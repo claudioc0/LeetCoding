@@ -260,6 +260,7 @@ nota2 = 6.0
             <div class="flex items-center gap-3">
               <button onclick="loadSolutionEx1()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
               <button onclick="clearExercise1()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+              <button onclick="toggleExpandEditor('code-ex1', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
             </div>
           </div>
         </div>
@@ -367,6 +368,7 @@ if 2 in vistos:      # Verificação instantânea O(1)!
             <div class="flex items-center gap-3">
               <button onclick="loadSolutionEx2()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
               <button onclick="clearExercise2()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+              <button onclick="toggleExpandEditor('code-ex2', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
             </div>
           </div>
         </div>
@@ -458,6 +460,7 @@ for i, num in enumerate(nums):
             <div class="flex items-center gap-3">
               <button onclick="loadSolutionEx3()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
               <button onclick="clearExercise3()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+              <button onclick="toggleExpandEditor('code-ex3', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
             </div>
           </div>
         </div>
@@ -655,6 +658,10 @@ def two_sum(nums, target):
             <button onclick="toggleHints()" class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
               💡 Dicas Progressivas
             </button>
+          </div>
+            <button onclick="revealLeetCodeSolution()" class="text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">👁️ Ver Solução Modelo</button>
+            <button onclick="clearLeetCodeEditor()" class="text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">🔄 Limpar</button>
+            <button onclick="toggleExpandEditor('code-leetcode', this)" class="text-xs px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
           </div>
 
           <div id="complexity-badge-container"></div>
@@ -1593,6 +1600,23 @@ def two_sum(nums, target):
       };
     }
 
+    function clearLeetCodeEditor() {
+      const ed = document.getElementById('code-leetcode');
+      ed.value = 'def two_sum(nums, target):\n    # Escreva sua solução aqui\n    pass';
+      if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('code-leetcode', ed.value);
+      const res = document.getElementById('leetcode-results');
+      if (res) res.classList.add('hidden');
+    }
+
+    function revealLeetCodeSolution() {
+      const ed = document.getElementById('code-leetcode');
+      ed.value = 'def two_sum(nums, target):\n    mapa = {}\n    for i, num in enumerate(nums):\n        complemento = target - num\n        if complemento in mapa:\n            return [mapa[complemento], i]\n        mapa[num] = i\n    return []';
+      if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('code-leetcode', ed.value);
+      ensureCursorVisible(ed);
+    }
+
     function runLeetCodeTests() {
       const pythonCode = document.getElementById('code-leetcode').value;
       const consoleBox = document.getElementById('leetcode-console-box');
@@ -1711,13 +1735,14 @@ def two_sum(nums, target):
     renderVisualStep();
     updateProgress();
   
-    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    // --- SMART CODE EDITOR FEATURES: Auto-Grow, Cursor Following, Tab Indent & Expand ---
     function ensureCursorVisible(textarea) {
       if (!textarea) return;
       const start = textarea.selectionStart;
       const val = textarea.value;
       const textBefore = val.substring(0, start);
-      const currentLine = textBefore.split('\\n').length;
+      const lines = textBefore.split(/\r?\n/);
+      const currentLine = lines.length;
       
       const style = window.getComputedStyle(textarea);
       const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
@@ -1726,7 +1751,7 @@ def two_sum(nums, target):
       const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
       const visibleTop = textarea.scrollTop;
       const visibleBottom = textarea.scrollTop + textarea.clientHeight;
-      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+      const margin = lineHeight * 2; // Keeps 2 lines visible margin around cursor
 
       if (cursorTop + lineHeight > visibleBottom - margin) {
         textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
@@ -1738,14 +1763,15 @@ def two_sum(nums, target):
     function handleAutoGrow(textarea) {
       if (!textarea || textarea.dataset.expanded === 'true') return;
       const isLeet = textarea.id.includes('leetcode');
-      const minH = isLeet ? 360 : 240;
-      const maxH = isLeet ? 750 : 550;
+      const minH = isLeet ? 380 : 240;
+      const maxH = isLeet ? 850 : 550;
       
-      // Calculate needed height
+      const prevScroll = textarea.scrollTop;
       textarea.style.height = 'auto';
       const scrollH = textarea.scrollHeight;
       const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
       textarea.style.height = targetHeight + 'px';
+      textarea.scrollTop = prevScroll;
     }
 
     function toggleExpandEditor(editorId, btn) {
@@ -1754,7 +1780,7 @@ def two_sum(nums, target):
       const isExpanded = textarea.dataset.expanded === 'true';
       const isLeet = textarea.id.includes('leetcode');
       const defaultH = isLeet ? 380 : 240;
-      const expandedH = isLeet ? 750 : 540;
+      const expandedH = isLeet ? 850 : 560;
       
       if (isExpanded) {
         textarea.style.height = defaultH + 'px';
@@ -1774,7 +1800,7 @@ def two_sum(nums, target):
         textarea.dataset.editorEnhanced = 'true';
 
         const isLeet = textarea.id.includes('leetcode');
-        const minH = isLeet ? 360 : 240;
+        const minH = isLeet ? 380 : 240;
         textarea.style.minHeight = minH + 'px';
         if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
           textarea.style.height = minH + 'px';
@@ -1792,20 +1818,20 @@ def two_sum(nums, target):
                 this.value = value.substring(0, start) + '    ' + value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 4;
               } else {
-                const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
-                const lineEnd = value.indexOf('\\n', end);
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\n', end);
                 const endPos = lineEnd === -1 ? value.length : lineEnd;
-                const selectedLines = value.substring(lineStart, endPos).split('\\n');
-                const indented = selectedLines.map(l => '    ' + l).join('\\n');
+                const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
                 this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
                 this.selectionStart = start + 4;
                 this.selectionEnd = end + (selectedLines.length * 4);
               }
             } else {
-              const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
-              const lineEnd = value.indexOf('\\n', end);
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\n', end);
               const endPos = lineEnd === -1 ? value.length : lineEnd;
-              const selectedLines = value.substring(lineStart, endPos).split('\\n');
+              const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
               let removedTotal = 0;
               let firstLineRemoved = 0;
 
@@ -1818,7 +1844,7 @@ def two_sum(nums, target):
                   return l.substring(removed);
                 }
                 return l;
-              }).join('\\n');
+              }).join('\n');
 
               this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
               this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
@@ -1826,12 +1852,13 @@ def two_sum(nums, target):
             }
             handleAutoGrow(this);
             ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
           } else if (e.key === 'Enter') {
             const start = this.selectionStart;
             const value = this.value;
-            const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
             const currentLine = value.substring(lineStart, start);
-            const indentMatch = currentLine.match(/^\\s*/);
+            const indentMatch = currentLine.match(/^\s*/);
             let indent = indentMatch ? indentMatch[0] : '';
             if (currentLine.trim().endsWith(':')) {
               indent += '    ';
@@ -1840,11 +1867,12 @@ def two_sum(nums, target):
               e.preventDefault();
               const before = value.substring(0, start);
               const after = value.substring(this.selectionEnd);
-              this.value = before + '\\n' + indent + after;
+              this.value = before + '\n' + indent + after;
               this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
             }
-            handleAutoGrow(this);
-            ensureCursorVisible(this);
           }
         });
 
@@ -1854,7 +1882,7 @@ def two_sum(nums, target):
         });
 
         textarea.addEventListener('keyup', function(e) {
-          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Backspace', 'Delete'].includes(e.key)) {
             ensureCursorVisible(this);
           }
         });

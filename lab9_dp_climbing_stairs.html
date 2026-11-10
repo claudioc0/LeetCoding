@@ -702,7 +702,7 @@ def custo_degraus(custos):
           </div>
           <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y leading-relaxed" placeholder="# Escreva sua solução aqui:
 class Solution:
-    def climbStairs(self, n: int) -> int:
+    def climbStairs(self, n: int) -&gt; int:
         # sua implementação aqui
 "></textarea>
         </div>
@@ -1513,7 +1513,7 @@ class Solution:
 
     function revealLeetCodeSolution() {
       const ed = document.getElementById('editor-leetcode');
-      ed.value = "class Solution:\n    def climbStairs(self, n: int) -> int:\n        if n <= 2:\n            return n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        dp[2] = 2\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n        return dp[n]";
+      ed.value = "class Solution:\n    def climbStairs(self, n: int) -&gt; int:\n        if n <= 2:\n            return n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        dp[2] = 2\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n        return dp[n]";
       if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
       if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
     }
@@ -1622,13 +1622,14 @@ class Solution:
     });
   
 
-    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    // --- SMART CODE EDITOR FEATURES: Auto-Grow, Cursor Following, Tab Indent & Expand ---
     function ensureCursorVisible(textarea) {
       if (!textarea) return;
       const start = textarea.selectionStart;
       const val = textarea.value;
       const textBefore = val.substring(0, start);
-      const currentLine = textBefore.split('\\n').length;
+      const lines = textBefore.split(/\r?\n/);
+      const currentLine = lines.length;
       
       const style = window.getComputedStyle(textarea);
       const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
@@ -1637,7 +1638,7 @@ class Solution:
       const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
       const visibleTop = textarea.scrollTop;
       const visibleBottom = textarea.scrollTop + textarea.clientHeight;
-      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+      const margin = lineHeight * 2; // Keeps 2 lines visible margin around cursor
 
       if (cursorTop + lineHeight > visibleBottom - margin) {
         textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
@@ -1649,14 +1650,15 @@ class Solution:
     function handleAutoGrow(textarea) {
       if (!textarea || textarea.dataset.expanded === 'true') return;
       const isLeet = textarea.id.includes('leetcode');
-      const minH = isLeet ? 360 : 240;
-      const maxH = isLeet ? 750 : 550;
+      const minH = isLeet ? 380 : 240;
+      const maxH = isLeet ? 850 : 550;
       
-      // Calculate needed height
+      const prevScroll = textarea.scrollTop;
       textarea.style.height = 'auto';
       const scrollH = textarea.scrollHeight;
       const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
       textarea.style.height = targetHeight + 'px';
+      textarea.scrollTop = prevScroll;
     }
 
     function toggleExpandEditor(editorId, btn) {
@@ -1665,7 +1667,7 @@ class Solution:
       const isExpanded = textarea.dataset.expanded === 'true';
       const isLeet = textarea.id.includes('leetcode');
       const defaultH = isLeet ? 380 : 240;
-      const expandedH = isLeet ? 750 : 540;
+      const expandedH = isLeet ? 850 : 560;
       
       if (isExpanded) {
         textarea.style.height = defaultH + 'px';
@@ -1685,7 +1687,7 @@ class Solution:
         textarea.dataset.editorEnhanced = 'true';
 
         const isLeet = textarea.id.includes('leetcode');
-        const minH = isLeet ? 360 : 240;
+        const minH = isLeet ? 380 : 240;
         textarea.style.minHeight = minH + 'px';
         if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
           textarea.style.height = minH + 'px';
@@ -1703,20 +1705,20 @@ class Solution:
                 this.value = value.substring(0, start) + '    ' + value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 4;
               } else {
-                const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
-                const lineEnd = value.indexOf('\\n', end);
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\n', end);
                 const endPos = lineEnd === -1 ? value.length : lineEnd;
-                const selectedLines = value.substring(lineStart, endPos).split('\\n');
-                const indented = selectedLines.map(l => '    ' + l).join('\\n');
+                const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
                 this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
                 this.selectionStart = start + 4;
                 this.selectionEnd = end + (selectedLines.length * 4);
               }
             } else {
-              const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
-              const lineEnd = value.indexOf('\\n', end);
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\n', end);
               const endPos = lineEnd === -1 ? value.length : lineEnd;
-              const selectedLines = value.substring(lineStart, endPos).split('\\n');
+              const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
               let removedTotal = 0;
               let firstLineRemoved = 0;
 
@@ -1729,7 +1731,7 @@ class Solution:
                   return l.substring(removed);
                 }
                 return l;
-              }).join('\\n');
+              }).join('\n');
 
               this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
               this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
@@ -1737,12 +1739,13 @@ class Solution:
             }
             handleAutoGrow(this);
             ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
           } else if (e.key === 'Enter') {
             const start = this.selectionStart;
             const value = this.value;
-            const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
             const currentLine = value.substring(lineStart, start);
-            const indentMatch = currentLine.match(/^\\s*/);
+            const indentMatch = currentLine.match(/^\s*/);
             let indent = indentMatch ? indentMatch[0] : '';
             if (currentLine.trim().endsWith(':')) {
               indent += '    ';
@@ -1751,11 +1754,12 @@ class Solution:
               e.preventDefault();
               const before = value.substring(0, start);
               const after = value.substring(this.selectionEnd);
-              this.value = before + '\\n' + indent + after;
+              this.value = before + '\n' + indent + after;
               this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
             }
-            handleAutoGrow(this);
-            ensureCursorVisible(this);
           }
         });
 
@@ -1765,7 +1769,7 @@ class Solution:
         });
 
         textarea.addEventListener('keyup', function(e) {
-          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Backspace', 'Delete'].includes(e.key)) {
             ensureCursorVisible(this);
           }
         });
