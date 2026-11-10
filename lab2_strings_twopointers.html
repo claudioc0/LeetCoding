@@ -1233,7 +1233,7 @@ def is_palindrome(s):
       cond = cond.trim();
       cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
       cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
-      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
       cond = cond.replace(/\bnot\s+/g, '!');
       cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
       cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
@@ -1280,12 +1280,42 @@ def is_palindrome(s):
         return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
       }
 
-      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
       expr = expr.replace(/\bnot\s+/g, '!');
       expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
       expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
       expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
-      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*==\s*([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyEq($1, $2)');
+      function wrapEquality(s) {
+        let inQuote = null;
+        let pDepth = 0;
+        let bDepth = 0;
+        let eqIdx = -1;
+        for (let i = 0; i < s.length; i++) {
+          const ch = s[i];
+          if (inQuote) {
+            if (ch === inQuote && s[i - 1] !== '\\') inQuote = null;
+            continue;
+          }
+          if (ch === '"' || ch === "'") { inQuote = ch; continue; }
+          if (ch === '(') pDepth++;
+          else if (ch === ')') pDepth--;
+          else if (ch === '[') bDepth++;
+          else if (ch === ']') bDepth--;
+          else if (pDepth === 0 && bDepth === 0) {
+            if (ch === '=' && s[i + 1] === '=' && s[i + 2] !== '=' && s[i - 1] !== '!' && s[i - 1] !== '<' && s[i - 1] !== '>') {
+              eqIdx = i;
+              break;
+            }
+          }
+        }
+        if (eqIdx !== -1) {
+          const left = s.substring(0, eqIdx).trim();
+          const right = s.substring(eqIdx + 2).trim();
+          return `pyEq(${left}, ${right})`;
+        }
+        return s;
+      }
+      expr = wrapEquality(expr);
       expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
       return expr;
     }
@@ -1293,7 +1323,7 @@ def is_palindrome(s):
     function transpileStatement(stmt) {
       stmt = transpileListComp(stmt);
       stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
-      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
       stmt = stmt.replace(/\bnot\s+/g, '!');
 
       // Tuple unpacking assignment: a, b = 1, 2
@@ -1610,7 +1640,12 @@ def is_palindrome(s):
         }
         const funcName = fnNameMatch[1];
 
-        const factory = new Function('__print', jsTranspiled + `\nreturn (typeof ${funcName} !== 'undefined') ? ${funcName} : null;`);
+        const factory = new Function('__print', jsTranspiled + `
+          let sol = (typeof Solution === 'function') ? new Solution() : null;
+          if (sol && typeof sol.${funcName} === 'function') return sol.${funcName}.bind(sol);
+          if (typeof ${funcName} !== 'undefined') return ${funcName};
+          return null;
+        `);
         const userFunction = factory((...args) => capturedLogs.push(args.join(' ')));
 
         if (typeof userFunction !== 'function') {
