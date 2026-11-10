@@ -54,53 +54,80 @@
   <div class="max-w-5xl mx-auto space-y-8">
 
     <!-- Header / Banner with Phase Switcher -->
-    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT) -->
-    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col lg:flex-row items-center justify-between gap-4">
-      <!-- Left: Avatar, Name, Level & XP Bar -->
-      <div class="flex items-center gap-3.5 w-full lg:w-auto">
-        <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
-          🐍
-        </button>
-        <div class="flex-1 min-w-[180px]">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
-            <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
-            <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
-          </div>
-          <div class="mt-1.5 flex items-center gap-2.5">
-            <div class="flex-1 max-w-[200px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
-              <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT ACROSS ALL 10 LABS) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col gap-3.5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Left: Avatar, Name, Level & XP Bar -->
+        <div class="flex items-center gap-3.5 w-full md:w-auto">
+          <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+            🐍
+          </button>
+          <div class="flex-1 min-w-[200px]">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
+              <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
             </div>
-            <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+            <div class="mt-1.5 flex items-center gap-2.5">
+              <div class="flex-1 max-w-[220px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+            </div>
           </div>
+        </div>
+
+        <!-- Right: Open Profile Modal Button -->
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+          <button onclick="window.ProfileSystem.openModal()" class="w-full md:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+            <span>🏅</span> Ver Perfil, 10 Labs & Conquistas
+          </button>
         </div>
       </div>
 
-      <!-- Center: 4 Labs Quick Roadmap -->
-      <div class="flex flex-wrap items-center gap-1.5 text-xs">
-        <a href="index.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+      <!-- Bottom Row: 10 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-[11px] pt-2.5 border-t border-slate-800/80">
+        
+        <a href="index.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
           <span>F1: Hash Map</span>
-          <span id="nav-pct-lab1" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+          <span id="nav-pct-lab1" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
         </a>
-        <a href="lab2_strings_twopointers.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-purple-500/15 border-purple-500/40 text-purple-300 font-bold">
+        <a href="lab2_strings_twopointers.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-purple-500/20 border-purple-500/50 text-purple-300 font-bold shadow-sm">
           <span>F2: Two Pointers</span>
-          <span id="nav-pct-lab2" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+          <span id="nav-pct-lab2" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
         </a>
-        <a href="lab3_stacks_valid_parentheses.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
           <span>F3: Pilhas</span>
-          <span id="nav-pct-lab3" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+          <span id="nav-pct-lab3" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
         </a>
-        <a href="lab4_sliding_window_stocks.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+        <a href="lab4_sliding_window_stocks.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
           <span>F4: Sliding Window</span>
-          <span id="nav-pct-lab4" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+          <span id="nav-pct-lab4" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
         </a>
-      </div>
-
-      <!-- Right: Open Profile Modal Button -->
-      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
-        <button onclick="window.ProfileSystem.openModal()" class="w-full lg:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
-          <span>👤</span> Meu Perfil & Conquistas
-        </button>
+        <a href="lab5_binary_search.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F5: Busca Binária</span>
+          <span id="nav-pct-lab5" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab6_sets_duplicates.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F6: Hash Sets</span>
+          <span id="nav-pct-lab6" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab7_kadane_max_subarray.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F7: Kadane</span>
+          <span id="nav-pct-lab7" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab8_two_pointers_water.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F8: Container Água</span>
+          <span id="nav-pct-lab8" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab9_dp_climbing_stairs.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F9: Prog. Dinâmica</span>
+          <span id="nav-pct-lab9" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab10_intervals_merge.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F10: Intervalos</span>
+          <span id="nav-pct-lab10" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
       </div>
     </div>
 
@@ -689,9 +716,30 @@ def is_palindrome(s):
     </section>
 
     <!-- Footer -->
-    <footer class="text-center text-xs text-slate-500 py-6 space-y-1">
-      <p>Python Learning Lab • Fase 2: Strings & Two Pointers</p>
-      <p>Bons estudos e continue firme rumo aos próximos desafios!</p>
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 border-t border-slate-800/60">
+      <p>Python Study Lab • Trilha Completa de 10 Fases com Persistência de Perfil & Evolução de XP</p>
+      <div class="mt-3 flex flex-wrap justify-center gap-2.5 text-slate-400">
+        <a href="index.html" class="hover:text-emerald-400 transition-colors">F1: Hash Map</a>
+        <span>•</span>
+        <span class="text-emerald-400 font-bold">F2: Two Pointers</span>
+        <span>•</span>
+        <a href="lab3_stacks_valid_parentheses.html" class="hover:text-emerald-400 transition-colors">F3: Pilhas</a>
+        <span>•</span>
+        <a href="lab4_sliding_window_stocks.html" class="hover:text-emerald-400 transition-colors">F4: Sliding Window</a>
+        <span>•</span>
+        <a href="lab5_binary_search.html" class="hover:text-emerald-400 transition-colors">F5: Busca Binária</a>
+        <span>•</span>
+        <a href="lab6_sets_duplicates.html" class="hover:text-emerald-400 transition-colors">F6: Hash Sets</a>
+        <span>•</span>
+        <a href="lab7_kadane_max_subarray.html" class="hover:text-emerald-400 transition-colors">F7: Kadane</a>
+        <span>•</span>
+        <a href="lab8_two_pointers_water.html" class="hover:text-emerald-400 transition-colors">F8: Container Água</a>
+        <span>•</span>
+        <a href="lab9_dp_climbing_stairs.html" class="hover:text-emerald-400 transition-colors">F9: Prog. Dinâmica</a>
+        <span>•</span>
+        <a href="lab10_intervals_merge.html" class="hover:text-emerald-400 transition-colors">F10: Intervalos</a>
+      </div>
     </footer>
 
   </div>
@@ -806,8 +854,43 @@ def is_palindrome(s):
         }
         return res;
       }
+      function sum(arr) {
+        if (!arr) return 0;
+        let s = 0;
+        for (let x of arr) s += x;
+        return s;
+      }
+      function pyCompare(a, b) {
+        if (Array.isArray(a) && Array.isArray(b)) {
+          const l = Math.min(a.length, b.length);
+          for (let i = 0; i < l; i++) {
+            const c = pyCompare(a[i], b[i]);
+            if (c !== 0) return c;
+          }
+          return a.length - b.length;
+        }
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      }
+      function pySortInPlace(arr, keyFn, reverse) {
+        if (!Array.isArray(arr)) return arr;
+        arr.sort((a, b) => {
+          const ka = keyFn ? keyFn(a) : a;
+          const kb = keyFn ? keyFn(b) : b;
+          const cmp = pyCompare(ka, kb);
+          return reverse ? -cmp : cmp;
+        });
+        return arr;
+      }
+      function sorted(iterable, keyFn, reverse) {
+        const arr = Array.from(iterable || []);
+        return pySortInPlace(arr, keyFn, reverse);
+      }
       function pyIn(item, container) {
-        if (Array.isArray(container) || typeof container === 'string') {
+        if (Array.isArray(container)) {
+          return container.some(x => pyEq(x, item));
+        }
+        if (typeof container === 'string') {
           return container.includes(item);
         }
         if (container instanceof Set) {
@@ -891,6 +974,18 @@ def is_palindrome(s):
           writable: true, configurable: true, enumerable: false
         });
       }
+      if (!Set.prototype.remove) {
+        Object.defineProperty(Set.prototype, 'remove', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Set.prototype.discard) {
+        Object.defineProperty(Set.prototype, 'discard', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
       if (!String.prototype.startswith) {
         Object.defineProperty(String.prototype, 'startswith', {
           value: function(prefix) { return this.startsWith(prefix); },
@@ -924,7 +1019,6 @@ def is_palindrome(s):
     }
 
     function declareVar(name) {
-      // Declare in current function scope or root scope so Python function-level scoping works!
       for (let i = blockStack.length - 1; i >= 0; i--) {
         if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
           blockStack[i].vars.add(name);
@@ -932,6 +1026,57 @@ def is_palindrome(s):
         }
       }
       blockStack[0].vars.add(name);
+    }
+
+    function convertCommonPythonSyntax(s) {
+      // Convert Python f-strings: f"..." or f'...'
+      s = s.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      s = s.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // set(...) and list(...)
+      s = s.replace(/(?<![a-zA-Z0-9_.])\bset\s*\(/g, 'pySet(');
+      s = s.replace(/(?<![a-zA-Z0-9_.])\blist\s*\(/g, 'pyList(');
+
+      // .sort(key=lambda x: ...) or .sort()
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `pySortInPlace(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*reverse\s*=\s*(True|False|true|false)\s*\)/g,
+        (_, arr, rev) => `pySortInPlace(${arr}, null, ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*\)/g, 'pySortInPlace($1)');
+
+      // sorted(arr, key=lambda x: ...)
+      s = s.replace(/\bsorted\(\s*([^,)]+)\s*,\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `sorted(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+
+      // Methods and slicing
+      s = s.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      s = s.replace(/\.lower\(\)/g, '.toLowerCase()');
+      s = s.replace(/\.upper\(\)/g, '.toUpperCase()');
+      s = s.replace(/\.startswith\(/g, '.startsWith(');
+      s = s.replace(/\.endswith\(/g, '.endsWith(');
+      s = s.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      // Slicing: arr[start:stop], arr[start:], arr[:stop]
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice($2, $3)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*\]/g, '$1.slice($2)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice(0, $2)');
+
+      // Negative indexing: arr[-1], arr[-2], etc. Works for both L-value and R-value!
+      s = s.replace(/([a-zA-Z0-9_]+)\[-([0-9]+)\]/g, '$1[$1.length - $2]');
+
+      // List repetition: [0] * (n + 1) or [0] * n
+      s = s.replace(/\[\s*([^\[\],]+)\s*\]\s*\*\s*(\([^)]+\)|[a-zA-Z0-9_]+)/g, 'Array($2).fill($1)');
+
+      // Floor division assignment: a //= b
+      s = s.replace(/([a-zA-Z0-9_\[\]]+)\s*\/\/=\s*(.+)/g, '$1 = Math.floor(($1) / ($2))');
+
+      // Floor division operator: expr // expr
+      while (s.includes('//')) {
+        const next = s.replace(/(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+(?:\s*[+\-]\s*[a-zA-Z0-9_\[\]\.]+)*)\s*\/\/\s*(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+)/, 'Math.floor(($1) / ($2))');
+        if (next === s) break;
+        s = next;
+      }
+
+      return s;
     }
 
     for (let rawLine of lines) {
@@ -967,18 +1112,7 @@ def is_palindrome(s):
         }
       }
 
-      // Convert Python f-strings: f"..." or f'...'
-      line = line.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
-      line = line.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
-
-      // Methods and conversions
-      line = line.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
-      line = line.replace(/\.lower\(\)/g, '.toLowerCase()');
-      line = line.replace(/\.upper\(\)/g, '.toUpperCase()');
-      line = line.replace(/\.startswith\(/g, '.startsWith(');
-      line = line.replace(/\.endswith\(/g, '.endsWith(');
-      line = line.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
-      line = line.replace(/([a-zA-Z0-9_]+)\[-1\]/g, '$1.at(-1)');
+      line = convertCommonPythonSyntax(line);
 
       // class Solution:
       if (line.match(/^class\s+Solution.*?:\s*$/)) {
@@ -1004,6 +1138,17 @@ def is_palindrome(s):
         let targetArr = forEnumMatch[3];
         jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
         blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for a, b in iter:
+      let forTupleMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forTupleMatch) {
+        let v1 = forTupleMatch[1];
+        let v2 = forTupleMatch[2];
+        let iterable = forTupleMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${v1}, ${v2}] of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([v1, v2]) });
         continue;
       }
 
@@ -1166,6 +1311,12 @@ def is_palindrome(s):
           declareVar(varName);
           return `let ${varName} = ${rhs}`;
         }
+      }
+
+      // Indexed assignment: arr[i] = rhs
+      let idxAssignMatch = stmt.match(/^([a-zA-Z0-9_]+\[.*?\])\s*(?<![=!<>+\-*/])=(?!=)\s*(.*)/);
+      if (idxAssignMatch) {
+        return `${idxAssignMatch[1]} = ${transpileExpression(idxAssignMatch[2])}`;
       }
       return stmt;
     }
@@ -1527,7 +1678,7 @@ def is_palindrome(s):
       const start = textarea.selectionStart;
       const val = textarea.value;
       const textBefore = val.substring(0, start);
-      const currentLine = textBefore.split('\n').length;
+      const currentLine = textBefore.split('\\n').length;
       
       const style = window.getComputedStyle(textarea);
       const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
@@ -1602,20 +1753,20 @@ def is_palindrome(s):
                 this.value = value.substring(0, start) + '    ' + value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 4;
               } else {
-                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-                const lineEnd = value.indexOf('\n', end);
+                const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\\n', end);
                 const endPos = lineEnd === -1 ? value.length : lineEnd;
-                const selectedLines = value.substring(lineStart, endPos).split('\n');
-                const indented = selectedLines.map(l => '    ' + l).join('\n');
+                const selectedLines = value.substring(lineStart, endPos).split('\\n');
+                const indented = selectedLines.map(l => '    ' + l).join('\\n');
                 this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
                 this.selectionStart = start + 4;
                 this.selectionEnd = end + (selectedLines.length * 4);
               }
             } else {
-              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-              const lineEnd = value.indexOf('\n', end);
+              const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\\n', end);
               const endPos = lineEnd === -1 ? value.length : lineEnd;
-              const selectedLines = value.substring(lineStart, endPos).split('\n');
+              const selectedLines = value.substring(lineStart, endPos).split('\\n');
               let removedTotal = 0;
               let firstLineRemoved = 0;
 
@@ -1628,7 +1779,7 @@ def is_palindrome(s):
                   return l.substring(removed);
                 }
                 return l;
-              }).join('\n');
+              }).join('\\n');
 
               this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
               this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
@@ -1639,9 +1790,9 @@ def is_palindrome(s):
           } else if (e.key === 'Enter') {
             const start = this.selectionStart;
             const value = this.value;
-            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
             const currentLine = value.substring(lineStart, start);
-            const indentMatch = currentLine.match(/^\s*/);
+            const indentMatch = currentLine.match(/^\\s*/);
             let indent = indentMatch ? indentMatch[0] : '';
             if (currentLine.trim().endsWith(':')) {
               indent += '    ';
@@ -1650,7 +1801,7 @@ def is_palindrome(s):
               e.preventDefault();
               const before = value.substring(0, start);
               const after = value.substring(this.selectionEnd);
-              this.value = before + '\n' + indent + after;
+              this.value = before + '\\n' + indent + after;
               this.selectionStart = this.selectionEnd = start + 1 + indent.length;
             }
             handleAutoGrow(this);
@@ -1686,9 +1837,8 @@ def is_palindrome(s):
     } else {
       setupCodeEditorFeatures();
     }
-  
 
-    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM ---
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (10 LABS) ---
     window.ProfileSystem = (function() {
       const STORAGE_KEY = 'python_study_lab_profile_v1';
       const CURRENT_LAB = 2;
@@ -1717,35 +1867,78 @@ def is_palindrome(s):
         lab4_mod2: { lab: 4, xp: 50, title: 'Módulo 2: Lucro Diário' },
         lab4_mod3: { lab: 4, xp: 50, title: 'Módulo 3: Consultor da Bolsa' },
         lab4_mod4: { lab: 4, xp: 50, title: 'Módulo 4: Simulador Wall Street' },
-        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true }
+        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true },
+        // Fase 5
+        lab5_mod1: { lab: 5, xp: 50, title: 'Módulo 1: Divisão Inteira (//)' },
+        lab5_mod2: { lab: 5, xp: 50, title: 'Módulo 2: Bússola da Metade' },
+        lab5_mod3: { lab: 5, xp: 50, title: 'Módulo 3: Contador de Divisões' },
+        lab5_mod4: { lab: 5, xp: 50, title: 'Módulo 4: Simulador Busca Binária' },
+        lab5_mod5: { lab: 5, xp: 150, title: '⚡ LeetCode #704: Binary Search', isLeet: true },
+        // Fase 6
+        lab6_mod1: { lab: 6, xp: 50, title: 'Módulo 1: Filtrando com Set' },
+        lab6_mod2: { lab: 6, xp: 50, title: 'Módulo 2: Caçador do Primeiro Clone' },
+        lab6_mod3: { lab: 6, xp: 50, title: 'Módulo 3: Interseção em O(1)' },
+        lab6_mod4: { lab: 6, xp: 50, title: 'Módulo 4: Simulador Hash Set' },
+        lab6_mod5: { lab: 6, xp: 150, title: '⚡ LeetCode #217: Contains Duplicate', isLeet: true },
+        // Fase 7
+        lab7_mod1: { lab: 7, xp: 50, title: 'Módulo 1: Somas Acumuladas' },
+        lab7_mod2: { lab: 7, xp: 50, title: 'Módulo 2: Decisão de Kadane' },
+        lab7_mod3: { lab: 7, xp: 50, title: 'Módulo 3: Histórico de Kadane' },
+        lab7_mod4: { lab: 7, xp: 50, title: 'Módulo 4: Simulador Kadane' },
+        lab7_mod5: { lab: 7, xp: 150, title: '⚡ LeetCode #53: Maximum Subarray', isLeet: true },
+        // Fase 8
+        lab8_mod1: { lab: 8, xp: 50, title: 'Módulo 1: Volume do Tanque' },
+        lab8_mod2: { lab: 8, xp: 50, title: 'Módulo 2: Movimento do Gargalo' },
+        lab8_mod3: { lab: 8, xp: 50, title: 'Módulo 3: Áreas Convergentes' },
+        lab8_mod4: { lab: 8, xp: 50, title: 'Módulo 4: Simulador Reservatório' },
+        lab8_mod5: { lab: 8, xp: 150, title: '⚡ LeetCode #11: Container Most Water', isLeet: true },
+        // Fase 9
+        lab9_mod1: { lab: 9, xp: 50, title: 'Módulo 1: Tabela Fibonacci (DP)' },
+        lab9_mod2: { lab: 9, xp: 50, title: 'Módulo 2: Transição de Degraus' },
+        lab9_mod3: { lab: 9, xp: 50, title: 'Módulo 3: DP de Custo Mínimo' },
+        lab9_mod4: { lab: 9, xp: 50, title: 'Módulo 4: Simulador Escada DP' },
+        lab9_mod5: { lab: 9, xp: 150, title: '⚡ LeetCode #70: Climbing Stairs', isLeet: true },
+        // Fase 10
+        lab10_mod1: { lab: 10, xp: 50, title: 'Módulo 1: Detector de Conflito' },
+        lab10_mod2: { lab: 10, xp: 50, title: 'Módulo 2: Fusão de Dois Intervalos' },
+        lab10_mod3: { lab: 10, xp: 50, title: 'Módulo 3: Ordenando Listas 2D' },
+        lab10_mod4: { lab: 10, xp: 50, title: 'Módulo 4: Simulador Linha do Tempo' },
+        lab10_mod5: { lab: 10, xp: 150, title: '⚡ LeetCode #56: Merge Intervals', isLeet: true }
       };
 
       const LEVELS = [
-        { level: 1, minXp: 0, maxXp: 150, rank: '🌱 Iniciante Python' },
-        { level: 2, minXp: 150, maxXp: 350, rank: '🔍 Explorador de Dados' },
-        { level: 3, minXp: 350, maxXp: 650, rank: '⚡ Caçador de Algoritmos' },
-        { level: 4, minXp: 650, maxXp: 1000, rank: '🏗️ Arquiteto de Estruturas' },
-        { level: 5, minXp: 1000, maxXp: 1350, rank: '🚀 Engenheiro Big Tech' },
-        { level: 6, minXp: 1350, maxXp: 2000, rank: '👑 Lenda do LeetCode' }
+        { level: 1, minXp: 0, maxXp: 200, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 200, maxXp: 500, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 500, maxXp: 900, rank: '🛠️ Artesão de Algoritmos' },
+        { level: 4, minXp: 900, maxXp: 1350, rank: '⚡ Mestre O(n)' },
+        { level: 5, minXp: 1350, maxXp: 1850, rank: '🧭 Navegador Binário' },
+        { level: 6, minXp: 1850, maxXp: 2350, rank: '🔥 Estrategista Guloso' },
+        { level: 7, minXp: 2350, maxXp: 2850, rank: '🔮 Arquiteto Dinâmico' },
+        { level: 8, minXp: 2850, maxXp: 3500, rank: '👑 Grão-Mestre LeetCode' }
       ];
 
       const ACHIEVEMENTS = [
-        { id: 'first_blood', icon: '🩸', title: 'Primeiro Passo', desc: 'Concluiu sua primeira atividade prática', check: (p) => Object.keys(p.completedTasks).length >= 1 },
-        { id: 'hash_master', icon: '🗺️', title: 'Mestre do Hash Map', desc: 'Venceu o LeetCode #1: Two Sum', check: (p) => !!p.completedTasks['lab1_mod5'] },
-        { id: 'two_pointers', icon: '🎯', title: 'Olhos de Águia', desc: 'Venceu o LeetCode #125: Valid Palindrome', check: (p) => !!p.completedTasks['lab2_mod5'] },
-        { id: 'lifo_guardian', icon: '🥞', title: 'Guardião LIFO', desc: 'Venceu o LeetCode #20: Valid Parentheses', check: (p) => !!p.completedTasks['lab3_mod5'] },
-        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Venceu o LeetCode #121: Buy & Sell Stock', check: (p) => !!p.completedTasks['lab4_mod5'] },
-        { id: 'python_legend', icon: '👑', title: 'Maratonista Python', desc: 'Acumulou 1.000+ XP nos laboratórios', check: (p) => p.xp >= 1000 }
+        { id: 'first_blood', icon: '🎯', title: 'Primeiro Passo', desc: 'Conclua seu primeiro exercício em qualquer Lab.', check: p => Object.keys(p.completedTasks).length >= 1 },
+        { id: 'hash_master', icon: '🗂️', title: 'Mestre do Hash Map', desc: 'Vença o LeetCode #1 (Two Sum).', check: p => !!p.completedTasks.lab1_mod5 },
+        { id: 'two_pointers', icon: '👉👈', title: 'Domador de Ponteiros', desc: 'Vença o LeetCode #125 (Valid Palindrome).', check: p => !!p.completedTasks.lab2_mod5 },
+        { id: 'stack_lord', icon: '🥞', title: 'Guardião LIFO', desc: 'Vença o LeetCode #20 (Valid Parentheses).', check: p => !!p.completedTasks.lab3_mod5 },
+        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Vença o LeetCode #121 (Buy & Sell Stock).', check: p => !!p.completedTasks.lab4_mod5 },
+        { id: 'binary_sniper', icon: '🎯', title: 'Sniper Logarítmico', desc: 'Vença o LeetCode #704 (Binary Search).', check: p => !!p.completedTasks.lab5_mod5 },
+        { id: 'set_detective', icon: '🕵️', title: 'Detetive de Duplicatas', desc: 'Vença o LeetCode #217 (Contains Duplicate).', check: p => !!p.completedTasks.lab6_mod5 },
+        { id: 'kadane_king', icon: '👑', title: 'Mestre de Kadane', desc: 'Vença o LeetCode #53 (Maximum Subarray).', check: p => !!p.completedTasks.lab7_mod5 },
+        { id: 'water_architect', icon: '🌊', title: 'Engenheiro Hidráulico', desc: 'Vença o LeetCode #11 (Container With Most Water).', check: p => !!p.completedTasks.lab8_mod5 },
+        { id: 'dp_wizard', icon: '🪜', title: 'Mago da Recorrência', desc: 'Vença o LeetCode #70 (Climbing Stairs).', check: p => !!p.completedTasks.lab9_mod5 },
+        { id: 'time_lord', icon: '⏳', title: 'Senhor do Tempo', desc: 'Vença o LeetCode #56 (Merge Intervals).', check: p => !!p.completedTasks.lab10_mod5 },
+        { id: 'grandmaster_10', icon: '🏆', title: 'Lenda dos 10 Labs', desc: 'Resolva todos os 10 desafios do LeetCode!', check: p => [1,2,3,4,5,6,7,8,9,10].every(n => !!p.completedTasks['lab' + n + '_mod5']) }
       ];
 
       function getDefaultProfile() {
         return {
-          name: 'Claudio',
+          name: 'Estudante Python',
           avatar: '🐍',
           xp: 0,
           completedTasks: {},
-          savedCode: {},
-          history: []
+          savedCode: {}
         };
       }
 
@@ -1766,6 +1959,15 @@ def is_palindrome(s):
         } catch (e) {}
       }
 
+      function recalcXp(profile) {
+        let total = 0;
+        for (const k of Object.keys(profile.completedTasks)) {
+          if (TASKS_CATALOG[k]) total += TASKS_CATALOG[k].xp;
+        }
+        profile.xp = total;
+        return total;
+      }
+
       function getLevelInfo(xp) {
         for (let i = LEVELS.length - 1; i >= 0; i--) {
           if (xp >= LEVELS[i].minXp) return LEVELS[i];
@@ -1773,74 +1975,37 @@ def is_palindrome(s):
         return LEVELS[0];
       }
 
-      function showToast(message, subtext) {
-        const container = document.getElementById('xp-toast-container');
-        if (!container) return;
-        const toast = document.createElement('div');
-        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl text-xs text-white flex items-center gap-3 transform transition-all duration-300 pointer-events-auto';
-        toast.innerHTML = `
-          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center text-xl">✨</div>
-          <div>
-            <div class="font-extrabold text-emerald-400 text-sm">${message}</div>
-            <div class="text-slate-300 text-[11px]">${subtext || ''}</div>
-          </div>
-        `;
-        container.appendChild(toast);
-        setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transform = 'translateY(10px)';
-          setTimeout(() => toast.remove(), 300);
-        }, 4000);
-      }
-
-      function completeTask(taskKey) {
-        const taskDef = TASKS_CATALOG[taskKey];
-        if (!taskDef) return;
-        const profile = loadProfile();
-        if (profile.completedTasks[taskKey]) {
-          // Already completed before, just refresh UI
-          renderTopBar(profile);
-          return;
-        }
-
-        const oldLevel = getLevelInfo(profile.xp).level;
-        profile.completedTasks[taskKey] = {
-          completedAt: new Date().toISOString(),
-          xp: taskDef.xp
-        };
-        profile.xp += taskDef.xp;
-        profile.history.unshift({
-          date: new Date().toISOString(),
-          text: `+${taskDef.xp} XP • ${taskDef.title}`
-        });
-        if (profile.history.length > 25) profile.history.pop();
-
-        saveProfile(profile);
-        renderTopBar(profile);
-
-        const newLevelObj = getLevelInfo(profile.xp);
-        if (newLevelObj.level > oldLevel) {
-          showToast(`🎉 LEVEL UP! Nível ${newLevelObj.level}!`, `Nova Patente: ${newLevelObj.rank} (+${taskDef.xp} XP)`);
-        } else {
-          showToast(`+${taskDef.xp} XP Ganhos!`, taskDef.title);
-        }
-      }
-
-      function saveEditorCode(editorId, code) {
-        const profile = loadProfile();
-        profile.savedCode[`lab${CURRENT_LAB}_${editorId}`] = code;
-        saveProfile(profile);
-      }
-
       function getLabStats(profile, labNum) {
         const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
         const done = keys.filter(k => !!profile.completedTasks[k]).length;
-        const pct = Math.round((done / keys.length) * 100);
+        const pct = keys.length ? Math.round((done / keys.length) * 100) : 0;
         return { done, total: keys.length, pct, keys };
       }
 
+      function showToast(title, subtitle) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-2 opacity-0';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">⚡</div>
+          <div>
+            <div class="text-xs font-extrabold text-white">${title}</div>
+            <div class="text-[11px] text-emerald-300 font-mono">${subtitle}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        });
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 3800);
+      }
+
       function renderTopBar(profile) {
-        profile = profile || loadProfile();
+        recalcXp(profile);
         const lvl = getLevelInfo(profile.xp);
         const avatarEl = document.getElementById('profile-bar-avatar');
         const nameEl = document.getElementById('profile-bar-name');
@@ -1849,79 +2014,108 @@ def is_palindrome(s):
         const xpTextEl = document.getElementById('profile-bar-xp-text');
         const xpFillEl = document.getElementById('profile-bar-xp-fill');
 
-        if (avatarEl) avatarEl.innerText = profile.avatar;
-        if (nameEl) nameEl.innerText = profile.name;
+        if (avatarEl) avatarEl.innerText = profile.avatar || '🐍';
+        if (nameEl) nameEl.innerText = profile.name || 'Estudante Python';
         if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
         if (rankEl) rankEl.innerText = lvl.rank;
         if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
-
         if (xpFillEl) {
           const span = Math.max(1, lvl.maxXp - lvl.minXp);
-          const inLevel = Math.min(span, Math.max(0, profile.xp - lvl.minXp));
-          xpFillEl.style.width = `${Math.round((inLevel / span) * 100)}%`;
+          const pct = Math.min(100, Math.round(((profile.xp - lvl.minXp) / span) * 100));
+          xpFillEl.style.width = `${pct}%`;
         }
 
-        for (let l = 1; l <= 4; l++) {
-          const st = getLabStats(profile, l);
+        for (let l = 1; l <= 10; l++) {
           const el = document.getElementById(`nav-pct-lab${l}`);
           if (el) {
+            const st = getLabStats(profile, l);
             el.innerText = `${st.pct}%`;
             if (st.pct === 100) {
-              el.className = 'text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+              el.className = 'text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
             }
           }
         }
+      }
+
+      function completeTask(taskId) {
+        const task = TASKS_CATALOG[taskId];
+        if (!task) return;
+        const profile = loadProfile();
+        const oldLvl = getLevelInfo(recalcXp(profile)).level;
+        const alreadyDone = !!profile.completedTasks[taskId];
+
+        if (!alreadyDone) {
+          profile.completedTasks[taskId] = { completedAt: new Date().toISOString() };
+          recalcXp(profile);
+          saveProfile(profile);
+          const newLvlInfo = getLevelInfo(profile.xp);
+          showToast(`+${task.xp} XP Conquistado!`, task.title);
+          if (newLvlInfo.level > oldLvl) {
+            setTimeout(() => {
+              showToast(`🎉 SUBIU PARA O NÍVEL ${newLvlInfo.level}!`, newLvlInfo.rank);
+            }, 900);
+          }
+        }
+        renderTopBar(profile);
+      }
+
+      function saveEditorCode(editorId, code) {
+        const profile = loadProfile();
+        const key = `lab${CURRENT_LAB}_${editorId}`;
+        profile.savedCode[key] = code;
+        saveProfile(profile);
       }
 
       function restoreLabState() {
         const profile = loadProfile();
         renderTopBar(profile);
 
-        // Restore saved editor code & bind auto-save
         document.querySelectorAll('textarea').forEach(ta => {
+          if (!ta.id) return;
           const key = `lab${CURRENT_LAB}_${ta.id}`;
-          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key].trim() !== '') {
+          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
             ta.value = profile.savedCode[key];
             if (typeof handleAutoGrow === 'function') handleAutoGrow(ta);
           }
-          ta.addEventListener('input', function() {
-            saveEditorCode(this.id, this.value);
-          });
+          if (!ta.dataset.profileBound) {
+            ta.dataset.profileBound = 'true';
+            ta.addEventListener('input', function() {
+              saveEditorCode(this.id, this.value);
+            });
+          }
         });
 
-        // Restore badges & progress for current lab
-        for (let m = 1; m <= 5; m++) {
-          const taskKey = `lab${CURRENT_LAB}_mod${m}`;
-          if (profile.completedTasks[taskKey]) {
-            const badge = document.getElementById(`badge-mod-${m}`);
-            if (badge) {
-              badge.innerText = 'Concluído ✓';
-              badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+        const st = getLabStats(profile, CURRENT_LAB);
+        st.keys.forEach((k, idx) => {
+          if (profile.completedTasks[k]) {
+            const modNum = idx + 1;
+            const b1 = document.getElementById(`badge-mod${modNum}`);
+            if (b1) {
+              b1.className = "text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+              b1.innerText = "Concluído ✓";
             }
-            if (m === 5) {
-              const lc1 = document.getElementById('leetcode-status');
-              if (lc1) {
-                lc1.className = 'px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2';
-                lc1.innerHTML = '<span>🎉</span> Desafio Resolvido!';
-              }
-              const lc2 = document.getElementById('status-tag-leetcode');
-              if (lc2) {
-                lc2.innerText = 'Concluído ✅';
-                lc2.className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            const b2 = document.getElementById(`badge-mod-${modNum}`);
+            if (b2) {
+              b2.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+              b2.innerText = "Concluído ✓";
+            }
+            if (modNum === 5) {
+              const lcStatus = document.getElementById('leetcode-status');
+              if (lcStatus) {
+                lcStatus.className = "px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2";
+                lcStatus.innerHTML = "<span>🎉</span> Desafio Resolvido!";
               }
             }
             if (typeof completedModules !== 'undefined') {
               if (completedModules instanceof Set) {
-                completedModules.add(m === 5 ? 'leetcode' : `mod-${m}`);
+                completedModules.add(modNum === 5 ? 'leetcode' : `mod-${modNum}`);
               } else if (typeof completedModules === 'object') {
-                completedModules[`mod${m}`] = true;
+                completedModules[`mod${modNum}`] = true;
               }
             }
           }
-        }
+        });
 
-        // Update current lab header progress bar
-        const st = getLabStats(profile, CURRENT_LAB);
         const pctEl = document.getElementById('progress-percent');
         const fillEl = document.getElementById('progress-bar-fill');
         if (pctEl) pctEl.innerText = `${st.pct}% Concluído`;
@@ -1946,20 +2140,14 @@ def is_palindrome(s):
 
         const totalTasks = Object.keys(TASKS_CATALOG).length;
         const doneTasks = Object.keys(profile.completedTasks).length;
-        const leetsDone = ['lab1_mod5', 'lab2_mod5', 'lab3_mod5', 'lab4_mod5'].filter(k => !!profile.completedTasks[k]).length;
+        const leetsDone = [1,2,3,4,5,6,7,8,9,10].filter(n => !!profile.completedTasks['lab' + n + '_mod5']).length;
 
         document.getElementById('stat-total-xp').innerText = `${profile.xp} XP`;
         document.getElementById('stat-tasks-done').innerText = `${doneTasks} / ${totalTasks}`;
-        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 4`;
+        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 10`;
         document.getElementById('stat-global-pct').innerText = `${Math.round((doneTasks / totalTasks) * 100)}%`;
 
-        // Render Labs breakdown
-        const labsInfo = [
-          { num: 1, name: 'Fase 1: Hash Maps & Two Sum', url: 'index.html', color: 'sky' },
-          { num: 2, name: 'Fase 2: Strings & Two Pointers', url: 'lab2_strings_twopointers.html', color: 'purple' },
-          { num: 3, name: 'Fase 3: Pilhas & Parênteses', url: 'lab3_stacks_valid_parentheses.html', color: 'indigo' },
-          { num: 4, name: 'Fase 4: Sliding Window & Ações', url: 'lab4_sliding_window_stocks.html', color: 'emerald' }
-        ];
+        const labsInfo = [{"num":1,"short":"F1: Hash Map","name":"Fase 1: Hash Maps & Two Sum (#1)","url":"index.html","artifact":"python_study_lab.html","color":"sky"},{"num":2,"short":"F2: Two Pointers","name":"Fase 2: Strings & Valid Palindrome (#125)","url":"lab2_strings_twopointers.html","artifact":"python_study_lab_phase2.html","color":"purple"},{"num":3,"short":"F3: Pilhas","name":"Fase 3: Pilhas & Valid Parentheses (#20)","url":"lab3_stacks_valid_parentheses.html","artifact":"python_study_lab_phase3.html","color":"indigo"},{"num":4,"short":"F4: Sliding Window","name":"Fase 4: Sliding Window & Stocks (#121)","url":"lab4_sliding_window_stocks.html","artifact":"python_study_lab_phase4.html","color":"emerald"},{"num":5,"short":"F5: Busca Binária","name":"Fase 5: Busca Binária (#704)","url":"lab5_binary_search.html","artifact":"python_study_lab_phase5.html","color":"cyan"},{"num":6,"short":"F6: Hash Sets","name":"Fase 6: Conjuntos & Duplicatas (#217)","url":"lab6_sets_duplicates.html","artifact":"python_study_lab_phase6.html","color":"rose"},{"num":7,"short":"F7: Kadane","name":"Fase 7: Kadane & Max Subarray (#53)","url":"lab7_kadane_max_subarray.html","artifact":"python_study_lab_phase7.html","color":"amber"},{"num":8,"short":"F8: Container Água","name":"Fase 8: Two Pointers & Container (#11)","url":"lab8_two_pointers_water.html","artifact":"python_study_lab_phase8.html","color":"sky"},{"num":9,"short":"F9: Prog. Dinâmica","name":"Fase 9: DP & Climbing Stairs (#70)","url":"lab9_dp_climbing_stairs.html","artifact":"python_study_lab_phase9.html","color":"purple"},{"num":10,"short":"F10: Intervalos","name":"Fase 10: Ordenação & Merge Intervals (#56)","url":"lab10_intervals_merge.html","artifact":"python_study_lab_phase10.html","color":"emerald"}];
         const labsContainer = document.getElementById('modal-labs-breakdown');
         labsContainer.innerHTML = labsInfo.map(l => {
           const st = getLabStats(profile, l.num);
@@ -1988,7 +2176,6 @@ def is_palindrome(s):
           `;
         }).join('');
 
-        // Render Achievements
         const achContainer = document.getElementById('modal-achievements-grid');
         achContainer.innerHTML = ACHIEVEMENTS.map(a => {
           const unlocked = a.check(profile);
@@ -2070,8 +2257,7 @@ def is_palindrome(s):
   <div id="xp-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
-      <!-- Modal Header -->
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-4xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
       <div class="flex items-start justify-between border-b border-slate-800 pb-4">
         <div class="flex items-center gap-4">
           <div id="modal-avatar-display" class="w-16 h-16 rounded-2xl bg-indigo-500/15 border-2 border-indigo-500/40 flex items-center justify-center text-4xl shadow-inner">
@@ -2088,14 +2274,13 @@ def is_palindrome(s):
               <span id="modal-level-badge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Nível 1</span>
               <span id="modal-rank-title" class="text-amber-400 font-semibold">🌱 Iniciante Python</span>
               <span class="text-slate-500">•</span>
-              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 150 XP para o próximo nível</span>
+              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 200 XP</span>
             </div>
           </div>
         </div>
         <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2 py-1">✕</button>
       </div>
 
-      <!-- Avatar Selector -->
       <div class="flex items-center gap-2 flex-wrap text-xs">
         <span class="text-slate-400 font-medium">Escolher Avatar:</span>
         <button onclick="window.ProfileSystem.setAvatar('🐍')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐍</button>
@@ -2105,10 +2290,9 @@ def is_palindrome(s):
         <button onclick="window.ProfileSystem.setAvatar('🦊')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🦊</button>
         <button onclick="window.ProfileSystem.setAvatar('🤖')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🤖</button>
         <button onclick="window.ProfileSystem.setAvatar('🐉')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐉</button>
-        <button onclick="window.ProfileSystem.setAvatar('🔥')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🔥</button>
+        <button onclick="window.ProfileSystem.setAvatar('👑')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">👑</button>
       </div>
 
-      <!-- Top Stats Grid -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
         <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
           <div class="text-[11px] text-slate-400 uppercase">XP Total</div>
@@ -2116,11 +2300,11 @@ def is_palindrome(s):
         </div>
         <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
           <div class="text-[11px] text-slate-400 uppercase">Atividades</div>
-          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 20</div>
+          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 50</div>
         </div>
         <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
           <div class="text-[11px] text-slate-400 uppercase">LeetCodes</div>
-          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 4</div>
+          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 10</div>
         </div>
         <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
           <div class="text-[11px] text-slate-400 uppercase">Progresso Geral</div>
@@ -2128,23 +2312,16 @@ def is_palindrome(s):
         </div>
       </div>
 
-      <!-- Progress Across All 4 Labs -->
       <div class="space-y-3">
-        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado por Fase</h3>
-        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <!-- Populated dynamically -->
-        </div>
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado nas 10 Fases</h3>
+        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
       </div>
 
-      <!-- Achievements / Badges -->
       <div class="space-y-3">
-        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas</h3>
-        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
-          <!-- Populated dynamically -->
-        </div>
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas (12 Medalhas)</h3>
+        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs"></div>
       </div>
 
-      <!-- Data Backup & Reset -->
       <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
         <div class="flex items-center gap-2">
           <button onclick="window.ProfileSystem.exportProfile()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">

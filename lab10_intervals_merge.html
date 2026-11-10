@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Study Lab • Fase 10: LeetCode #56 — Merge Intervals</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['Fira Code', 'Consolas', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      background-color: #090d16;
+      color: #e2e8f0;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+    textarea {
+      tab-size: 4;
+      -moz-tab-size: 4;
+      resize: vertical !important;
+      line-height: 1.6 !important;
+      font-size: 13px !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-emerald-500/30 selection:text-emerald-200 pb-20">
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-6 space-y-8">
+
+    <!-- Header -->
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT ACROSS ALL 10 LABS) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col gap-3.5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Left: Avatar, Name, Level & XP Bar -->
+        <div class="flex items-center gap-3.5 w-full md:w-auto">
+          <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+            🐍
+          </button>
+          <div class="flex-1 min-w-[200px]">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
+              <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
+              <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
+            </div>
+            <div class="mt-1.5 flex items-center gap-2.5">
+              <div class="flex-1 max-w-[220px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+              </div>
+              <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Open Profile Modal Button -->
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+          <button onclick="window.ProfileSystem.openModal()" class="w-full md:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+            <span>🏅</span> Ver Perfil, 10 Labs & Conquistas
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Row: 10 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-[11px] pt-2.5 border-t border-slate-800/80">
+        
+        <a href="index.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F1: Hash Map</span>
+          <span id="nav-pct-lab1" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab2_strings_twopointers.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F2: Two Pointers</span>
+          <span id="nav-pct-lab2" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F3: Pilhas</span>
+          <span id="nav-pct-lab3" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab4_sliding_window_stocks.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F4: Sliding Window</span>
+          <span id="nav-pct-lab4" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab5_binary_search.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F5: Busca Binária</span>
+          <span id="nav-pct-lab5" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab6_sets_duplicates.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F6: Hash Sets</span>
+          <span id="nav-pct-lab6" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab7_kadane_max_subarray.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F7: Kadane</span>
+          <span id="nav-pct-lab7" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab8_two_pointers_water.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F8: Container Água</span>
+          <span id="nav-pct-lab8" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab9_dp_climbing_stairs.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F9: Prog. Dinâmica</span>
+          <span id="nav-pct-lab9" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab10_intervals_merge.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm">
+          <span>F10: Intervalos</span>
+          <span id="nav-pct-lab10" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+      </div>
+    </div>
+
+    <header class="glass-card rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold tracking-wide uppercase">
+            <span>⚡ Fase 10 • Ordenação, Listas 2D & Fusão de Intervalos</span>
+          </div>
+          <h1 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
+            Ordenação (<code class="font-mono">.sort()</code>), Intervalos & <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">LeetCode #56</span>
+          </h1>
+          <p class="text-slate-400 text-sm md:text-base max-w-2xl">
+            Feche a jornada de 10 Labs dominando listas 2D, ordenação por chave e fusão de intervalos sobrepostos (<code class="text-emerald-300 font-mono">Merge Intervals</code>) em <code class="text-amber-300 font-mono">O(n log n)</code>!
+          </p>
+        </div>
+
+        <!-- Lab Progress & Phase Switcher -->
+        <div class="flex flex-col items-start md:items-end gap-3 shrink-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="lab9_dp_climbing_stairs.html" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">← Fase 9</a>
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Fase 10 Ativa
+            </span>
+            
+          </div>
+          <div class="w-full md:w-56 bg-slate-900/90 rounded-xl p-3 border border-slate-800">
+            <div class="flex justify-between text-xs mb-1.5">
+              <span class="text-slate-400 font-medium">Progresso da Fase 10</span>
+              <div class="flex items-center gap-1">
+                <span id="progress-percent" class="text-emerald-400 font-bold">0% Concluído</span>
+                <span id="trophy-badge" class="opacity-30 transition-all duration-500">🏆</span>
+              </div>
+            </div>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+              <div id="progress-bar-fill" class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    
+    <!-- ========================================== -->
+    <!-- MÓDULO 1 -->
+    <!-- ========================================== -->
+    <section class="glass-card rounded-2xl p-6 md:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center border border-emerald-500/30">1</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Detectando Sobreposição Entre Dois Intervalos</h2>
+            <p class="text-xs text-slate-400">Como saber matematicamente se duas reuniões na agenda conflitam.</p>
+          </div>
+        </div>
+        <span id="badge-mod-1" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 self-start md:self-center">
+          Pendente (+50 XP)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm leading-relaxed">
+        
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+            <h4 class="font-bold text-emerald-400">📅 Representando Intervalos como <code class="font-mono">[inicio, fim]</code></h4>
+            <p class="text-xs text-slate-400">Se dois intervalos já estão ordenados pelo início (<code class="font-mono">int1[0] &lt;= int2[0]</code>), eles se sobrepõem se — e somente se — o <strong>início do segundo</strong> acontecer antes ou no mesmo instante que o <strong>fim do primeiro</strong>:</p>
+            <pre class="font-mono text-xs text-slate-300 bg-slate-900 p-2.5 rounded border border-slate-800"># int1 = [1, 3], int2 = [2, 6]
+if int2[0] <= int1[1]:
+    # 2 <= 3 -> Verdadeiro! Há sobreposição!</pre>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+            <h4 class="font-bold text-teal-400">🤝 Toque nas Bordas também funde!</h4>
+            <p class="text-xs text-slate-400">No LeetCode #56, intervalos como <code class="font-mono text-amber-300">[1, 4]</code> e <code class="font-mono text-amber-300">[4, 5]</code> são considerados sobrepostos (<code class="font-mono">4 &lt;= 4</code>) e se fundem em <code class="font-mono text-emerald-300">[1, 5]</code>.</p>
+          </div>
+        
+      </div>
+
+      <!-- Mini-Desafio 1 -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h3 class="font-bold text-white flex items-center gap-2">
+              <span>🧩</span> Mini-Desafio 1: Detector de Conflito de Horários
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Crie a função <code class="text-emerald-300 font-mono">tem_sobreposicao(int1, int2)</code> (assumindo <code class="font-mono">int1[0] &lt;= int2[0]</code>) que retorna <code class="font-mono text-emerald-300">True</code> se eles se sobrepõem (<code class="font-mono">int2[0] &lt;= int1[1]</code>) ou <code class="font-mono text-rose-300">False</code> caso contrário.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button onclick="toggleHint('hint-1')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica
+            </button>
+            <button onclick="toggleHint('explain-1')" class="text-xs px-3 py-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/40 text-emerald-300 hover:bg-emerald-900/50 transition-colors flex items-center gap-1 font-medium">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(1)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução
+            </button>
+            <button onclick="clearEditor(1)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              🔄 Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-1', this)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>⛶</span> Expandir
+            </button>
+            <button onclick="runChallenge(1)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 shadow-lg shadow-emerald-950/50">
+              <span>▶️</span> Executar & Testar
+            </button>
+          </div>
+        </div>
+
+        <div id="hint-1" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
+          <strong>Dica:</strong> Use <code class="font-mono text-amber-300">if int2[0] &lt;= int1[1]: return True</code> e no <code class="font-mono">else: return False</code>.
+        </div>
+
+        <div id="explain-1" class="hidden p-4 rounded-xl bg-emerald-950/30 border border-emerald-500/30 text-xs space-y-2.5">
+          
+          <div class="font-bold text-emerald-300">📖 Como resolver passo a passo:</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300">
+            <li>Compare o horário de início do segundo intervalo (<code class="font-mono text-cyan-300">int2[0]</code>) com o horário de término do primeiro (<code class="font-mono text-amber-300">int1[1]</code>).</li>
+            <li>Se <code class="font-mono">int2[0] &lt;= int1[1]</code>, retorne <code class="font-mono text-emerald-300">True</code>, senão retorne <code class="font-mono text-rose-300">False</code>.</li>
+          </ol>
+        
+        </div>
+
+        <textarea id="editor-1" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y" placeholder="# Escreva sua função abaixo:
+def tem_sobreposicao(int1, int2):
+    # seu código aqui
+"></textarea>
+
+        <div id="result-1" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+  
+
+    <!-- ========================================== -->
+    <!-- MÓDULO 2 -->
+    <!-- ========================================== -->
+    <section class="glass-card rounded-2xl p-6 md:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 font-bold flex items-center justify-center border border-teal-500/30">2</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Fundindo Dois Intervalos com max()</h2>
+            <p class="text-xs text-slate-400">Por que o fim do intervalo fundido deve ser max(int1[1], int2[1]).</p>
+          </div>
+        </div>
+        <span id="badge-mod-2" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 self-start md:self-center">
+          Pendente (+50 XP)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm leading-relaxed">
+        
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+            <h4 class="font-bold text-teal-400">⚠️ A Armadilha do Intervalo Engolido</h4>
+            <p class="text-xs text-slate-400">Imagine fundir <code class="font-mono text-amber-300">int1 = [1, 10]</code> com <code class="font-mono text-cyan-300">int2 = [2, 5]</code>. Se você pegasse cegamente o fim do segundo (<code class="font-mono">5</code>), encolheria o intervalo para <code class="font-mono text-rose-300">[1, 5]</code>! Por isso, o novo término é sempre o maior entre os dois fins:</p>
+            <pre class="font-mono text-xs text-slate-300 bg-slate-900 p-2.5 rounded border border-slate-800">novo_fim = max(int1[1], int2[1])
+fundido = [int1[0], novo_fim]   # [1, 10]</pre>
+          </div>
+        
+      </div>
+
+      <!-- Mini-Desafio 2 -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h3 class="font-bold text-white flex items-center gap-2">
+              <span>🧩</span> Mini-Desafio 2: Fusão Segura de Dois Intervalos
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Crie a função <code class="text-teal-300 font-mono">fundir_dois(int1, int2)</code> que recebe dois intervalos ordenados que se sobrepõem e retorna o intervalo fundido <code class="font-mono text-emerald-300">[int1[0], max(int1[1], int2[1])]</code>.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button onclick="toggleHint('hint-2')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica
+            </button>
+            <button onclick="toggleHint('explain-2')" class="text-xs px-3 py-1.5 rounded-lg border border-teal-500/40 bg-teal-950/40 text-teal-300 hover:bg-teal-900/50 transition-colors flex items-center gap-1 font-medium">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(2)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução
+            </button>
+            <button onclick="clearEditor(2)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              🔄 Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-2', this)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>⛶</span> Expandir
+            </button>
+            <button onclick="runChallenge(2)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white transition-colors flex items-center gap-1.5 shadow-lg shadow-teal-950/50">
+              <span>▶️</span> Executar & Testar
+            </button>
+          </div>
+        </div>
+
+        <div id="hint-2" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
+          <strong>Dica:</strong> Basta retornar <code class="font-mono text-amber-300">[int1[0], max(int1[1], int2[1])]</code>!
+        </div>
+
+        <div id="explain-2" class="hidden p-4 rounded-xl bg-teal-950/30 border border-teal-500/30 text-xs space-y-2.5">
+          
+          <div class="font-bold text-teal-300">📖 Como resolver passo a passo:</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300">
+            <li>O início do intervalo fundido é <code class="font-mono text-cyan-300">int1[0]</code>.</li>
+            <li>O fim é <code class="font-mono text-amber-300">max(int1[1], int2[1])</code>. Retorne <code class="font-mono text-emerald-300">[int1[0], max(int1[1], int2[1])]</code>.</li>
+          </ol>
+        
+        </div>
+
+        <textarea id="editor-2" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-teal-500 resize-y" placeholder="# Escreva sua função abaixo:
+def fundir_dois(int1, int2):
+    # seu código aqui
+"></textarea>
+
+        <div id="result-2" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+  
+
+    <!-- ========================================== -->
+    <!-- MÓDULO 3 -->
+    <!-- ========================================== -->
+    <section class="glass-card rounded-2xl p-6 md:p-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold flex items-center justify-center border border-cyan-500/30">3</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Ordenando Listas 2D em Python (.sort())</h2>
+            <p class="text-xs text-slate-400">Como colocar intervalos fora de ordem em sequência cronológica antes de fundir.</p>
+          </div>
+        </div>
+        <span id="badge-mod-3" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 self-start md:self-center">
+          Pendente (+50 XP)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm leading-relaxed">
+        
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+            <h4 class="font-bold text-cyan-400">🗂️ Ordenação Automática de Sublistas</h4>
+            <p class="text-xs text-slate-400">Em Python, quando você chama <code class="font-mono text-emerald-300">intervals.sort()</code> em uma lista de pares <code class="font-mono">[[8, 10], [1, 3], [2, 6]]</code>, o Python ordena automaticamente pelo <strong>primeiro elemento</strong> de cada par (e pelo segundo em caso de empate)!</p>
+            <pre class="font-mono text-xs text-slate-300 bg-slate-900 p-2.5 rounded border border-slate-800">intervals = [[8, 10], [1, 3], [2, 6]]
+intervals.sort()
+# intervals agora é [[1, 3], [2, 6], [8, 10]]</pre>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
+            <h4 class="font-bold text-amber-400">🔍 Acessando o Último Intervalo Fundido: <code class="font-mono">fundidos[-1]</code></h4>
+            <p class="text-xs text-slate-400">Enquanto percorremos os intervalos ordenados, olhamos sempre para <code class="font-mono text-emerald-300">ultimo = fundidos[-1]</code> para decidir se esticamos <code class="font-mono">ultimo[1]</code> ou se adicionamos um novo bloco com <code class="font-mono">fundidos.append(atual)</code>.</p>
+          </div>
+        
+      </div>
+
+      <!-- Mini-Desafio 3 -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h3 class="font-bold text-white flex items-center gap-2">
+              <span>🧩</span> Mini-Desafio 3: Ordenando Intervalos pela Hora de Início
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Crie a função <code class="text-cyan-300 font-mono">ordenar_agenda(intervalos)</code> que ordena a lista de intervalos in-place usando <code class="font-mono">intervalos.sort()</code> e retorna a lista ordenada.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button onclick="toggleHint('hint-3')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica
+            </button>
+            <button onclick="toggleHint('explain-3')" class="text-xs px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900/50 transition-colors flex items-center gap-1 font-medium">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(3)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução
+            </button>
+            <button onclick="clearEditor(3)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              🔄 Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-3', this)" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>⛶</span> Expandir
+            </button>
+            <button onclick="runChallenge(3)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition-colors flex items-center gap-1.5 shadow-lg shadow-cyan-950/50">
+              <span>▶️</span> Executar & Testar
+            </button>
+          </div>
+        </div>
+
+        <div id="hint-3" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90">
+          <strong>Dica:</strong> Chame <code class="font-mono text-amber-300">intervalos.sort()</code> na primeira linha e <code class="font-mono text-amber-300">return intervalos</code> na segunda linha.
+        </div>
+
+        <div id="explain-3" class="hidden p-4 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-xs space-y-2.5">
+          
+          <div class="font-bold text-cyan-300">📖 Como resolver passo a passo:</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-300">
+            <li>Execute <code class="font-mono text-emerald-300">intervalos.sort()</code> para ordenar os pares pelo horário inicial.</li>
+            <li>Retorne <code class="font-mono text-emerald-300">intervalos</code>.</li>
+          </ol>
+        
+        </div>
+
+        <textarea id="editor-3" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500 resize-y" placeholder="# Escreva sua função abaixo:
+def ordenar_agenda(intervalos):
+    # seu código aqui
+"></textarea>
+
+        <div id="result-3" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+  
+
+    <!-- ========================================== -->
+    <!-- MÓDULO 4: SIMULADOR VISUAL INTERATIVO -->
+    <!-- ========================================== -->
+    <section class="glass-card rounded-2xl p-6 md:p-8 space-y-6 border-emerald-500/30">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-3">
+          <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center border border-emerald-500/30">4</span>
+          <div>
+            <h2 class="text-xl font-bold text-white">Simulador Visual de Linha do Tempo (Merge Intervals)</h2>
+            <p class="text-xs text-slate-400">Veja os intervalos sendo ordenados e fundidos quando há sobreposição na agenda.</p>
+          </div>
+        </div>
+        <span id="badge-mod-4" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700 self-start md:self-center">
+          Simulador (+50 XP)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-5 space-y-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Intervalos separados por ponto-e-vírgula (ex: 1,3; 2,6; 8,10; 15,18):</label>
+            <div class="flex gap-2">
+              <input id="sim-input" type="text" value="1,3; 2,6; 8,10; 15,18" class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-emerald-500" />
+              <button onclick="startSim()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors">
+                Iniciar
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5">
+            <span class="text-[11px] text-slate-400 w-full">Cenários Rápidos:</span>
+            
+    <button onclick="loadSimPreset('1,3; 2,6; 8,10; 15,18')" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700">
+      Clássico [1,3]; [2,6]; [8,10]; [15,18]
+    </button>
+  
+    <button onclick="loadSimPreset('1,4; 4,5')" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-teal-300 border border-slate-700">
+      Toque na Borda [1,4]; [4,5]
+    </button>
+  
+    <button onclick="loadSimPreset('8,10; 1,4; 2,3; 9,12')" class="text-[11px] px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700">
+      Fora de Ordem [8,10]; [1,4]; [2,3]; [9,12]
+    </button>
+  
+          </div>
+
+          <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
+            <button id="btn-sim-step" onclick="stepSim()" disabled class="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:pointer-events-none text-white text-xs font-bold transition-colors">
+              ⏭️ Próximo Passo
+            </button>
+            <button onclick="resetSim()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700">
+              🔄 Resetar
+            </button>
+          </div>
+
+          <div id="sim-log-box" class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono min-h-[84px] flex flex-col justify-center">
+            <span class="text-slate-400" id="sim-log-text">Clique em "Iniciar" para começar a simulação.</span>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7 space-y-4">
+          <div class="grid grid-cols-3 gap-3">
+            
+    <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
+      <div class="text-[11px] text-slate-400">Intervalo Atual</div>
+      <div id="sim-m1" class="text-base font-bold font-mono text-cyan-400 mt-0.5">-</div>
+    </div>
+  
+    <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
+      <div class="text-[11px] text-slate-400">Último Fundido</div>
+      <div id="sim-m2" class="text-base font-bold font-mono text-amber-400 mt-0.5">-</div>
+    </div>
+  
+    <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-center">
+      <div class="text-[11px] text-slate-400">Total de Blocos</div>
+      <div id="sim-m3" class="text-base font-bold font-mono text-emerald-400 mt-0.5">0</div>
+    </div>
+  
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800">
+            <div class="flex justify-between items-center mb-3">
+              <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider" id="sim-step-label">Estado Atual</span>
+              <span id="sim-status-badge" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400 font-mono">Pronto</span>
+            </div>
+            <div id="sim-canvas" class="min-h-[160px] flex items-center justify-center gap-2 px-2 py-4 border-b border-slate-800 flex-wrap"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- DESAFIO FINAL: LEETCODE #56 -->
+    <!-- ========================================== -->
+    <section class="glass-card rounded-2xl p-6 md:p-8 space-y-6 border-2 border-emerald-500/40 shadow-2xl shadow-emerald-950/20">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-bold uppercase tracking-wider">
+              Desafio Oficial LeetCode (+150 XP)
+            </span>
+            <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 text-xs font-semibold">Medium</span>
+            <span class="text-xs text-slate-400 font-mono">Array • Sorting • Intervals O(n log n)</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-white pt-1">
+            🏆 LeetCode #56 — Merge Intervals
+          </h2>
+        </div>
+        <div id="leetcode-status" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-400 shrink-0 self-start md:self-center">
+          ⏳ Aguardando Submissão
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 text-sm leading-relaxed">
+        <div class="lg:col-span-7 space-y-3 text-slate-300">
+          <p>Dado um array de intervalos <code class="text-amber-300 font-mono">intervals</code> onde <code class="font-mono">intervals[i] = [start_i, end_i]</code>, funda todos os intervalos sobrepostos e retorne um array dos intervalos não sobrepostos que cobrem todos os intervalos da entrada.</p>
+        </div>
+        <div class="lg:col-span-5 space-y-3">
+          
+    <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2 font-mono text-xs">
+      <div class="text-slate-400 font-sans font-semibold">Exemplo 1:</div>
+      <div><span class="text-slate-500">Entrada:</span> <span class="text-amber-300">intervals = [[1,3],[2,6],[8,10],[15,18]]</span></div>
+      <div><span class="text-slate-500">Saída:</span> <span class="text-emerald-400 font-bold">[[1,6],[8,10],[15,18]]</span></div>
+      <div class="text-slate-400 font-sans text-[11px]">Como [1,3] e [2,6] se sobrepõem, eles são fundidos em [1,6].</div>
+    </div>
+  
+    <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2 font-mono text-xs">
+      <div class="text-slate-400 font-sans font-semibold">Exemplo 2:</div>
+      <div><span class="text-slate-500">Entrada:</span> <span class="text-amber-300">intervals = [[1,4],[4,5]]</span></div>
+      <div><span class="text-slate-500">Saída:</span> <span class="text-emerald-400 font-bold">[[1,5]]</span></div>
+      <div class="text-slate-400 font-sans text-[11px]">Os intervalos [1,4] e [4,5] se tocam no 4 e são fundidos em [1,5].</div>
+    </div>
+  
+        </div>
+      </div>
+
+      <!-- Step-by-Step Guide & Trace Table -->
+      <div class="bg-emerald-950/20 border border-emerald-500/30 rounded-2xl p-5 space-y-5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-emerald-300 text-base flex items-center gap-2">
+            <span>🧠</span> Como Pensar na Solução (Passo a Passo & Anatomia)
+          </h3>
+          <span class="text-[11px] px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 font-semibold border border-emerald-500/30">
+            Guia Completo
+          </span>
+        </div>
+
+        <div class="pt-1">
+          <span class="font-bold text-emerald-300 block mb-2 text-xs">📊 Simulação Passo a Passo: intervals = [[1,3], [2,6], [8,10], [15,18]]:</span>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px] text-slate-300 border border-slate-800 rounded bg-slate-950">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr><th class="p-2">Passo</th><th class="p-2">atual</th><th class="p-2">ultimo = fundidos[-1]</th><th class="p-2">atual[0] <= ultimo[1]?</th><th class="p-2">Lista fundidos após o passo</th></tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                
+    <tr>
+      <td class="p-2 text-slate-400">Início</td><td class="p-2 text-amber-200">-</td><td class="p-2 text-amber-200">-</td><td class="p-2 text-amber-200">-</td><td class="p-2 text-emerald-300 font-bold">[[1, 3]]</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-slate-400">1</td><td class="p-2 text-amber-200">[2, 6]</td><td class="p-2 text-amber-200">[1, 3]</td><td class="p-2 text-amber-200">2 <= 3 (Sim! Funde max(3,6)=6)</td><td class="p-2 text-emerald-300 font-bold">[[1, 6]]</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-slate-400">2</td><td class="p-2 text-amber-200">[8, 10]</td><td class="p-2 text-amber-200">[1, 6]</td><td class="p-2 text-amber-200">8 <= 6 (Não! Novo bloco)</td><td class="p-2 text-emerald-300 font-bold">[[1, 6], [8, 10]]</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-slate-400">3</td><td class="p-2 text-amber-200">[15, 18]</td><td class="p-2 text-amber-200">[8, 10]</td><td class="p-2 text-amber-200">15 <= 10 (Não! Novo bloco)</td><td class="p-2 text-emerald-300 font-bold">[[1, 6], [8, 10], [15, 18]]</td>
+    </tr>
+  
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-emerald-500/30">
+          <span class="font-bold text-emerald-300 block mb-2 text-xs">🔍 Anatomia da Solução Linha por Linha:</span>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs text-slate-300 border border-slate-800 rounded bg-slate-950">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-2 w-1/2">Linha de Código em Python</th>
+                  <th class="p-2 w-1/2 font-sans">O que ela faz em português simples?</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-[11px]">
+                
+    <tr>
+      <td class="p-2 text-emerald-300">intervals.sort()</td>
+      <td class="p-2 font-sans text-slate-400">Ordena todos os intervalos em ordem crescente pela hora de início.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">fundidos = [intervals[0]]</td>
+      <td class="p-2 font-sans text-slate-400">Inicia a lista de resposta com o primeiro intervalo já ordenado.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">for atual in intervals[1:]:</td>
+      <td class="p-2 font-sans text-slate-400">Percorre os demais intervalos a partir do segundo item.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">    ultimo = fundidos[-1]</td>
+      <td class="p-2 font-sans text-slate-400">Pega a referência para o último intervalo que está na resposta.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">    if atual[0] &lt;= ultimo[1]:</td>
+      <td class="p-2 font-sans text-slate-400">Verifica se o intervalo atual começa antes ou junto do fim do último.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">        ultimo[1] = max(ultimo[1], atual[1])</td>
+      <td class="p-2 font-sans text-slate-400">Se sobrepõe, estica o fim do último intervalo usando max().</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">    else: fundidos.append(atual)</td>
+      <td class="p-2 font-sans text-slate-400">Se não sobrepõe, adiciona o intervalo atual como um novo bloco.</td>
+    </tr>
+  
+    <tr>
+      <td class="p-2 text-emerald-300">return fundidos</td>
+      <td class="p-2 font-sans text-slate-400">Retorna a lista final de intervalos fundidos!</td>
+    </tr>
+  
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LeetCode Interactive Editor -->
+      <div class="space-y-3 pt-2">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="toggleHint('hint-leetcode-1')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica 1
+            </button>
+            <button onclick="toggleHint('hint-leetcode-2')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica 2
+            </button>
+            <button onclick="revealLeetCodeSolution()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução Modelo
+            </button>
+            <button onclick="clearLeetCodeEditor()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              🔄 Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-leetcode', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>⛶</span> Expandir
+            </button>
+          </div>
+
+          <button onclick="runLeetCodeTests()" class="text-xs md:text-sm font-bold px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all transform hover:scale-[1.02] flex items-center gap-2 shadow-lg shadow-emerald-950/40">
+            <span>▶️</span> Executar Todos os Casos de Teste
+          </button>
+        </div>
+
+        <div id="hint-leetcode-1" class="hidden p-3.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica 1:</strong> Primeiro ordene com <code class="font-mono text-amber-300">intervals.sort()</code> e inicie <code class="font-mono text-amber-300">fundidos = [intervals[0]]</code>.
+        </div>
+
+        <div id="hint-leetcode-2" class="hidden p-3.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica 2:</strong> Percorra <code class="font-mono text-amber-300">for atual in intervals[1:]:</code>, pegue <code class="font-mono">ultimo = fundidos[-1]</code> e teste <code class="font-mono">if atual[0] &lt;= ultimo[1]: ultimo[1] = max(ultimo[1], atual[1])</code>, senão <code class="font-mono">fundidos.append(atual)</code>.
+        </div>
+
+        <div class="relative rounded-xl overflow-hidden border border-slate-800 shadow-inner">
+          <div class="bg-slate-900 px-4 py-2 text-xs font-mono text-slate-400 border-b border-slate-800 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> solution.py
+            </span>
+            <span class="text-[11px] text-slate-500">Python 3 (Auto-Save & Cursor Tracking Ativos)</span>
+          </div>
+          <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y leading-relaxed" placeholder="# Escreva sua solução aqui:
+class Solution:
+    def merge(self, intervals: list) -> list:
+        # sua implementação aqui
+"></textarea>
+        </div>
+
+        <div id="leetcode-results-panel" class="hidden space-y-3">
+          <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <span>Resultados dos Testes Automatizados</span>
+            <span id="tests-summary-badge" class="px-2 py-0.5 rounded text-[11px]"></span>
+          </div>
+
+          <div id="test-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
+
+          <div id="complexity-card" class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-2">
+            <h4 class="font-bold text-white flex items-center gap-2">
+              <span>📊</span> Análise de Complexidade (Big-O)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-400">
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800/80">
+                <span class="font-semibold text-emerald-400 block mb-0.5">Complexidade de Tempo</span>
+                O(n log n) — Dominado pela ordenação inicial dos intervalos.
+              </div>
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800/80">
+                <span class="font-semibold text-indigo-400 block mb-0.5">Complexidade de Espaço</span>
+                O(n) — Para armazenar a lista de intervalos fundidos.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <!-- Footer -->
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 border-t border-slate-800/60">
+      <p>Python Study Lab • Trilha Completa de 10 Fases com Persistência de Perfil & Evolução de XP</p>
+      <div class="mt-3 flex flex-wrap justify-center gap-2.5 text-slate-400">
+        <a href="index.html" class="hover:text-emerald-400 transition-colors">F1: Hash Map</a>
+        <span>•</span>
+        <a href="lab2_strings_twopointers.html" class="hover:text-emerald-400 transition-colors">F2: Two Pointers</a>
+        <span>•</span>
+        <a href="lab3_stacks_valid_parentheses.html" class="hover:text-emerald-400 transition-colors">F3: Pilhas</a>
+        <span>•</span>
+        <a href="lab4_sliding_window_stocks.html" class="hover:text-emerald-400 transition-colors">F4: Sliding Window</a>
+        <span>•</span>
+        <a href="lab5_binary_search.html" class="hover:text-emerald-400 transition-colors">F5: Busca Binária</a>
+        <span>•</span>
+        <a href="lab6_sets_duplicates.html" class="hover:text-emerald-400 transition-colors">F6: Hash Sets</a>
+        <span>•</span>
+        <a href="lab7_kadane_max_subarray.html" class="hover:text-emerald-400 transition-colors">F7: Kadane</a>
+        <span>•</span>
+        <a href="lab8_two_pointers_water.html" class="hover:text-emerald-400 transition-colors">F8: Container Água</a>
+        <span>•</span>
+        <a href="lab9_dp_climbing_stairs.html" class="hover:text-emerald-400 transition-colors">F9: Prog. Dinâmica</a>
+        <span>•</span>
+        <span class="text-emerald-400 font-bold">F10: Intervalos</span>
+      </div>
+    </footer>
+  
+
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    function transpilePython(pythonCode) {
+    const lines = pythonCode.split('\n');
+    let jsLines = [];
+
+    let preamble = `
+      function print(...args) {
+        if (typeof __print === 'function') {
+          __print(...args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)));
+        }
+      }
+      function range(start, stop, step) {
+        if (stop === undefined) { stop = start; start = 0; }
+        if (step === undefined) step = 1;
+        let res = [];
+        if (step > 0) {
+          for (let i = start; i < stop; i += step) res.push(i);
+        } else {
+          for (let i = start; i > stop; i += step) res.push(i);
+        }
+        return res;
+      }
+      function len(obj) {
+        if (obj === undefined || obj === null) return 0;
+        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
+        if (obj instanceof Set || obj instanceof Map) return obj.size;
+        if (typeof obj === 'object') return Object.keys(obj).length;
+        return 0;
+      }
+      function enumerate(arr) {
+        let res = [];
+        for (let i = 0; i < arr.length; i++) {
+          res.push([i, arr[i]]);
+        }
+        return res;
+      }
+      function sum(arr) {
+        if (!arr) return 0;
+        let s = 0;
+        for (let x of arr) s += x;
+        return s;
+      }
+      function pyCompare(a, b) {
+        if (Array.isArray(a) && Array.isArray(b)) {
+          const l = Math.min(a.length, b.length);
+          for (let i = 0; i < l; i++) {
+            const c = pyCompare(a[i], b[i]);
+            if (c !== 0) return c;
+          }
+          return a.length - b.length;
+        }
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      }
+      function pySortInPlace(arr, keyFn, reverse) {
+        if (!Array.isArray(arr)) return arr;
+        arr.sort((a, b) => {
+          const ka = keyFn ? keyFn(a) : a;
+          const kb = keyFn ? keyFn(b) : b;
+          const cmp = pyCompare(ka, kb);
+          return reverse ? -cmp : cmp;
+        });
+        return arr;
+      }
+      function sorted(iterable, keyFn, reverse) {
+        const arr = Array.from(iterable || []);
+        return pySortInPlace(arr, keyFn, reverse);
+      }
+      function pyIn(item, container) {
+        if (Array.isArray(container)) {
+          return container.some(x => pyEq(x, item));
+        }
+        if (typeof container === 'string') {
+          return container.includes(item);
+        }
+        if (container instanceof Set) {
+          return container.has(item);
+        }
+        if (typeof container === 'object' && container !== null) {
+          return Object.prototype.hasOwnProperty.call(container, item) || (String(item) in container);
+        }
+        return false;
+      }
+      function pySlice(obj, step) {
+        if (typeof obj === 'string') {
+          if (step === -1) return obj.split('').reverse().join('');
+        }
+        if (Array.isArray(obj)) {
+          if (step === -1) return [...obj].reverse();
+        }
+        return obj;
+      }
+      function pyIsAlnum(str) {
+        return /^[a-zA-Z0-9]+$/.test(str);
+      }
+      function pyTruth(val) {
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'number') return val !== 0;
+        if (typeof val === 'string') return val.length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (val instanceof Set || val instanceof Map) return val.size > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return Boolean(val);
+      }
+      function pyNot(val) {
+        return !pyTruth(val);
+      }
+      function pyEq(a, b) {
+        if (a === b) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return a.length === b.length && a.every((v, i) => pyEq(v, b[i]));
+        }
+        return a == b;
+      }
+      function pySet(iterable) {
+        let s = new Set();
+        if (iterable) {
+          for (let item of iterable) s.add(item);
+        }
+        return s;
+      }
+      function pyList(iterable) {
+        return iterable ? Array.from(iterable) : [];
+      }
+      function pyDict() {
+        return {};
+      }
+      function int(val) {
+        return parseInt(val, 10);
+      }
+      function float(val) {
+        if (val === 'inf' || val === '+inf' || val === 'Infinity') return Infinity;
+        if (val === '-inf' || val === '-Infinity') return -Infinity;
+        return parseFloat(val);
+      }
+      function str(val) {
+        return String(val);
+      }
+      function abs(val) {
+        return Math.abs(val);
+      }
+      function min(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]);
+        return Math.min(...args);
+      }
+      function max(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]);
+        return Math.max(...args);
+      }
+      if (!Array.prototype.append) {
+        Object.defineProperty(Array.prototype, 'append', {
+          value: function(x) { this.push(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Set.prototype.remove) {
+        Object.defineProperty(Set.prototype, 'remove', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Set.prototype.discard) {
+        Object.defineProperty(Set.prototype, 'discard', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.startswith) {
+        Object.defineProperty(String.prototype, 'startswith', {
+          value: function(prefix) { return this.startsWith(prefix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.endswith) {
+        Object.defineProperty(String.prototype, 'endswith', {
+          value: function(suffix) { return this.endsWith(suffix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Object.prototype.get) {
+        Object.defineProperty(Object.prototype, 'get', {
+          value: function(k, d) { return this[k] !== undefined ? this[k] : d; },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      function Solution() {
+        if (!(this instanceof Solution)) return new Solution();
+      }
+    `;
+
+    let blockStack = [{ indent: -1, type: 'root', vars: new Set() }];
+
+    function isVarDeclared(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].vars && blockStack[i].vars.has(name)) return true;
+      }
+      return false;
+    }
+
+    function declareVar(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
+          blockStack[i].vars.add(name);
+          return;
+        }
+      }
+      blockStack[0].vars.add(name);
+    }
+
+    function convertCommonPythonSyntax(s) {
+      // Convert Python f-strings: f"..." or f'...'
+      s = s.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      s = s.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // set(...) and list(...)
+      s = s.replace(/(?<![a-zA-Z0-9_.])\bset\s*\(/g, 'pySet(');
+      s = s.replace(/(?<![a-zA-Z0-9_.])\blist\s*\(/g, 'pyList(');
+
+      // .sort(key=lambda x: ...) or .sort()
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `pySortInPlace(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*reverse\s*=\s*(True|False|true|false)\s*\)/g,
+        (_, arr, rev) => `pySortInPlace(${arr}, null, ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*\)/g, 'pySortInPlace($1)');
+
+      // sorted(arr, key=lambda x: ...)
+      s = s.replace(/\bsorted\(\s*([^,)]+)\s*,\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `sorted(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+
+      // Methods and slicing
+      s = s.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      s = s.replace(/\.lower\(\)/g, '.toLowerCase()');
+      s = s.replace(/\.upper\(\)/g, '.toUpperCase()');
+      s = s.replace(/\.startswith\(/g, '.startsWith(');
+      s = s.replace(/\.endswith\(/g, '.endsWith(');
+      s = s.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      // Slicing: arr[start:stop], arr[start:], arr[:stop]
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice($2, $3)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*\]/g, '$1.slice($2)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice(0, $2)');
+
+      // Negative indexing: arr[-1], arr[-2], etc. Works for both L-value and R-value!
+      s = s.replace(/([a-zA-Z0-9_]+)\[-([0-9]+)\]/g, '$1[$1.length - $2]');
+
+      // List repetition: [0] * (n + 1) or [0] * n
+      s = s.replace(/\[\s*([^\[\],]+)\s*\]\s*\*\s*(\([^)]+\)|[a-zA-Z0-9_]+)/g, 'Array($2).fill($1)');
+
+      // Floor division assignment: a //= b
+      s = s.replace(/([a-zA-Z0-9_\[\]]+)\s*\/\/=\s*(.+)/g, '$1 = Math.floor(($1) / ($2))');
+
+      // Floor division operator: expr // expr
+      while (s.includes('//')) {
+        const next = s.replace(/(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+(?:\s*[+\-]\s*[a-zA-Z0-9_\[\]\.]+)*)\s*\/\/\s*(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+)/, 'Math.floor(($1) / ($2))');
+        if (next === s) break;
+        s = next;
+      }
+
+      return s;
+    }
+
+    for (let rawLine of lines) {
+      let trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      let indent = rawLine.search(/\S/);
+      if (indent === -1) indent = 0;
+
+      // Strip end comments
+      let inStr = false, quote = '';
+      let commentIdx = -1;
+      for (let i = 0; i < trimmed.length; i++) {
+        let ch = trimmed[i];
+        if ((ch === '"' || ch === "'") && (i === 0 || trimmed[i-1] !== '\\')) {
+          if (!inStr) { inStr = true; quote = ch; }
+          else if (quote === ch) { inStr = false; }
+        }
+        if (!inStr && ch === '#') {
+          commentIdx = i;
+          break;
+        }
+      }
+      let line = (commentIdx !== -1 ? trimmed.substring(0, commentIdx) : trimmed).trim();
+      if (!line) continue;
+
+      // Dedent blocks
+      while (blockStack.length > 1 && indent <= blockStack[blockStack.length - 1].indent) {
+        let top = blockStack.pop();
+        jsLines.push(' '.repeat(top.indent) + '}');
+        if (top.type === 'def' && top.funcName) {
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+        }
+      }
+
+      line = convertCommonPythonSyntax(line);
+
+      // class Solution:
+      if (line.match(/^class\s+Solution.*?:\s*$/)) {
+        continue;
+      }
+
+      // def func(self, a, b): or def func(a, b):
+      let defMatch = line.match(/^def\s+([a-zA-Z0-9_]+)\s*\((.*?)\)(?:\s*->\s*[^:]+)?\s*:\s*$/);
+      if (defMatch) {
+        let funcName = defMatch[1];
+        let paramList = defMatch[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(p => p && p !== 'self');
+        let params = paramList.join(', ');
+        jsLines.push(' '.repeat(indent) + `function ${funcName}(${params}) {`);
+        blockStack.push({ indent: indent, type: 'def', funcName: funcName, vars: new Set(paramList) });
+        continue;
+      }
+
+      // for i, val in enumerate(arr):
+      let forEnumMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+enumerate\((.*?)\)\s*:\s*$/);
+      if (forEnumMatch) {
+        let iVar = forEnumMatch[1];
+        let valVar = forEnumMatch[2];
+        let targetArr = forEnumMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for a, b in iter:
+      let forTupleMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forTupleMatch) {
+        let v1 = forTupleMatch[1];
+        let v2 = forTupleMatch[2];
+        let iterable = forTupleMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${v1}, ${v2}] of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([v1, v2]) });
+        continue;
+      }
+
+      // for var in iter:
+      let forInMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forInMatch) {
+        let varName = forInMatch[1];
+        let iterable = forInMatch[2];
+        jsLines.push(' '.repeat(indent) + `for (let ${varName} of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([varName]) });
+        continue;
+      }
+
+      // while cond:
+      let whileMatch = line.match(/^while\s+(.*?)\s*:\s*$/);
+      if (whileMatch) {
+        let cond = transpileCondition(whileMatch[1]);
+        jsLines.push(' '.repeat(indent) + `while (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'while', vars: new Set() });
+        continue;
+      }
+
+      // elif cond:
+      let elifMatch = line.match(/^elif\s+(.*?)\s*:\s*$/);
+      if (elifMatch) {
+        let cond = transpileCondition(elifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `else if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'elif', vars: new Set() });
+        continue;
+      }
+
+      // else:
+      let elseMatch = line.match(/^else\s*:\s*$/);
+      if (elseMatch) {
+        jsLines.push(' '.repeat(indent) + `else {`);
+        blockStack.push({ indent: indent, type: 'else', vars: new Set() });
+        continue;
+      }
+
+      // if cond:
+      let ifMatch = line.match(/^if\s+(.*?)\s*:\s*$/);
+      if (ifMatch) {
+        let cond = transpileCondition(ifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'if', vars: new Set() });
+        continue;
+      }
+
+      // return statement
+      if (line.startsWith('return ') || line === 'return') {
+        let expr = line.replace(/^return\s*/, '').trim();
+        if (!expr) {
+          jsLines.push(' '.repeat(indent) + 'return;');
+          continue;
+        }
+        expr = transpileExpression(expr);
+        jsLines.push(' '.repeat(indent) + `return ${expr};`);
+        continue;
+      }
+
+      // regular statement
+      let stmt = transpileStatement(line);
+      jsLines.push(' '.repeat(indent) + stmt + ';');
+    }
+
+    while (blockStack.length > 1) {
+      let top = blockStack.pop();
+      jsLines.push(' '.repeat(top.indent) + '}');
+      if (top.type === 'def' && top.funcName) {
+        jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+      }
+    }
+
+    function transpileCondition(cond) {
+      cond = cond.trim();
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+/g, '!');
+      cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+      cond = cond.replace(/^([a-zA-Z0-9_]+)$/, 'pyTruth($1)');
+      cond = cond.replace(/^([a-zA-Z0-9_]+)\s+&&/, 'pyTruth($1) &&');
+      cond = cond.replace(/&&\s+([a-zA-Z0-9_]+)\s*$/, '&& pyTruth($1)');
+      cond = cond.replace(/\|\|\s+([a-zA-Z0-9_]+)\s*$/, '|| pyTruth($1)');
+
+      return cond;
+    }
+
+    function transpileListComp(expr) {
+      const listCompWithIf = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+if\s+(.*?)\s*\]/;
+      const matchIf = expr.match(listCompWithIf);
+      if (matchIf) {
+        const mapExpr = matchIf[1];
+        const itemVar = matchIf[2];
+        const iterVar = matchIf[3];
+        const ifCond = matchIf[4];
+        return expr.replace(listCompWithIf, `Array.from(${iterVar}).filter(${itemVar} => ${ifCond}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      const listCompSimple = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*\]/;
+      const matchSimple = expr.match(listCompSimple);
+      if (matchSimple) {
+        const mapExpr = matchSimple[1];
+        const itemVar = matchSimple[2];
+        const iterVar = matchSimple[3];
+        return expr.replace(listCompSimple, `Array.from(${iterVar}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      return expr;
+    }
+
+    function transpileExpression(expr) {
+      expr = transpileListComp(expr);
+
+      let ternaryMatch = expr.match(/^(.*?)\s+if\s+(.*?)\s+else\s+(.*)$/);
+      if (ternaryMatch) {
+        let valTrue = transpileExpression(ternaryMatch[1].trim());
+        let cond = transpileCondition(ternaryMatch[2].trim());
+        let valFalse = transpileExpression(ternaryMatch[3].trim());
+        return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
+      }
+
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+/g, '!');
+      expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*==\s*([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyEq($1, $2)');
+      expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+      return expr;
+    }
+
+    function transpileStatement(stmt) {
+      stmt = transpileListComp(stmt);
+      stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+/g, '!');
+
+      // Tuple unpacking assignment: a, b = 1, 2
+      let tupleAssign = stmt.match(/^([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s*=\s*(.+?)\s*,\s*(.+)$/);
+      if (tupleAssign) {
+        let v1 = tupleAssign[1], v2 = tupleAssign[2];
+        let r1 = transpileExpression(tupleAssign[3]), r2 = transpileExpression(tupleAssign[4]);
+        let prefix = (!isVarDeclared(v1) && !isVarDeclared(v2)) ? 'let ' : '';
+        declareVar(v1);
+        declareVar(v2);
+        return `${prefix}[${v1}, ${v2}] = [${r1}, ${r2}]`;
+      }
+
+      // Single variable assignment (not ==, !=, <=, >=, +=, -=, *=, /=)
+      let assignMatch = stmt.match(/^([a-zA-Z0-9_]+)\s*=(?!=)\s*(.*)/);
+      if (assignMatch) {
+        let varName = assignMatch[1];
+        let rhs = transpileExpression(assignMatch[2]);
+        if (isVarDeclared(varName)) {
+          return `${varName} = ${rhs}`;
+        } else {
+          declareVar(varName);
+          return `let ${varName} = ${rhs}`;
+        }
+      }
+
+      // Indexed assignment: arr[i] = rhs
+      let idxAssignMatch = stmt.match(/^([a-zA-Z0-9_]+\[.*?\])\s*(?<![=!<>+\-*/])=(?!=)\s*(.*)/);
+      if (idxAssignMatch) {
+        return `${idxAssignMatch[1]} = ${transpileExpression(idxAssignMatch[2])}`;
+      }
+      return stmt;
+    }
+
+    return preamble + '\n' + jsLines.join('\n');
+    }
+
+    let completedModules = new Set();
+    function markModuleComplete(modId) {
+      completedModules.add(modId);
+      const pct = Math.min(100, Math.round((completedModules.size / 5) * 100));
+      document.getElementById('progress-percent').innerText = `${pct}% Concluído`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+
+      if (pct >= 100) {
+        const badge = document.getElementById('trophy-badge');
+        badge.classList.remove('opacity-30');
+        badge.classList.add('scale-125', 'opacity-100');
+      }
+
+      if (window.ProfileSystem) {
+        const mapKey = {
+          'mod-1': 'lab10_mod1',
+          'mod-2': 'lab10_mod2',
+          'mod-3': 'lab10_mod3',
+          'mod-4': 'lab10_mod4',
+          'leetcode': 'lab10_mod5'
+        }[modId];
+        if (mapKey) window.ProfileSystem.completeTask(mapKey);
+      }
+    }
+
+    function completeSimModule() {
+      const badge = document.getElementById('badge-mod-4');
+      if (badge) {
+        badge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+        badge.innerText = "Concluído ✓";
+      }
+      markModuleComplete('mod-4');
+    }
+
+    function toggleHint(hintId) {
+      const el = document.getElementById(hintId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function clearEditor(num) {
+      const ed = document.getElementById(`editor-${num}`);
+      ed.value = '';
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(`editor-${num}`, '');
+      const res = document.getElementById(`result-${num}`);
+      res.classList.add('hidden');
+      res.innerHTML = '';
+    }
+
+    function revealSolution(num) {
+      const solutions = {
+        1: "def tem_sobreposicao(int1, int2):\n    if int2[0] <= int1[1]:\n        return True\n    else:\n        return False",
+        2: "def fundir_dois(int1, int2):\n    return [int1[0], max(int1[1], int2[1])]",
+        3: "def ordenar_agenda(intervalos):\n    intervalos.sort()\n    return intervalos"
+      };
+      const ed = document.getElementById(`editor-${num}`);
+      ed.value = solutions[num];
+      if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(`editor-${num}`, ed.value);
+    }
+
+    function runChallenge(num) {
+      const code = document.getElementById(`editor-${num}`).value.trim();
+      const resEl = document.getElementById(`result-${num}`);
+      resEl.classList.remove('hidden');
+
+      if (!code) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-amber-500/10 border-amber-500/30 text-amber-300";
+        resEl.innerHTML = "⚠️ O campo de código está vazio. Escreva sua função antes de executar!";
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        let runner;
+        if (num === 1) {
+          runner = new Function(transpiled + `\n
+          if (typeof tem_sobreposicao !== 'function') throw new Error("Função 'tem_sobreposicao(int1, int2)' não encontrada.");
+          const t1 = tem_sobreposicao([1, 3], [2, 6]);
+          const t2 = tem_sobreposicao([1, 4], [4, 5]);
+          const t3 = tem_sobreposicao([1, 3], [5, 8]);
+          return [
+            { name: '[1, 3] e [2, 6] -> True', got: t1, expected: true, pass: t1 === true },
+            { name: 'Bordas Iguais [1, 4] e [4, 5] -> True', got: t2, expected: true, pass: t2 === true },
+            { name: 'Separados [1, 3] e [5, 8] -> False', got: t3, expected: false, pass: t3 === false }
+          ];
+        `);
+        } else if (num === 2) {
+          runner = new Function(transpiled + `\n
+          if (typeof fundir_dois !== 'function') throw new Error("Função 'fundir_dois(int1, int2)' não encontrada.");
+          const t1 = fundir_dois([1, 3], [2, 6]);
+          const t2 = fundir_dois([1, 10], [2, 5]);
+          return [
+            { name: '[1, 3] + [2, 6] -> [1, 6]', got: t1, expected: [1, 6], pass: JSON.stringify(t1) === JSON.stringify([1, 6]) },
+            { name: 'Intervalo Engolido [1, 10] + [2, 5] -> [1, 10]', got: t2, expected: [1, 10], pass: JSON.stringify(t2) === JSON.stringify([1, 10]) }
+          ];
+        `);
+        } else if (num === 3) {
+          runner = new Function(transpiled + `\n
+          if (typeof ordenar_agenda !== 'function') throw new Error("Função 'ordenar_agenda(intervalos)' não encontrada.");
+          const t1 = ordenar_agenda([[8, 10], [1, 3], [2, 6]]);
+          const t2 = ordenar_agenda([[5, 9], [1, 4], [1, 2]]);
+          return [
+            { name: 'Ordenar [[8,10], [1,3], [2,6]]', got: t1, expected: [[1, 3], [2, 6], [8, 10]], pass: JSON.stringify(t1) === JSON.stringify([[1, 3], [2, 6], [8, 10]]) },
+            { name: 'Desempate [[5,9], [1,4], [1,2]]', got: t2, expected: [[1, 2], [1, 4], [5, 9]], pass: JSON.stringify(t2) === JSON.stringify([[1, 2], [1, 4], [5, 9]]) }
+          ];
+        `);
+        }
+
+        const tests = runner();
+        const allPassed = tests.every(t => t.pass);
+
+        if (allPassed) {
+          resEl.className = "text-xs p-3 rounded-lg border bg-emerald-500/10 border-emerald-500/30 text-emerald-300 space-y-1.5";
+          resEl.innerHTML = `
+            <div class="font-bold flex items-center gap-1.5">
+              <span>✅</span> Todos os testes passaram com sucesso! (+50 XP)
+            </div>
+            <div class="text-[11px] text-emerald-400/80 font-mono space-y-0.5">
+              ${tests.map(t => `<div>• ${t.name}: <strong>${JSON.stringify(t.got)}</strong></div>`).join('')}
+            </div>
+          `;
+          const badge = document.getElementById(`badge-mod-${num}`);
+          badge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+          badge.innerText = "Concluído ✓";
+          markModuleComplete(`mod-${num}`);
+        } else {
+          resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/10 border-rose-500/30 text-rose-300 space-y-1";
+          resEl.innerHTML = `
+            <div class="font-bold">❌ Alguns testes falharam:</div>
+            ${tests.map(t => `
+              <div class="font-mono text-[11px] ${t.pass ? 'text-emerald-400' : 'text-rose-300'}">
+                ${t.pass ? '✓' : '✗'} ${t.name} -> Esperado: ${JSON.stringify(t.expected)}, Obtido: ${JSON.stringify(t.got)}
+              </div>
+            `).join('')}
+          `;
+        }
+      } catch (err) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/15 border-rose-500/40 text-rose-200 space-y-1";
+        resEl.innerHTML = `
+          <div class="font-bold flex items-center gap-1.5">
+            <span>⚠️</span> Erro ao executar código Python:
+          </div>
+          <div class="font-mono text-[11px] bg-slate-950 p-2 rounded text-rose-300 whitespace-pre-wrap">${err.message}</div>
+        `;
+      }
+    }
+
+    // --- SIMULADOR VISUAL ---
+    
+        let simState = { list: [[1,3],[2,6],[8,10],[15,18]], idx: -1, merged: [], running: false, finished: false };
+        function parseSimInput() {
+          const raw = document.getElementById('sim-input').value;
+          const items = raw.split(';').map(s => {
+            const p = s.split(',').map(x => parseInt(x.trim(), 10));
+            return (p.length >= 2 && !isNaN(p[0]) && !isNaN(p[1])) ? [p[0], p[1]] : null;
+          }).filter(Boolean);
+          return items.length ? items : [[1,3],[2,6],[8,10],[15,18]];
+        }
+        function loadSimPreset(str) { document.getElementById('sim-input').value = str; startSim(); }
+        function resetSim() {
+          const list = parseSimInput();
+          simState = { list, idx: -1, merged: [], running: false, finished: false };
+          document.getElementById('btn-sim-step').disabled = true;
+          document.getElementById('sim-step-label').innerText = 'Passo: 0';
+          document.getElementById('sim-m1').innerText = '-';
+          document.getElementById('sim-m2').innerText = '-';
+          document.getElementById('sim-m3').innerText = '0';
+          document.getElementById('sim-status-badge').innerText = 'Pronto';
+          document.getElementById('sim-log-text').innerHTML = 'Clique em <strong class="text-emerald-400">"Iniciar"</strong> para ordenar os intervalos e iniciar a fusão.';
+          renderSimCanvas();
+        }
+        function startSim() {
+          resetSim();
+          simState.list.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+          simState.running = true;
+          document.getElementById('btn-sim-step').disabled = false;
+          document.getElementById('sim-log-text').innerHTML = 'Intervalos ordenados: <code class="text-emerald-300">' + JSON.stringify(simState.list) + '</code>. Clique em <strong>"Próximo Passo"</strong>!';
+          renderSimCanvas();
+        }
+        function stepSim() {
+          if (!simState.running || simState.finished) return;
+          simState.idx++;
+          if (simState.idx >= simState.list.length) {
+            simState.finished = true;
+            document.getElementById('btn-sim-step').disabled = true;
+            document.getElementById('sim-status-badge').innerText = 'Concluído';
+            document.getElementById('sim-log-text').innerHTML = '<span class="text-emerald-400 font-bold">✅ Fusão Concluída! Resultado Final: ' + JSON.stringify(simState.merged) + '</span>.';
+            completeSimModule();
+            renderSimCanvas();
+            return;
+          }
+          const cur = [...simState.list[simState.idx]];
+          document.getElementById('sim-step-label').innerText = 'Item: ' + (simState.idx + 1) + ' / ' + simState.list.length;
+          document.getElementById('sim-m1').innerText = '[' + cur[0] + ', ' + cur[1] + ']';
+
+          if (simState.merged.length === 0) {
+            simState.merged.push(cur);
+            document.getElementById('sim-log-text').innerHTML = 'Primeiro intervalo <strong>[' + cur[0] + ', ' + cur[1] + ']</strong> adicionado à lista <code class="text-emerald-300">fundidos</code>.';
+          } else {
+            const last = simState.merged[simState.merged.length - 1];
+            if (cur[0] <= last[1]) {
+              const oldEnd = last[1];
+              last[1] = Math.max(last[1], cur[1]);
+              document.getElementById('sim-log-text').innerHTML = '<span class="text-amber-300 font-bold">🔗 Sobreposição! (' + cur[0] + ' &lt;= ' + oldEnd + ')</span> Fundimos com o último bloco → novo término = <strong>[' + last[0] + ', ' + last[1] + ']</strong>!';
+            } else {
+              simState.merged.push(cur);
+              document.getElementById('sim-log-text').innerHTML = 'Sem sobreposição (' + cur[0] + ' &gt; ' + last[1] + '). Adicionamos novo bloco separado <strong>[' + cur[0] + ', ' + cur[1] + ']</strong>.';
+            }
+          }
+          const lastNow = simState.merged[simState.merged.length - 1];
+          document.getElementById('sim-m2').innerText = '[' + lastNow[0] + ', ' + lastNow[1] + ']';
+          document.getElementById('sim-m3').innerText = simState.merged.length;
+          renderSimCanvas();
+        }
+        function renderSimCanvas() {
+          const c = document.getElementById('sim-canvas');
+          c.innerHTML = `
+            <div class="w-full flex flex-col gap-2.5 items-center">
+              <div class="text-[11px] font-mono text-slate-400">Lista <strong class="text-emerald-300">fundidos</strong> até o momento:</div>
+              <div class="flex flex-wrap gap-2 justify-center">
+                ${simState.merged.length === 0 ? '<span class="text-xs text-slate-600 font-mono">Nenhum intervalo processado ainda</span>' : simState.merged.map((iv, idx) => `
+                  <div class="px-3.5 py-2 rounded-xl font-mono font-bold text-xs border-2 ${idx === simState.merged.length - 1 && !simState.finished ? 'bg-emerald-500/25 border-emerald-400 text-emerald-200 scale-105' : 'bg-slate-900 border-emerald-500/40 text-emerald-300'}">[${iv[0]}, ${iv[1]}]</div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+      
+
+    // --- LEETCODE RUNNER ---
+    function clearLeetCodeEditor() {
+      const ed = document.getElementById('editor-leetcode');
+      ed.value = '';
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', '');
+      document.getElementById('leetcode-results-panel').classList.add('hidden');
+    }
+
+    function revealLeetCodeSolution() {
+      const ed = document.getElementById('editor-leetcode');
+      ed.value = "class Solution:\n    def merge(self, intervals: list) -> list:\n        intervals.sort()\n        fundidos = [intervals[0]]\n        \n        for atual in intervals[1:]:\n            ultimo = fundidos[-1]\n            if atual[0] <= ultimo[1]:\n                ultimo[1] = max(ultimo[1], atual[1])\n            else:\n                fundidos.append(atual)\n                \n        return fundidos";
+      if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
+    }
+
+    function runLeetCodeTests() {
+      const code = document.getElementById('editor-leetcode').value.trim();
+      const resultsPanel = document.getElementById('leetcode-results-panel');
+      const container = document.getElementById('test-cards-container');
+      const badge = document.getElementById('tests-summary-badge');
+      const statusTop = document.getElementById('leetcode-status');
+
+      resultsPanel.classList.remove('hidden');
+      container.innerHTML = '';
+
+      if (!code) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-amber-500/20 text-amber-300";
+        badge.innerText = "Código Vazio";
+        container.innerHTML = `
+          <div class="col-span-2 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+            ⚠️ O campo de código está vazio. Escreva sua solução ou clique em "💡 Dica" / "Ver Solução Modelo".
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        const testCases = [{"args":[[[1,3],[2,6],[8,10],[15,18]]],"expected":[[1,6],[8,10],[15,18]],"desc":"Caso Clássico Oficial"},{"args":[[[1,4],[4,5]]],"expected":[[1,5]],"desc":"Toque Exato na Borda (4)"},{"args":[[[1,10],[2,3],[4,8]]],"expected":[[1,10]],"desc":"Intervalo Maior Engolindo Menores"},{"args":[[[8,10],[1,3],[2,6]]],"expected":[[1,6],[8,10]],"desc":"Entrada Fora de Ordem"},{"args":[[[1,2],[3,4],[5,6]]],"expected":[[1,2],[3,4],[5,6]],"desc":"Nenhuma Sobreposição"},{"args":[[[1,5]]],"expected":[[1,5]],"desc":"Apenas 1 Intervalo"}];
+
+        const runner = new Function('testCases', transpiled + `
+          let sol;
+          if (typeof Solution === 'function') sol = new Solution();
+          const targetFunc = (sol && typeof sol.merge === 'function') ? sol.merge.bind(sol) : (typeof merge === 'function' ? merge : null);
+          if (!targetFunc) throw new Error("Método 'merge' ou 'Solution.merge' não encontrado.");
+          
+          return testCases.map((tc, idx) => {
+            const clonedArgs = JSON.parse(JSON.stringify(tc.args));
+            const start = performance.now();
+            const res = targetFunc(...clonedArgs);
+            const time = (performance.now() - start).toFixed(3);
+            return {
+              idx: idx + 1,
+              input: tc.args,
+              expected: tc.expected,
+              got: res,
+              pass: JSON.stringify(res) === JSON.stringify(tc.expected),
+              time: time,
+              desc: tc.desc
+            };
+          });
+        `);
+
+        const results = runner(testCases);
+        const allPassed = results.every(r => r.pass);
+
+        if (allPassed) {
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-300 font-bold";
+          badge.innerText = `${results.length}/${results.length} PASSARAM`;
+          statusTop.className = "px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2";
+          statusTop.innerHTML = "<span>🎉</span> Desafio Resolvido! (+150 XP)";
+          markModuleComplete('leetcode');
+        } else {
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300 font-bold";
+          const passedCount = results.filter(r => r.pass).length;
+          badge.innerText = `${passedCount}/${results.length} PASSARAM`;
+          statusTop.className = "px-4 py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-sm font-bold text-rose-400 flex items-center gap-2";
+          statusTop.innerHTML = "<span>❌</span> Casos Falhando";
+        }
+
+        results.forEach(r => {
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-xl border ${
+            r.pass ? 'bg-slate-900/80 border-emerald-500/30 text-slate-300' : 'bg-rose-950/20 border-rose-500/40 text-rose-200'
+          } space-y-1.5`;
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold flex items-center gap-1.5">
+                <span>${r.pass ? '✅' : '❌'}</span> Caso ${r.idx}: ${r.desc}
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">${r.time}ms</span>
+            </div>
+            <div class="font-mono text-[11px] bg-slate-950 p-2 rounded border border-slate-800/80 space-y-0.5">
+              <div><span class="text-slate-500">Entrada:</span> <span class="text-amber-300">${JSON.stringify(r.input)}</span></div>
+              <div><span class="text-slate-500">Esperado:</span> <span class="text-emerald-400">${JSON.stringify(r.expected)}</span></div>
+              <div><span class="text-slate-500">Obtido:</span> <span class="${r.pass ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}">${JSON.stringify(r.got)}</span></div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (err) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300";
+        badge.innerText = "Erro de Execução";
+        container.innerHTML = `
+          <div class="col-span-2 p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 space-y-2">
+            <div class="font-bold flex items-center gap-2">
+              <span>⚠️</span> Erro ao interpretar o código Python:
+            </div>
+            <div class="font-mono text-xs bg-slate-950 p-3 rounded text-rose-300 whitespace-pre-wrap">${err.message}</div>
+          </div>
+        `;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      resetSim();
+    });
+  
+
+    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    function ensureCursorVisible(textarea) {
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const val = textarea.value;
+      const textBefore = val.substring(0, start);
+      const currentLine = textBefore.split('\\n').length;
+      
+      const style = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
+      const paddingTop = parseFloat(style.paddingTop) || 12;
+      
+      const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
+      const visibleTop = textarea.scrollTop;
+      const visibleBottom = textarea.scrollTop + textarea.clientHeight;
+      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+
+      if (cursorTop + lineHeight > visibleBottom - margin) {
+        textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
+      } else if (cursorTop < visibleTop + margin) {
+        textarea.scrollTop = Math.max(0, cursorTop - margin);
+      }
+    }
+
+    function handleAutoGrow(textarea) {
+      if (!textarea || textarea.dataset.expanded === 'true') return;
+      const isLeet = textarea.id.includes('leetcode');
+      const minH = isLeet ? 360 : 240;
+      const maxH = isLeet ? 750 : 550;
+      
+      // Calculate needed height
+      textarea.style.height = 'auto';
+      const scrollH = textarea.scrollHeight;
+      const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
+      textarea.style.height = targetHeight + 'px';
+    }
+
+    function toggleExpandEditor(editorId, btn) {
+      const textarea = document.getElementById(editorId);
+      if (!textarea) return;
+      const isExpanded = textarea.dataset.expanded === 'true';
+      const isLeet = textarea.id.includes('leetcode');
+      const defaultH = isLeet ? 380 : 240;
+      const expandedH = isLeet ? 750 : 540;
+      
+      if (isExpanded) {
+        textarea.style.height = defaultH + 'px';
+        textarea.dataset.expanded = 'false';
+        if (btn) btn.innerHTML = '<span>⛶</span> Expandir';
+      } else {
+        textarea.style.height = expandedH + 'px';
+        textarea.dataset.expanded = 'true';
+        if (btn) btn.innerHTML = '<span>🗗</span> Reduzir';
+      }
+      ensureCursorVisible(textarea);
+    }
+
+    function setupCodeEditorFeatures() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.dataset.editorEnhanced) return;
+        textarea.dataset.editorEnhanced = 'true';
+
+        const isLeet = textarea.id.includes('leetcode');
+        const minH = isLeet ? 360 : 240;
+        textarea.style.minHeight = minH + 'px';
+        if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
+          textarea.style.height = minH + 'px';
+        }
+
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const value = this.value;
+
+            if (!e.shiftKey) {
+              if (start === end) {
+                this.value = value.substring(0, start) + '    ' + value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+              } else {
+                const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\\n', end);
+                const endPos = lineEnd === -1 ? value.length : lineEnd;
+                const selectedLines = value.substring(lineStart, endPos).split('\\n');
+                const indented = selectedLines.map(l => '    ' + l).join('\\n');
+                this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
+                this.selectionStart = start + 4;
+                this.selectionEnd = end + (selectedLines.length * 4);
+              }
+            } else {
+              const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\\n', end);
+              const endPos = lineEnd === -1 ? value.length : lineEnd;
+              const selectedLines = value.substring(lineStart, endPos).split('\\n');
+              let removedTotal = 0;
+              let firstLineRemoved = 0;
+
+              const dedented = selectedLines.map((l, idx) => {
+                const match = l.match(/^ {1,4}/);
+                if (match) {
+                  const removed = match[0].length;
+                  removedTotal += removed;
+                  if (idx === 0) firstLineRemoved = removed;
+                  return l.substring(removed);
+                }
+                return l;
+              }).join('\\n');
+
+              this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
+              this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
+              this.selectionEnd = Math.max(lineStart, end - removedTotal);
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          } else if (e.key === 'Enter') {
+            const start = this.selectionStart;
+            const value = this.value;
+            const lineStart = value.lastIndexOf('\\n', start - 1) + 1;
+            const currentLine = value.substring(lineStart, start);
+            const indentMatch = currentLine.match(/^\\s*/);
+            let indent = indentMatch ? indentMatch[0] : '';
+            if (currentLine.trim().endsWith(':')) {
+              indent += '    ';
+            }
+            if (indent.length > 0) {
+              e.preventDefault();
+              const before = value.substring(0, start);
+              const after = value.substring(this.selectionEnd);
+              this.value = before + '\\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('input', function() {
+          handleAutoGrow(this);
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('keyup', function(e) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('click', function() {
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('focus', function() {
+          ensureCursorVisible(this);
+        });
+
+        handleAutoGrow(textarea);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', setupCodeEditorFeatures);
+    } else {
+      setupCodeEditorFeatures();
+    }
+
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (10 LABS) ---
+    window.ProfileSystem = (function() {
+      const STORAGE_KEY = 'python_study_lab_profile_v1';
+      const CURRENT_LAB = 10;
+
+      const TASKS_CATALOG = {
+        // Fase 1
+        lab1_mod1: { lab: 1, xp: 50, title: 'Módulo 1: Tipos & F-Strings' },
+        lab1_mod2: { lab: 1, xp: 50, title: 'Módulo 2: Dict vs List O(1)' },
+        lab1_mod3: { lab: 1, xp: 50, title: 'Módulo 3: Loops & Enumerate' },
+        lab1_mod4: { lab: 1, xp: 50, title: 'Módulo 4: Simulador Hash Map' },
+        lab1_mod5: { lab: 1, xp: 150, title: '⚡ LeetCode #1: Two Sum', isLeet: true },
+        // Fase 2
+        lab2_mod1: { lab: 2, xp: 50, title: 'Módulo 1: Métodos de String' },
+        lab2_mod2: { lab: 2, xp: 50, title: 'Módulo 2: Slicing & [::-1]' },
+        lab2_mod3: { lab: 2, xp: 50, title: 'Módulo 3: List Comprehensions' },
+        lab2_mod4: { lab: 2, xp: 50, title: 'Módulo 4: Simulador Two Pointers' },
+        lab2_mod5: { lab: 2, xp: 150, title: '⚡ LeetCode #125: Valid Palindrome', isLeet: true },
+        // Fase 3
+        lab3_mod1: { lab: 3, xp: 50, title: 'Módulo 1: Pilhas & LIFO' },
+        lab3_mod2: { lab: 3, xp: 50, title: 'Módulo 2: Mapeamento de Pares' },
+        lab3_mod3: { lab: 3, xp: 50, title: 'Módulo 3: Diagnóstico de Erros' },
+        lab3_mod4: { lab: 3, xp: 50, title: 'Módulo 4: Stack Inspector' },
+        lab3_mod5: { lab: 3, xp: 150, title: '⚡ LeetCode #20: Valid Parentheses', isLeet: true },
+        // Fase 4
+        lab4_mod1: { lab: 4, xp: 50, title: 'Módulo 1: Memória do Menor Preço' },
+        lab4_mod2: { lab: 4, xp: 50, title: 'Módulo 2: Lucro Diário' },
+        lab4_mod3: { lab: 4, xp: 50, title: 'Módulo 3: Consultor da Bolsa' },
+        lab4_mod4: { lab: 4, xp: 50, title: 'Módulo 4: Simulador Wall Street' },
+        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true },
+        // Fase 5
+        lab5_mod1: { lab: 5, xp: 50, title: 'Módulo 1: Divisão Inteira (//)' },
+        lab5_mod2: { lab: 5, xp: 50, title: 'Módulo 2: Bússola da Metade' },
+        lab5_mod3: { lab: 5, xp: 50, title: 'Módulo 3: Contador de Divisões' },
+        lab5_mod4: { lab: 5, xp: 50, title: 'Módulo 4: Simulador Busca Binária' },
+        lab5_mod5: { lab: 5, xp: 150, title: '⚡ LeetCode #704: Binary Search', isLeet: true },
+        // Fase 6
+        lab6_mod1: { lab: 6, xp: 50, title: 'Módulo 1: Filtrando com Set' },
+        lab6_mod2: { lab: 6, xp: 50, title: 'Módulo 2: Caçador do Primeiro Clone' },
+        lab6_mod3: { lab: 6, xp: 50, title: 'Módulo 3: Interseção em O(1)' },
+        lab6_mod4: { lab: 6, xp: 50, title: 'Módulo 4: Simulador Hash Set' },
+        lab6_mod5: { lab: 6, xp: 150, title: '⚡ LeetCode #217: Contains Duplicate', isLeet: true },
+        // Fase 7
+        lab7_mod1: { lab: 7, xp: 50, title: 'Módulo 1: Somas Acumuladas' },
+        lab7_mod2: { lab: 7, xp: 50, title: 'Módulo 2: Decisão de Kadane' },
+        lab7_mod3: { lab: 7, xp: 50, title: 'Módulo 3: Histórico de Kadane' },
+        lab7_mod4: { lab: 7, xp: 50, title: 'Módulo 4: Simulador Kadane' },
+        lab7_mod5: { lab: 7, xp: 150, title: '⚡ LeetCode #53: Maximum Subarray', isLeet: true },
+        // Fase 8
+        lab8_mod1: { lab: 8, xp: 50, title: 'Módulo 1: Volume do Tanque' },
+        lab8_mod2: { lab: 8, xp: 50, title: 'Módulo 2: Movimento do Gargalo' },
+        lab8_mod3: { lab: 8, xp: 50, title: 'Módulo 3: Áreas Convergentes' },
+        lab8_mod4: { lab: 8, xp: 50, title: 'Módulo 4: Simulador Reservatório' },
+        lab8_mod5: { lab: 8, xp: 150, title: '⚡ LeetCode #11: Container Most Water', isLeet: true },
+        // Fase 9
+        lab9_mod1: { lab: 9, xp: 50, title: 'Módulo 1: Tabela Fibonacci (DP)' },
+        lab9_mod2: { lab: 9, xp: 50, title: 'Módulo 2: Transição de Degraus' },
+        lab9_mod3: { lab: 9, xp: 50, title: 'Módulo 3: DP de Custo Mínimo' },
+        lab9_mod4: { lab: 9, xp: 50, title: 'Módulo 4: Simulador Escada DP' },
+        lab9_mod5: { lab: 9, xp: 150, title: '⚡ LeetCode #70: Climbing Stairs', isLeet: true },
+        // Fase 10
+        lab10_mod1: { lab: 10, xp: 50, title: 'Módulo 1: Detector de Conflito' },
+        lab10_mod2: { lab: 10, xp: 50, title: 'Módulo 2: Fusão de Dois Intervalos' },
+        lab10_mod3: { lab: 10, xp: 50, title: 'Módulo 3: Ordenando Listas 2D' },
+        lab10_mod4: { lab: 10, xp: 50, title: 'Módulo 4: Simulador Linha do Tempo' },
+        lab10_mod5: { lab: 10, xp: 150, title: '⚡ LeetCode #56: Merge Intervals', isLeet: true }
+      };
+
+      const LEVELS = [
+        { level: 1, minXp: 0, maxXp: 200, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 200, maxXp: 500, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 500, maxXp: 900, rank: '🛠️ Artesão de Algoritmos' },
+        { level: 4, minXp: 900, maxXp: 1350, rank: '⚡ Mestre O(n)' },
+        { level: 5, minXp: 1350, maxXp: 1850, rank: '🧭 Navegador Binário' },
+        { level: 6, minXp: 1850, maxXp: 2350, rank: '🔥 Estrategista Guloso' },
+        { level: 7, minXp: 2350, maxXp: 2850, rank: '🔮 Arquiteto Dinâmico' },
+        { level: 8, minXp: 2850, maxXp: 3500, rank: '👑 Grão-Mestre LeetCode' }
+      ];
+
+      const ACHIEVEMENTS = [
+        { id: 'first_blood', icon: '🎯', title: 'Primeiro Passo', desc: 'Conclua seu primeiro exercício em qualquer Lab.', check: p => Object.keys(p.completedTasks).length >= 1 },
+        { id: 'hash_master', icon: '🗂️', title: 'Mestre do Hash Map', desc: 'Vença o LeetCode #1 (Two Sum).', check: p => !!p.completedTasks.lab1_mod5 },
+        { id: 'two_pointers', icon: '👉👈', title: 'Domador de Ponteiros', desc: 'Vença o LeetCode #125 (Valid Palindrome).', check: p => !!p.completedTasks.lab2_mod5 },
+        { id: 'stack_lord', icon: '🥞', title: 'Guardião LIFO', desc: 'Vença o LeetCode #20 (Valid Parentheses).', check: p => !!p.completedTasks.lab3_mod5 },
+        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Vença o LeetCode #121 (Buy & Sell Stock).', check: p => !!p.completedTasks.lab4_mod5 },
+        { id: 'binary_sniper', icon: '🎯', title: 'Sniper Logarítmico', desc: 'Vença o LeetCode #704 (Binary Search).', check: p => !!p.completedTasks.lab5_mod5 },
+        { id: 'set_detective', icon: '🕵️', title: 'Detetive de Duplicatas', desc: 'Vença o LeetCode #217 (Contains Duplicate).', check: p => !!p.completedTasks.lab6_mod5 },
+        { id: 'kadane_king', icon: '👑', title: 'Mestre de Kadane', desc: 'Vença o LeetCode #53 (Maximum Subarray).', check: p => !!p.completedTasks.lab7_mod5 },
+        { id: 'water_architect', icon: '🌊', title: 'Engenheiro Hidráulico', desc: 'Vença o LeetCode #11 (Container With Most Water).', check: p => !!p.completedTasks.lab8_mod5 },
+        { id: 'dp_wizard', icon: '🪜', title: 'Mago da Recorrência', desc: 'Vença o LeetCode #70 (Climbing Stairs).', check: p => !!p.completedTasks.lab9_mod5 },
+        { id: 'time_lord', icon: '⏳', title: 'Senhor do Tempo', desc: 'Vença o LeetCode #56 (Merge Intervals).', check: p => !!p.completedTasks.lab10_mod5 },
+        { id: 'grandmaster_10', icon: '🏆', title: 'Lenda dos 10 Labs', desc: 'Resolva todos os 10 desafios do LeetCode!', check: p => [1,2,3,4,5,6,7,8,9,10].every(n => !!p.completedTasks['lab' + n + '_mod5']) }
+      ];
+
+      function getDefaultProfile() {
+        return {
+          name: 'Estudante Python',
+          avatar: '🐍',
+          xp: 0,
+          completedTasks: {},
+          savedCode: {}
+        };
+      }
+
+      function loadProfile() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultProfile();
+          const parsed = JSON.parse(raw);
+          return Object.assign(getDefaultProfile(), parsed);
+        } catch (e) {
+          return getDefaultProfile();
+        }
+      }
+
+      function saveProfile(profile) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+        } catch (e) {}
+      }
+
+      function recalcXp(profile) {
+        let total = 0;
+        for (const k of Object.keys(profile.completedTasks)) {
+          if (TASKS_CATALOG[k]) total += TASKS_CATALOG[k].xp;
+        }
+        profile.xp = total;
+        return total;
+      }
+
+      function getLevelInfo(xp) {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) return LEVELS[i];
+        }
+        return LEVELS[0];
+      }
+
+      function getLabStats(profile, labNum) {
+        const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
+        const done = keys.filter(k => !!profile.completedTasks[k]).length;
+        const pct = keys.length ? Math.round((done / keys.length) * 100) : 0;
+        return { done, total: keys.length, pct, keys };
+      }
+
+      function showToast(title, subtitle) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-2 opacity-0';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">⚡</div>
+          <div>
+            <div class="text-xs font-extrabold text-white">${title}</div>
+            <div class="text-[11px] text-emerald-300 font-mono">${subtitle}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        });
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 3800);
+      }
+
+      function renderTopBar(profile) {
+        recalcXp(profile);
+        const lvl = getLevelInfo(profile.xp);
+        const avatarEl = document.getElementById('profile-bar-avatar');
+        const nameEl = document.getElementById('profile-bar-name');
+        const levelEl = document.getElementById('profile-bar-level');
+        const rankEl = document.getElementById('profile-bar-rank');
+        const xpTextEl = document.getElementById('profile-bar-xp-text');
+        const xpFillEl = document.getElementById('profile-bar-xp-fill');
+
+        if (avatarEl) avatarEl.innerText = profile.avatar || '🐍';
+        if (nameEl) nameEl.innerText = profile.name || 'Estudante Python';
+        if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
+        if (rankEl) rankEl.innerText = lvl.rank;
+        if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
+        if (xpFillEl) {
+          const span = Math.max(1, lvl.maxXp - lvl.minXp);
+          const pct = Math.min(100, Math.round(((profile.xp - lvl.minXp) / span) * 100));
+          xpFillEl.style.width = `${pct}%`;
+        }
+
+        for (let l = 1; l <= 10; l++) {
+          const el = document.getElementById(`nav-pct-lab${l}`);
+          if (el) {
+            const st = getLabStats(profile, l);
+            el.innerText = `${st.pct}%`;
+            if (st.pct === 100) {
+              el.className = 'text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+            }
+          }
+        }
+      }
+
+      function completeTask(taskId) {
+        const task = TASKS_CATALOG[taskId];
+        if (!task) return;
+        const profile = loadProfile();
+        const oldLvl = getLevelInfo(recalcXp(profile)).level;
+        const alreadyDone = !!profile.completedTasks[taskId];
+
+        if (!alreadyDone) {
+          profile.completedTasks[taskId] = { completedAt: new Date().toISOString() };
+          recalcXp(profile);
+          saveProfile(profile);
+          const newLvlInfo = getLevelInfo(profile.xp);
+          showToast(`+${task.xp} XP Conquistado!`, task.title);
+          if (newLvlInfo.level > oldLvl) {
+            setTimeout(() => {
+              showToast(`🎉 SUBIU PARA O NÍVEL ${newLvlInfo.level}!`, newLvlInfo.rank);
+            }, 900);
+          }
+        }
+        renderTopBar(profile);
+      }
+
+      function saveEditorCode(editorId, code) {
+        const profile = loadProfile();
+        const key = `lab${CURRENT_LAB}_${editorId}`;
+        profile.savedCode[key] = code;
+        saveProfile(profile);
+      }
+
+      function restoreLabState() {
+        const profile = loadProfile();
+        renderTopBar(profile);
+
+        document.querySelectorAll('textarea').forEach(ta => {
+          if (!ta.id) return;
+          const key = `lab${CURRENT_LAB}_${ta.id}`;
+          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
+            ta.value = profile.savedCode[key];
+            if (typeof handleAutoGrow === 'function') handleAutoGrow(ta);
+          }
+          if (!ta.dataset.profileBound) {
+            ta.dataset.profileBound = 'true';
+            ta.addEventListener('input', function() {
+              saveEditorCode(this.id, this.value);
+            });
+          }
+        });
+
+        const st = getLabStats(profile, CURRENT_LAB);
+        st.keys.forEach((k, idx) => {
+          if (profile.completedTasks[k]) {
+            const modNum = idx + 1;
+            const b1 = document.getElementById(`badge-mod${modNum}`);
+            if (b1) {
+              b1.className = "text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+              b1.innerText = "Concluído ✓";
+            }
+            const b2 = document.getElementById(`badge-mod-${modNum}`);
+            if (b2) {
+              b2.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+              b2.innerText = "Concluído ✓";
+            }
+            if (modNum === 5) {
+              const lcStatus = document.getElementById('leetcode-status');
+              if (lcStatus) {
+                lcStatus.className = "px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2";
+                lcStatus.innerHTML = "<span>🎉</span> Desafio Resolvido!";
+              }
+            }
+            if (typeof completedModules !== 'undefined') {
+              if (completedModules instanceof Set) {
+                completedModules.add(modNum === 5 ? 'leetcode' : `mod-${modNum}`);
+              } else if (typeof completedModules === 'object') {
+                completedModules[`mod${modNum}`] = true;
+              }
+            }
+          }
+        });
+
+        const pctEl = document.getElementById('progress-percent');
+        const fillEl = document.getElementById('progress-bar-fill');
+        if (pctEl) pctEl.innerText = `${st.pct}% Concluído`;
+        if (fillEl) fillEl.style.width = `${st.pct}%`;
+        if (st.pct === 100) {
+          const trophy = document.getElementById('trophy-badge');
+          if (trophy) {
+            trophy.classList.remove('opacity-30');
+            trophy.classList.add('opacity-100', 'scale-125');
+          }
+        }
+      }
+
+      function openModal() {
+        const profile = loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        document.getElementById('modal-avatar-display').innerText = profile.avatar;
+        document.getElementById('modal-name-input').value = profile.name;
+        document.getElementById('modal-level-badge').innerText = `Nível ${lvl.level}`;
+        document.getElementById('modal-rank-title').innerText = lvl.rank;
+        document.getElementById('modal-xp-Next').innerText = `${profile.xp} / ${lvl.maxXp} XP`;
+
+        const totalTasks = Object.keys(TASKS_CATALOG).length;
+        const doneTasks = Object.keys(profile.completedTasks).length;
+        const leetsDone = [1,2,3,4,5,6,7,8,9,10].filter(n => !!profile.completedTasks['lab' + n + '_mod5']).length;
+
+        document.getElementById('stat-total-xp').innerText = `${profile.xp} XP`;
+        document.getElementById('stat-tasks-done').innerText = `${doneTasks} / ${totalTasks}`;
+        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 10`;
+        document.getElementById('stat-global-pct').innerText = `${Math.round((doneTasks / totalTasks) * 100)}%`;
+
+        const labsInfo = [{"num":1,"short":"F1: Hash Map","name":"Fase 1: Hash Maps & Two Sum (#1)","url":"index.html","artifact":"python_study_lab.html","color":"sky"},{"num":2,"short":"F2: Two Pointers","name":"Fase 2: Strings & Valid Palindrome (#125)","url":"lab2_strings_twopointers.html","artifact":"python_study_lab_phase2.html","color":"purple"},{"num":3,"short":"F3: Pilhas","name":"Fase 3: Pilhas & Valid Parentheses (#20)","url":"lab3_stacks_valid_parentheses.html","artifact":"python_study_lab_phase3.html","color":"indigo"},{"num":4,"short":"F4: Sliding Window","name":"Fase 4: Sliding Window & Stocks (#121)","url":"lab4_sliding_window_stocks.html","artifact":"python_study_lab_phase4.html","color":"emerald"},{"num":5,"short":"F5: Busca Binária","name":"Fase 5: Busca Binária (#704)","url":"lab5_binary_search.html","artifact":"python_study_lab_phase5.html","color":"cyan"},{"num":6,"short":"F6: Hash Sets","name":"Fase 6: Conjuntos & Duplicatas (#217)","url":"lab6_sets_duplicates.html","artifact":"python_study_lab_phase6.html","color":"rose"},{"num":7,"short":"F7: Kadane","name":"Fase 7: Kadane & Max Subarray (#53)","url":"lab7_kadane_max_subarray.html","artifact":"python_study_lab_phase7.html","color":"amber"},{"num":8,"short":"F8: Container Água","name":"Fase 8: Two Pointers & Container (#11)","url":"lab8_two_pointers_water.html","artifact":"python_study_lab_phase8.html","color":"sky"},{"num":9,"short":"F9: Prog. Dinâmica","name":"Fase 9: DP & Climbing Stairs (#70)","url":"lab9_dp_climbing_stairs.html","artifact":"python_study_lab_phase9.html","color":"purple"},{"num":10,"short":"F10: Intervalos","name":"Fase 10: Ordenação & Merge Intervals (#56)","url":"lab10_intervals_merge.html","artifact":"python_study_lab_phase10.html","color":"emerald"}];
+        const labsContainer = document.getElementById('modal-labs-breakdown');
+        labsContainer.innerHTML = labsInfo.map(l => {
+          const st = getLabStats(profile, l.num);
+          const taskItems = st.keys.map(k => {
+            const done = !!profile.completedTasks[k];
+            const t = TASKS_CATALOG[k];
+            return `<div class="flex items-center justify-between py-0.5 ${done ? 'text-emerald-300' : 'text-slate-500'}">
+              <span>${done ? '✅' : '⏳'} ${t.title}</span>
+              <span class="font-mono text-[10px]">+${t.xp} XP</span>
+            </div>`;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <a href="${l.url}" class="font-bold text-white hover:underline">${l.name}</a>
+                <span class="px-2 py-0.5 rounded bg-slate-950 font-mono font-bold text-emerald-400">${st.pct}%</span>
+              </div>
+              <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full" style="width: ${st.pct}%"></div>
+              </div>
+              <div class="space-y-0.5 pt-1 text-[11px]">
+                ${taskItems}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const achContainer = document.getElementById('modal-achievements-grid');
+        achContainer.innerHTML = ACHIEVEMENTS.map(a => {
+          const unlocked = a.check(profile);
+          return `
+            <div class="p-3 rounded-xl border transition-all ${unlocked ? 'bg-indigo-950/30 border-indigo-500/40 text-white' : 'bg-slate-900/40 border-slate-800/60 text-slate-600 opacity-60'} flex items-start gap-2.5">
+              <span class="text-2xl">${a.icon}</span>
+              <div>
+                <div class="font-bold text-xs ${unlocked ? 'text-amber-300' : 'text-slate-500'}">${a.title}</div>
+                <div class="text-[11px] ${unlocked ? 'text-slate-300' : 'text-slate-600'} mt-0.5">${a.desc}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('profile-modal').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('profile-modal').classList.add('hidden');
+      }
+
+      function saveName() {
+        const input = document.getElementById('modal-name-input');
+        if (!input) return;
+        const val = input.value.trim() || 'Estudante Python';
+        const profile = loadProfile();
+        profile.name = val;
+        saveProfile(profile);
+        renderTopBar(profile);
+        showToast('Nome atualizado!', `Olá, ${val}!`);
+      }
+
+      function setAvatar(emoji) {
+        const profile = loadProfile();
+        profile.avatar = emoji;
+        saveProfile(profile);
+        document.getElementById('modal-avatar-display').innerText = emoji;
+        renderTopBar(profile);
+      }
+
+      function exportProfile() {
+        const profile = loadProfile();
+        const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `python_lab_perfil_${profile.name.toLowerCase().replace(/\s+/g, '_')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function resetProfile() {
+        if (!confirm('Tem certeza que deseja zerar todo o seu XP e progresso salvo?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      return {
+        completeTask,
+        saveEditorCode,
+        restoreLabState,
+        openModal,
+        closeModal,
+        saveName,
+        setAvatar,
+        exportProfile,
+        resetProfile
+      };
+    })();
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => window.ProfileSystem.restoreLabState());
+    } else {
+      window.ProfileSystem.restoreLabState();
+    }
+  </script>
+
+  <!-- PROFILE MODAL & XP TOAST CONTAINER -->
+  <div id="xp-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-4xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-4">
+          <div id="modal-avatar-display" class="w-16 h-16 rounded-2xl bg-indigo-500/15 border-2 border-indigo-500/40 flex items-center justify-center text-4xl shadow-inner">
+            🐍
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <input id="modal-name-input" type="text" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-lg font-extrabold text-white focus:outline-none focus:border-indigo-500" value="Estudante Python" maxlength="28">
+              <button onclick="window.ProfileSystem.saveName()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors">
+                Salvar Nome
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2 text-xs">
+              <span id="modal-level-badge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Nível 1</span>
+              <span id="modal-rank-title" class="text-amber-400 font-semibold">🌱 Iniciante Python</span>
+              <span class="text-slate-500">•</span>
+              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 200 XP</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2 py-1">✕</button>
+      </div>
+
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-slate-400 font-medium">Escolher Avatar:</span>
+        <button onclick="window.ProfileSystem.setAvatar('🐍')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐍</button>
+        <button onclick="window.ProfileSystem.setAvatar('🚀')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🚀</button>
+        <button onclick="window.ProfileSystem.setAvatar('⚡')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">⚡</button>
+        <button onclick="window.ProfileSystem.setAvatar('🧙‍♂️')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🧙‍♂️</button>
+        <button onclick="window.ProfileSystem.setAvatar('🦊')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🦊</button>
+        <button onclick="window.ProfileSystem.setAvatar('🤖')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🤖</button>
+        <button onclick="window.ProfileSystem.setAvatar('🐉')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐉</button>
+        <button onclick="window.ProfileSystem.setAvatar('👑')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">👑</button>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">XP Total</div>
+          <div id="stat-total-xp" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">0 XP</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Atividades</div>
+          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 50</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">LeetCodes</div>
+          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 10</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Progresso Geral</div>
+          <div id="stat-global-pct" class="text-2xl font-extrabold text-cyan-400 font-mono mt-1">0%</div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado nas 10 Fases</h3>
+        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs"></div>
+      </div>
+
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas (12 Medalhas)</h3>
+        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs"></div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <button onclick="window.ProfileSystem.exportProfile()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+            📥 Exportar Backup (.json)
+          </button>
+          <button onclick="window.ProfileSystem.resetProfile()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 border border-rose-500/30 transition-colors">
+            🗑️ Resetar Progresso
+          </button>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="px-5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
