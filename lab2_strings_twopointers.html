@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Study Lab - Fase 2: Strings, Slicing & Two Pointers (LeetCode #125)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Dark Theme Variables */
+    :root {
+      --background: #090d16;
+      --card: #0f172a;
+      --secondary: #1e293b;
+      --border: #334155;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #38bdf8;
+      --primary-foreground: #020617;
+    }
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .code-font {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+      textarea { tab-size: 4; -moz-tab-size: 4; }
+  
+    textarea {
+      tab-size: 4;
+      -moz-tab-size: 4;
+      resize: vertical !important;
+      line-height: 1.6 !important;
+      font-size: 13px !important;
+    }
+  
+  </style>
+</head>
+<body class="bg-[#090d16] text-[#f8fafc] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-5xl mx-auto space-y-8">
+
+    <!-- Header / Banner with Phase Switcher -->
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <!-- Left: Avatar, Name, Level & XP Bar -->
+      <div class="flex items-center gap-3.5 w-full lg:w-auto">
+        <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+          🐍
+        </button>
+        <div class="flex-1 min-w-[180px]">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
+            <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
+          </div>
+          <div class="mt-1.5 flex items-center gap-2.5">
+            <div class="flex-1 max-w-[200px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: 4 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs">
+        <a href="index.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F1: Hash Map</span>
+          <span id="nav-pct-lab1" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab2_strings_twopointers.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-purple-500/15 border-purple-500/40 text-purple-300 font-bold">
+          <span>F2: Two Pointers</span>
+          <span id="nav-pct-lab2" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F3: Pilhas</span>
+          <span id="nav-pct-lab3" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab4_sliding_window_stocks.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F4: Sliding Window</span>
+          <span id="nav-pct-lab4" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+      </div>
+
+      <!-- Right: Open Profile Modal Button -->
+      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
+        <button onclick="window.ProfileSystem.openModal()" class="w-full lg:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+          <span>👤</span> Meu Perfil & Conquistas
+        </button>
+      </div>
+    </div>
+
+    <header class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/40">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-2xl shadow-inner">
+              🔤
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">Python Lab • Fase 2</h1>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold">Strings & Two Pointers</span>
+              </div>
+              <p class="text-sm text-slate-400 mt-0.5">Manipulação de texto, fatiamento e a técnica clássica de Dois Ponteiros</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Score & Progress indicator -->
+        <div class="flex items-center gap-4 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+          <div class="text-right">
+            <div class="text-xs text-slate-400">Progresso Fase 2</div>
+            <div class="font-bold text-sm text-purple-400" id="progress-percent">0% Concluído</div>
+          </div>
+          <div class="w-24 bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+            <div id="progress-bar-fill" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div id="trophy-badge" class="text-2xl opacity-30 transition-all">🏆</div>
+        </div>
+      </div>
+
+      <!-- Navigation & Phase Switcher Tabs -->
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800 text-xs md:text-sm">
+        <nav class="flex flex-wrap gap-2">
+          <a href="#mod-1" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-purple-400 transition-colors">1. Métodos de String</a>
+          <a href="#mod-2" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-purple-400 transition-colors">2. Slicing & [::-1]</a>
+          <a href="#mod-3" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-purple-400 transition-colors">3. Comprehensions</a>
+          <a href="#mod-4" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-cyan-400 transition-colors">4. Two Pointers Visual</a>
+          <a href="#mod-5" class="px-3 py-1.5 rounded-lg border border-emerald-500/30 text-emerald-400 font-medium bg-emerald-500/5 hover:bg-emerald-500/15 transition-colors">⚡ 5. LeetCode #125</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <a href="index.html" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5">
+            <span>⏮️ Fase 1</span>
+          </a>
+          <a href="lab3_stacks_valid_parentheses.html" class="px-3.5 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-medium transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>Fase 3: Pilhas (LeetCode #20) ➡</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MÓDULO 1: MANIPULAÇÃO DE STRINGS & SANITIZAÇÃO -->
+    <section id="mod-1" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">Módulo 1</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Strings em Python & Métodos de Limpeza</h2>
+          <p class="text-sm text-slate-400">Strings em Python são <strong>imutáveis</strong>. Para manipulá-las, utilizamos métodos que retornam novas strings ou verificam caracteres.</p>
+        </div>
+        <span id="badge-mod-1" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Theory Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🔍</span> Inspeção de Caracteres: <code>.isalnum()</code>
+          </h3>
+          <p class="text-slate-400">Verifica se um caractere é alfanumérico (letra ou número), ignorando pontuações, traços e espaços:</p>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800 text-purple-300 overflow-x-auto">
+"A".isalnum()    # True
+"3".isalnum()    # True
+",".isalnum()    # False (vírgula)
+" ".isalnum()    # False (espaço)</pre>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🔡</span> Normalização: <code>.lower()</code> e <code>.upper()</code>
+          </h3>
+          <p class="text-slate-400">Essencial em algoritmos para desconsiderar diferenças entre maiúsculas e minúsculas (case-insensitivity):</p>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800 text-purple-300 overflow-x-auto">
+texto = "Panama"
+print(texto.lower()) # "panama"
+print(texto.upper()) # "PANAMA"</pre>
+        </div>
+      </div>
+
+      <!-- Interactive Mini-Exercise 1 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 1: Filtre e limpe a string
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Dada a string <code class="font-mono text-purple-400">frase = "Python 3.11, ótimo!"</code>, percorra cada caractere <code class="font-mono text-purple-400">c</code>. Se ele for alfanumérico (<code class="font-mono text-purple-400">c.isalnum()</code>), adicione sua versão minúscula (<code class="font-mono text-purple-400">c.lower()</code>) à variável <code class="font-mono text-purple-400">limpa</code> e faça o <code class="font-mono text-purple-400">print(limpa)</code>.
+        </p>
+
+        <!-- Code Playground 1 -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">desafio1_limpeza.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex1" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-purple-500 leading-relaxed font-mono resize-y" placeholder="frase = &quot;Python 3.11, ótimo!&quot;
+limpa = &quot;&quot;
+
+# Percorra a frase com 'for c in frase:', verifique com isalnum()
+# e adicione c.lower() à variável limpa..."></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise1()" class="px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(1)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx1()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise1()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 1 -->
+        <div id="hint-box-ex1" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-purple-400 flex items-center gap-1">💡 Dica para o Desafio 1:</div>
+          <p>1. Inicie com <code class="font-mono text-purple-300">limpa = ""</code>.</p>
+          <p>2. Itere sobre os caracteres: <code class="font-mono text-purple-300">for c in frase:</code>.</p>
+          <p>3. Verifique com <code class="font-mono text-purple-300">if c.isalnum():</code> e concatene: <code class="font-mono text-purple-300">limpa += c.lower()</code>.</p>
+          <p>4. No final do loop, imprima: <code class="font-mono text-purple-300">print(limpa)</code>.</p>
+        </div>
+
+        <!-- Terminal Output 1 -->
+        <div id="output-ex1" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2: FATIAMENTO (SLICING) & INVERSÃO COM [::-1] -->
+    <section id="mod-2" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Módulo 2</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">O Superpoder do Fatiamento (Slicing) & <code>[::-1]</code></h2>
+          <p class="text-sm text-slate-400">Em Python, fatiar sequências é nativo, expressivo e extremamente rápido.</p>
+        </div>
+        <span id="badge-mod-2" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Theory Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✂️</span> Anatomia do Slicing: <code>[start:stop:step]</code>
+          </h3>
+          <ul class="space-y-1.5 text-slate-400">
+            <li><code class="text-cyan-400 font-mono">s[0:3]</code>: Pega do índice 0 ao 2 (o stop não é incluído).</li>
+            <li><code class="text-cyan-400 font-mono">s[::2]</code>: Pula de 2 em 2 caracteres.</li>
+            <li><code class="text-cyan-400 font-mono">s[::-1]</code>: <strong>Passo negativo (-1)</strong> inverte a string inteira de trás para frente!</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>⚡</span> Inversão Instantânea
+          </h3>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800 text-cyan-300 overflow-x-auto">
+palavra = "radar"
+invertida = palavra[::-1]
+print(invertida) # "radar"
+
+# É palíndromo?
+print(palavra == invertida) # True!</pre>
+        </div>
+      </div>
+
+      <!-- Interactive Mini-Exercise 2 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 2: Inversão e Verificação Simples
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Dada a variável <code class="font-mono text-cyan-400">termo = "arara"</code>, inverta-a usando o fatiamento <code class="font-mono text-cyan-400">[::-1]</code> e salve em <code class="font-mono text-cyan-400">reverso</code>. Se <code class="font-mono text-cyan-400">termo == reverso</code>, imprima <code class="font-mono text-cyan-400">"Palíndromo confirmado: " + reverso</code>.
+        </p>
+
+        <!-- Code Playground 2 -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">desafio2_slicing.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex2" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 leading-relaxed font-mono resize-y" placeholder="termo = &quot;arara&quot;
+
+# Inverta a string usando [::-1]
+# Verifique se é igual ao original e faça o print()"></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise2()" class="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(2)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx2()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise2()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 2 -->
+        <div id="hint-box-ex2" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-cyan-400 flex items-center gap-1">💡 Dica para o Desafio 2:</div>
+          <p>1. Crie a versão invertida: <code class="font-mono text-cyan-300">reverso = termo[::-1]</code>.</p>
+          <p>2. Compare: <code class="font-mono text-cyan-300">if termo == reverso:</code>.</p>
+          <p>3. Imprima a mensagem com: <code class="font-mono text-cyan-300">print("Palíndromo confirmado: " + reverso)</code>.</p>
+        </div>
+
+        <!-- Terminal Output 2 -->
+        <div id="output-ex2" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: LIST COMPREHENSIONS -->
+    <section id="mod-3" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">Módulo 3</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">List Comprehensions & <code>"".join()</code></h2>
+          <p class="text-sm text-slate-400">Em vez de criar um loop com 4 linhas e `.append()`, o Python permite transformar e filtrar dados em uma única expressão elegante.</p>
+        </div>
+        <span id="badge-mod-3" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Theory comparison -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-slate-400 flex items-center gap-2">
+            <span>🐌</span> Loop Tradicional com .append()
+          </h3>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 overflow-x-auto">
+chars = []
+for c in "A-1!":
+    if c.isalnum():
+        chars.append(c.lower())
+# chars = ['a', '1']</pre>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-pink-400 flex items-center gap-2">
+            <span>✨</span> List Comprehension (Pythonico)
+          </h3>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800 text-pink-300 overflow-x-auto">
+chars = [c.lower() for c in "A-1!" if c.isalnum()]
+# Unindo tudo em uma string:
+texto = "".join(chars) # "a1"</pre>
+        </div>
+      </div>
+
+      <!-- Interactive Mini-Exercise 3 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 3: Filtragem elegante em uma linha
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Dada a lista de caracteres <code class="font-mono text-pink-400">brutos = ['A', ' ', 'b', '!', 'C', '2']</code>, filtre apenas os caracteres alfanuméricos convertidos para minúsculo usando um loop ou list comprehension, salve em <code class="font-mono text-pink-400">filtrados</code> e imprima <code class="font-mono text-pink-400">print(filtrados)</code>.
+        </p>
+
+        <!-- Code Playground 3 -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">desafio3_comprehension.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex3" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-pink-500 leading-relaxed font-mono resize-y" placeholder="brutos = ['A', ' ', 'b', '!', 'C', '2']
+
+# Crie a lista filtrada apenas com letras/números em minúsculo
+# e imprima com print(filtrados)"></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise3()" class="px-4 py-2 rounded-lg bg-pink-500 hover:bg-pink-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(3)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx3()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise3()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 3 -->
+        <div id="hint-box-ex3" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-pink-400 flex items-center gap-1">💡 Dica para o Desafio 3:</div>
+          <p>1. Você pode criar: <code class="font-mono text-pink-300">filtrados = []</code>.</p>
+          <p>2. Percorra: <code class="font-mono text-pink-300">for c in brutos: if c.isalnum(): filtrados.append(c.lower())</code>.</p>
+          <p>3. Ou na forma de list comprehension: <code class="font-mono text-pink-300">filtrados = [c.lower() for c in brutos if c.isalnum()]</code>.</p>
+          <p>4. Imprima: <code class="font-mono text-pink-300">print(filtrados)</code>.</p>
+        </div>
+
+        <!-- Terminal Output 3 -->
+        <div id="output-ex3" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 4: A TÉCNICA DOS DOIS PONTEIROS (SIMULADOR VISUAL) -->
+    <section id="mod-4" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Módulo 4</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">A Técnica dos Dois Ponteiros (Two Pointers)</h2>
+          <p class="text-sm text-slate-400">Por que criar novas strings quando você pode inspecionar a sequência original com ponteiros sem gastar memória extra?</p>
+        </div>
+        <span id="badge-mod-4" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Logic formula box -->
+      <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 text-xs md:text-sm">
+        <div class="font-bold text-white">Comparação de Complexidade: Slicing vs Dois Ponteiros</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+            <div class="font-semibold text-amber-400">Abordagem com Slicing s[::-1]</div>
+            <p class="text-slate-400 text-xs mt-1">Tempo: <code class="text-emerald-400">O(n)</code> | Memória: <code class="text-amber-400">O(n)</code> (cria uma cópia da string invertida na memória RAM).</p>
+          </div>
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+            <div class="font-semibold text-emerald-400">Abordagem Two Pointers (In-Place)</div>
+            <p class="text-slate-400 text-xs mt-1">Tempo: <code class="text-emerald-400">O(n)</code> | Memória: <code class="text-emerald-400 font-bold">O(1) Extra</code> (apenas dois números inteiros `left` e `right`).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Step-by-Step Visualizer -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h4 class="font-semibold text-sm text-white">Simulador Visual: Two Pointers em Ação</h4>
+            <p class="text-xs text-slate-400">Frase: <code class="font-mono text-cyan-400">"Was it a car or a cat I saw?"</code> (Simplificada abaixo)</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="prevStepTP()" id="btn-prev-tp" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-medium hover:bg-slate-700 text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed">
+              ⬅ Anterior
+            </button>
+            <button onclick="nextStepTP()" id="btn-next-tp" class="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-bold transition-colors">
+              Próximo Passo ➡
+            </button>
+            <button onclick="resetStepTP()" class="px-2 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:underline">
+              Reiniciar
+            </button>
+          </div>
+        </div>
+
+        <!-- String Characters Visualization -->
+        <div>
+          <div class="text-xs font-medium text-slate-400 mb-2">Ponteiros no Array de Caracteres:</div>
+          <div class="flex justify-between gap-1 overflow-x-auto pb-2 text-center" id="tp-visual-container">
+            <!-- Rendered by JS: "R", "A", "C", "E", "C", "A", "R" -->
+          </div>
+        </div>
+
+        <!-- State Inspector -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+            <div class="text-slate-400">Ponteiro Esquerdo (<code class="font-mono text-cyan-400">left</code>):</div>
+            <div id="tp-left-status" class="font-mono text-xs text-slate-200">left = 0</div>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+            <div class="text-slate-400">Ponteiro Direito (<code class="font-mono text-purple-400">right</code>):</div>
+            <div id="tp-right-status" class="font-mono text-xs text-slate-200">right = 6</div>
+          </div>
+        </div>
+
+        <!-- Step Explanation -->
+        <div id="tp-explanation" class="p-3.5 rounded-lg bg-cyan-950/40 border border-cyan-800/50 text-xs text-cyan-200">
+          💡 Clique em <strong>"Próximo Passo ➡"</strong> para observar como os ponteiros convergem para o centro comparando os caracteres sem alocar memória extra.
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 5: O DESAFIO LEETCODE #125: VALID PALINDROME -->
+    <section id="mod-5" class="bg-[#0f172a] border-2 border-emerald-500/30 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">LeetCode #125</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Dificuldade: Easy</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold mt-2 text-white">Desafio Prático: Valid Palindrome (Palíndromo Válido)</h2>
+          <p class="text-sm text-slate-400 mt-1">Aplique manipulação de strings, métodos de limpeza e Two Pointers para validar se uma frase é um palíndromo.</p>
+        </div>
+        <div id="status-tag-leetcode" class="self-start px-3 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">
+          Não Resolvido
+        </div>
+      </div>
+
+      <!-- Problem Statement -->
+      <div class="space-y-3 text-xs md:text-sm text-slate-300 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+        <p class="text-white font-medium">
+          <strong>Enunciado:</strong> Uma frase é um palíndromo se, após converter todas as letras maiúsculas em minúsculas e remover todos os caracteres não-alfanuméricos, ela for lida da mesma forma para frente e para trás.
+        </p>
+        <p>
+          Dada uma string <code class="font-mono text-cyan-400">s</code>, retorne <code class="font-mono text-emerald-400">True</code> se for um palíndromo, ou <code class="font-mono text-rose-400">False</code> caso contrário.
+        </p>
+        <ul class="list-disc list-inside space-y-1 pl-2 text-slate-400">
+          <li>Caracteres alfanuméricos incluem letras do alfabeto e números (<code class="font-mono">c.isalnum()</code>).</li>
+          <li>Ignore espaços, vírgulas, pontos e símbolos especiais.</li>
+          <li>Uma string vazia ou que contenha apenas símbolos não-alfanuméricos é considerada um palíndromo válido (<code class="font-mono">True</code>).</li>
+        </ul>
+      </div>
+
+      <!-- Examples Accordion / Tabs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 1:</div>
+          <div class="text-slate-400 font-mono text-[11px]">s = "A man, a plan, a canal: Panama"</div>
+          <div class="text-emerald-400 font-mono mt-1 font-bold">Saída: True</div>
+          <div class="text-slate-500 text-[11px] mt-1">"amanaplanacanalpanama" é palíndromo</div>
+        </div>
+
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 2:</div>
+          <div class="text-slate-400 font-mono text-[11px]">s = "race a car"</div>
+          <div class="text-rose-400 font-mono mt-1 font-bold">Saída: False</div>
+          <div class="text-slate-500 text-[11px] mt-1">"raceacar" não é igual a "racaecar"</div>
+        </div>
+
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 3 (Edge Case):</div>
+          <div class="text-slate-400 font-mono text-[11px]">s = " " (espaço em branco)</div>
+          <div class="text-emerald-400 font-mono mt-1 font-bold">Saída: True</div>
+          <div class="text-slate-500 text-[11px] mt-1">String vazia após filtrar é palíndromo</div>
+        </div>
+      </div>
+
+      <!-- Code Editor Component -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Editor Python</span>
+            <span class="text-[11px] text-slate-500">(Pressione Tab para identar)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="insertTemplate('starter')" class="text-xs text-slate-400 hover:text-white transition-colors">Reiniciar Template</button>
+            <span class="text-slate-700">|</span>
+            <button onclick="insertTemplate('solution_tp')" class="text-xs text-cyan-400 hover:underline">Carregar Two Pointers O(1)</button>
+            <span class="text-slate-700">|</span>
+            <button onclick="insertTemplate('solution_slice')" class="text-xs text-amber-400 hover:underline">Carregar Slicing</button>
+          </div>
+        </div>
+
+        <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden shadow-inner">
+          <div class="px-4 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              <span class="font-mono text-xs ml-2 text-slate-200">valid_palindrome.py</span>
+            </div>
+            <span class="text-xs text-slate-500">Python 3.11</span>
+          </div>
+
+          <textarea id="code-leetcode" rows="16" style="min-height: 380px;" class="w-full code-font text-xs md:text-sm p-4 bg-transparent text-slate-200 focus:outline-none resize-y leading-relaxed font-mono" spellcheck="false">
+def is_palindrome(s):
+    # Escreva sua solução aqui
+    pass
+</textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="flex items-center gap-2">
+            <button onclick="runLeetCodeTests()" id="btn-run-tests" class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs md:text-sm transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+              <span>🚀 Executar Todos os Testes</span>
+            </button>
+            <button onclick="toggleHints()" class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
+              💡 Dicas Progressivas
+            </button>
+          </div>
+
+          <div id="complexity-badge-container"></div>
+        </div>
+      </div>
+
+      <!-- Collapsible Hints -->
+      <div id="hints-box" class="hidden space-y-3 p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
+        <h4 class="font-bold text-white flex items-center gap-2">
+          <span>💡</span> Dicas Progressivas para o LeetCode #125
+        </h4>
+        <div class="space-y-2 text-slate-300">
+          <p><strong>Dica 1 (Abordagem com Slicing):</strong> Crie uma string filtrada apenas com letras/números em minúsculo: <code class="font-mono text-cyan-300">limpa = ""</code>, depois adicione com <code class="font-mono text-cyan-300">for c in s: if c.isalnum(): limpa += c.lower()</code>. Por fim, retorne <code class="font-mono text-cyan-300">limpa == limpa[::-1]</code>.</p>
+          <p><strong>Dica 2 (Abordagem Two Pointers O(1) de espaço):</strong> Inicie <code class="font-mono text-emerald-300">l = 0</code> e <code class="font-mono text-emerald-300">r = len(s) - 1</code>. Use um loop <code class="font-mono text-emerald-300">while l &lt; r:</code>.</p>
+          <p><strong>Dica 3:</strong> Dentro do loop, avance `l` enquanto não for alfanumérico (<code class="font-mono text-emerald-300">while l &lt; r and not s[l].isalnum(): l += 1</code>) e recue `r` analogamente. Se os caracteres em minúsculo forem diferentes, retorne <code class="font-mono text-rose-400">False</code>. Se o laço terminar, retorne <code class="font-mono text-emerald-400">True</code>!</p>
+        </div>
+      </div>
+
+      <!-- Test Cases Results Panel -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🧪</span> Casos de Teste (Test Suite)
+          </h3>
+          <span id="test-summary" class="text-xs text-slate-400">4 casos de teste prontos</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="test-cases-grid">
+          <!-- Case 1 -->
+          <div id="test-card-0" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 1: "A man, a plan, a canal: Panama"</span>
+              <span id="test-status-0" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">True</span></div>
+            <div id="test-result-0" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 2 -->
+          <div id="test-card-1" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 2: "race a car"</span>
+              <span id="test-status-1" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-rose-400 font-bold">False</span></div>
+            <div id="test-result-1" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 3 -->
+          <div id="test-card-2" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 3: " " (espaço em branco)</span>
+              <span id="test-status-2" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">True</span></div>
+            <div id="test-result-2" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 4 -->
+          <div id="test-card-3" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 4: "0P" (alfanumérico diferente)</span>
+              <span id="test-status-3" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-rose-400 font-bold">False</span></div>
+            <div id="test-result-3" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+        </div>
+
+        <!-- Terminal Console Logs if print() is used -->
+        <div id="leetcode-console-box" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono space-y-1">
+          <div class="text-slate-400 font-bold text-[11px] uppercase tracking-wide">Saída do Console (print):</div>
+          <div id="leetcode-console-logs" class="text-emerald-400 whitespace-pre-wrap"></div>
+        </div>
+
+        <!-- Success Celebration Banner -->
+        <div id="success-banner" class="hidden p-6 rounded-2xl bg-emerald-950/40 border-2 border-emerald-500/40 text-center space-y-3">
+          <div class="text-3xl">🎉 🏆 🌟</div>
+          <h4 class="text-lg md:text-xl font-bold text-emerald-400">Brilhante! Todos os Testes Passaram!</h4>
+          <p class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto">
+            Você dominou as técnicas essenciais de strings e a técnica de <strong>Dois Ponteiros (Two Pointers)</strong>, resolvendo com sucesso o clássico <strong>LeetCode #125</strong>!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 space-y-1">
+      <p>Python Learning Lab • Fase 2: Strings & Two Pointers</p>
+      <p>Bons estudos e continue firme rumo aos próximos desafios!</p>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // Tab key support in textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+          this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+          this.selectionStart = this.selectionEnd = start + 4;
+        }
+      });
+    });
+
+    // Global Progress Tracking
+    const completedModules = {
+      mod1: false,
+      mod2: false,
+      mod3: false,
+      mod4: false,
+      mod5: false
+    };
+
+    function updateProgress() {
+      const keys = Object.keys(completedModules);
+      const doneCount = keys.filter(k => completedModules[k]).length;
+      const pct = Math.round((doneCount / keys.length) * 100);
+      
+      document.getElementById('progress-percent').innerText = `${pct}% Concluído`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      if (window.ProfileSystem) {
+        ['mod1','mod2','mod3','mod4','mod5'].forEach((k, idx) => {
+          if (completedModules[k]) window.ProfileSystem.completeTask('lab2_mod' + (idx + 1));
+        });
+      }
+
+      if (pct === 100) {
+        document.getElementById('trophy-badge').classList.remove('opacity-30');
+        document.getElementById('trophy-badge').classList.add('opacity-100', 'scale-125');
+      }
+    }
+
+    // Toggle Hints
+    function toggleHintEx(exNum) {
+      const box = document.getElementById(`hint-box-ex${exNum}`);
+      if (box) box.classList.toggle('hidden');
+    }
+
+    // Solution Loaders & Clearers
+    function loadSolutionEx1() {
+      document.getElementById('code-ex1').value = `frase = "Python 3.11, ótimo!"\nlimpa = ""\n\nfor c in frase:\n    if c.isalnum():\n        limpa += c.lower()\n\nprint(limpa)`;
+    }
+    function clearExercise1() {
+      document.getElementById('code-ex1').value = `frase = "Python 3.11, ótimo!"\nlimpa = ""\n\n`;
+      document.getElementById('output-ex1').classList.add('hidden');
+    }
+
+    function loadSolutionEx2() {
+      document.getElementById('code-ex2').value = `termo = "arara"\nreverso = termo[::-1]\n\nif termo == reverso:\n    print("Palíndromo confirmado: " + reverso)`;
+    }
+    function clearExercise2() {
+      document.getElementById('code-ex2').value = `termo = "arara"\n\n`;
+      document.getElementById('output-ex2').classList.add('hidden');
+    }
+
+    function loadSolutionEx3() {
+      document.getElementById('code-ex3').value = `brutos = ['A', ' ', 'b', '!', 'C', '2']\nfiltrados = [c.lower() for c in brutos if c.isalnum()]\nprint(filtrados)`;
+    }
+    function clearExercise3() {
+      document.getElementById('code-ex3').value = `brutos = ['A', ' ', 'b', '!', 'C', '2']\n\n`;
+      document.getElementById('output-ex3').classList.add('hidden');
+    }
+
+    // Python-to-JS Mini Transpiler Engine with String & Two Pointers features
+    function transpilePython(pythonCode) {
+    const lines = pythonCode.split('\n');
+    let jsLines = [];
+
+    let preamble = `
+      function print(...args) {
+        if (typeof __print === 'function') {
+          __print(...args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)));
+        }
+      }
+      function range(start, stop, step) {
+        if (stop === undefined) { stop = start; start = 0; }
+        if (step === undefined) step = 1;
+        let res = [];
+        if (step > 0) {
+          for (let i = start; i < stop; i += step) res.push(i);
+        } else {
+          for (let i = start; i > stop; i += step) res.push(i);
+        }
+        return res;
+      }
+      function len(obj) {
+        if (obj === undefined || obj === null) return 0;
+        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
+        if (obj instanceof Set || obj instanceof Map) return obj.size;
+        if (typeof obj === 'object') return Object.keys(obj).length;
+        return 0;
+      }
+      function enumerate(arr) {
+        let res = [];
+        for (let i = 0; i < arr.length; i++) {
+          res.push([i, arr[i]]);
+        }
+        return res;
+      }
+      function pyIn(item, container) {
+        if (Array.isArray(container) || typeof container === 'string') {
+          return container.includes(item);
+        }
+        if (container instanceof Set) {
+          return container.has(item);
+        }
+        if (typeof container === 'object' && container !== null) {
+          return Object.prototype.hasOwnProperty.call(container, item) || (String(item) in container);
+        }
+        return false;
+      }
+      function pySlice(obj, step) {
+        if (typeof obj === 'string') {
+          if (step === -1) return obj.split('').reverse().join('');
+        }
+        if (Array.isArray(obj)) {
+          if (step === -1) return [...obj].reverse();
+        }
+        return obj;
+      }
+      function pyIsAlnum(str) {
+        return /^[a-zA-Z0-9]+$/.test(str);
+      }
+      function pyTruth(val) {
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'number') return val !== 0;
+        if (typeof val === 'string') return val.length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (val instanceof Set || val instanceof Map) return val.size > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return Boolean(val);
+      }
+      function pyNot(val) {
+        return !pyTruth(val);
+      }
+      function pyEq(a, b) {
+        if (a === b) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return a.length === b.length && a.every((v, i) => pyEq(v, b[i]));
+        }
+        return a == b;
+      }
+      function pySet(iterable) {
+        let s = new Set();
+        if (iterable) {
+          for (let item of iterable) s.add(item);
+        }
+        return s;
+      }
+      function pyList(iterable) {
+        return iterable ? Array.from(iterable) : [];
+      }
+      function pyDict() {
+        return {};
+      }
+      function int(val) {
+        return parseInt(val, 10);
+      }
+      function float(val) {
+        if (val === 'inf' || val === '+inf' || val === 'Infinity') return Infinity;
+        if (val === '-inf' || val === '-Infinity') return -Infinity;
+        return parseFloat(val);
+      }
+      function str(val) {
+        return String(val);
+      }
+      function abs(val) {
+        return Math.abs(val);
+      }
+      function min(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]);
+        return Math.min(...args);
+      }
+      function max(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]);
+        return Math.max(...args);
+      }
+      if (!Array.prototype.append) {
+        Object.defineProperty(Array.prototype, 'append', {
+          value: function(x) { this.push(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.startswith) {
+        Object.defineProperty(String.prototype, 'startswith', {
+          value: function(prefix) { return this.startsWith(prefix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.endswith) {
+        Object.defineProperty(String.prototype, 'endswith', {
+          value: function(suffix) { return this.endsWith(suffix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Object.prototype.get) {
+        Object.defineProperty(Object.prototype, 'get', {
+          value: function(k, d) { return this[k] !== undefined ? this[k] : d; },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      function Solution() {
+        if (!(this instanceof Solution)) return new Solution();
+      }
+    `;
+
+    let blockStack = [{ indent: -1, type: 'root', vars: new Set() }];
+
+    function isVarDeclared(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].vars && blockStack[i].vars.has(name)) return true;
+      }
+      return false;
+    }
+
+    function declareVar(name) {
+      // Declare in current function scope or root scope so Python function-level scoping works!
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
+          blockStack[i].vars.add(name);
+          return;
+        }
+      }
+      blockStack[0].vars.add(name);
+    }
+
+    for (let rawLine of lines) {
+      let trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      let indent = rawLine.search(/\S/);
+      if (indent === -1) indent = 0;
+
+      // Strip end comments
+      let inStr = false, quote = '';
+      let commentIdx = -1;
+      for (let i = 0; i < trimmed.length; i++) {
+        let ch = trimmed[i];
+        if ((ch === '"' || ch === "'") && (i === 0 || trimmed[i-1] !== '\\')) {
+          if (!inStr) { inStr = true; quote = ch; }
+          else if (quote === ch) { inStr = false; }
+        }
+        if (!inStr && ch === '#') {
+          commentIdx = i;
+          break;
+        }
+      }
+      let line = (commentIdx !== -1 ? trimmed.substring(0, commentIdx) : trimmed).trim();
+      if (!line) continue;
+
+      // Dedent blocks
+      while (blockStack.length > 1 && indent <= blockStack[blockStack.length - 1].indent) {
+        let top = blockStack.pop();
+        jsLines.push(' '.repeat(top.indent) + '}');
+        if (top.type === 'def' && top.funcName) {
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+        }
+      }
+
+      // Convert Python f-strings: f"..." or f'...'
+      line = line.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      line = line.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // Methods and conversions
+      line = line.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      line = line.replace(/\.lower\(\)/g, '.toLowerCase()');
+      line = line.replace(/\.upper\(\)/g, '.toUpperCase()');
+      line = line.replace(/\.startswith\(/g, '.startsWith(');
+      line = line.replace(/\.endswith\(/g, '.endsWith(');
+      line = line.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      line = line.replace(/([a-zA-Z0-9_]+)\[-1\]/g, '$1.at(-1)');
+
+      // class Solution:
+      if (line.match(/^class\s+Solution.*?:\s*$/)) {
+        continue;
+      }
+
+      // def func(self, a, b): or def func(a, b):
+      let defMatch = line.match(/^def\s+([a-zA-Z0-9_]+)\s*\((.*?)\)(?:\s*->\s*[^:]+)?\s*:\s*$/);
+      if (defMatch) {
+        let funcName = defMatch[1];
+        let paramList = defMatch[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(p => p && p !== 'self');
+        let params = paramList.join(', ');
+        jsLines.push(' '.repeat(indent) + `function ${funcName}(${params}) {`);
+        blockStack.push({ indent: indent, type: 'def', funcName: funcName, vars: new Set(paramList) });
+        continue;
+      }
+
+      // for i, val in enumerate(arr):
+      let forEnumMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+enumerate\((.*?)\)\s*:\s*$/);
+      if (forEnumMatch) {
+        let iVar = forEnumMatch[1];
+        let valVar = forEnumMatch[2];
+        let targetArr = forEnumMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for var in iter:
+      let forInMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forInMatch) {
+        let varName = forInMatch[1];
+        let iterable = forInMatch[2];
+        jsLines.push(' '.repeat(indent) + `for (let ${varName} of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([varName]) });
+        continue;
+      }
+
+      // while cond:
+      let whileMatch = line.match(/^while\s+(.*?)\s*:\s*$/);
+      if (whileMatch) {
+        let cond = transpileCondition(whileMatch[1]);
+        jsLines.push(' '.repeat(indent) + `while (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'while', vars: new Set() });
+        continue;
+      }
+
+      // elif cond:
+      let elifMatch = line.match(/^elif\s+(.*?)\s*:\s*$/);
+      if (elifMatch) {
+        let cond = transpileCondition(elifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `else if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'elif', vars: new Set() });
+        continue;
+      }
+
+      // else:
+      let elseMatch = line.match(/^else\s*:\s*$/);
+      if (elseMatch) {
+        jsLines.push(' '.repeat(indent) + `else {`);
+        blockStack.push({ indent: indent, type: 'else', vars: new Set() });
+        continue;
+      }
+
+      // if cond:
+      let ifMatch = line.match(/^if\s+(.*?)\s*:\s*$/);
+      if (ifMatch) {
+        let cond = transpileCondition(ifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'if', vars: new Set() });
+        continue;
+      }
+
+      // return statement
+      if (line.startsWith('return ') || line === 'return') {
+        let expr = line.replace(/^return\s*/, '').trim();
+        if (!expr) {
+          jsLines.push(' '.repeat(indent) + 'return;');
+          continue;
+        }
+        expr = transpileExpression(expr);
+        jsLines.push(' '.repeat(indent) + `return ${expr};`);
+        continue;
+      }
+
+      // regular statement
+      let stmt = transpileStatement(line);
+      jsLines.push(' '.repeat(indent) + stmt + ';');
+    }
+
+    while (blockStack.length > 1) {
+      let top = blockStack.pop();
+      jsLines.push(' '.repeat(top.indent) + '}');
+      if (top.type === 'def' && top.funcName) {
+        jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+      }
+    }
+
+    function transpileCondition(cond) {
+      cond = cond.trim();
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+/g, '!');
+      cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+      cond = cond.replace(/^([a-zA-Z0-9_]+)$/, 'pyTruth($1)');
+      cond = cond.replace(/^([a-zA-Z0-9_]+)\s+&&/, 'pyTruth($1) &&');
+      cond = cond.replace(/&&\s+([a-zA-Z0-9_]+)\s*$/, '&& pyTruth($1)');
+      cond = cond.replace(/\|\|\s+([a-zA-Z0-9_]+)\s*$/, '|| pyTruth($1)');
+
+      return cond;
+    }
+
+    function transpileListComp(expr) {
+      const listCompWithIf = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+if\s+(.*?)\s*\]/;
+      const matchIf = expr.match(listCompWithIf);
+      if (matchIf) {
+        const mapExpr = matchIf[1];
+        const itemVar = matchIf[2];
+        const iterVar = matchIf[3];
+        const ifCond = matchIf[4];
+        return expr.replace(listCompWithIf, `Array.from(${iterVar}).filter(${itemVar} => ${ifCond}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      const listCompSimple = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*\]/;
+      const matchSimple = expr.match(listCompSimple);
+      if (matchSimple) {
+        const mapExpr = matchSimple[1];
+        const itemVar = matchSimple[2];
+        const iterVar = matchSimple[3];
+        return expr.replace(listCompSimple, `Array.from(${iterVar}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      return expr;
+    }
+
+    function transpileExpression(expr) {
+      expr = transpileListComp(expr);
+
+      let ternaryMatch = expr.match(/^(.*?)\s+if\s+(.*?)\s+else\s+(.*)$/);
+      if (ternaryMatch) {
+        let valTrue = transpileExpression(ternaryMatch[1].trim());
+        let cond = transpileCondition(ternaryMatch[2].trim());
+        let valFalse = transpileExpression(ternaryMatch[3].trim());
+        return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
+      }
+
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+/g, '!');
+      expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*==\s*([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyEq($1, $2)');
+      expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+      return expr;
+    }
+
+    function transpileStatement(stmt) {
+      stmt = transpileListComp(stmt);
+      stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+/g, '!');
+
+      // Tuple unpacking assignment: a, b = 1, 2
+      let tupleAssign = stmt.match(/^([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s*=\s*(.+?)\s*,\s*(.+)$/);
+      if (tupleAssign) {
+        let v1 = tupleAssign[1], v2 = tupleAssign[2];
+        let r1 = transpileExpression(tupleAssign[3]), r2 = transpileExpression(tupleAssign[4]);
+        let prefix = (!isVarDeclared(v1) && !isVarDeclared(v2)) ? 'let ' : '';
+        declareVar(v1);
+        declareVar(v2);
+        return `${prefix}[${v1}, ${v2}] = [${r1}, ${r2}]`;
+      }
+
+      // Single variable assignment (not ==, !=, <=, >=, +=, -=, *=, /=)
+      let assignMatch = stmt.match(/^([a-zA-Z0-9_]+)\s*=(?!=)\s*(.*)/);
+      if (assignMatch) {
+        let varName = assignMatch[1];
+        let rhs = transpileExpression(assignMatch[2]);
+        if (isVarDeclared(varName)) {
+          return `${varName} = ${rhs}`;
+        } else {
+          declareVar(varName);
+          return `let ${varName} = ${rhs}`;
+        }
+      }
+      return stmt;
+    }
+
+    return preamble + '\n' + jsLines.join('\n');
+    }
+
+    // --- MODULE 1 EXERCISE ---
+    function runExercise1() {
+      const code = document.getElementById('code-ex1').value;
+      const outBox = document.getElementById('output-ex1');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Escreva o código filtrando caracteres alfanuméricos com <code>c.isalnum()</code>!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('python311') || logText.includes('python311timo')) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Ótimo! Todos os caracteres especiais foram descartados e as letras normalizadas.</span>`;
+          
+          completedModules.mod1 = true;
+          document.getElementById('badge-mod-1').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-1').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Certifique-se de que apenas letras e números minúsculos foram mantidos. Clique em "💡 Dica" se necessário.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 2 EXERCISE ---
+    function runExercise2() {
+      const code = document.getElementById('code-ex2').value;
+      const outBox = document.getElementById('output-ex2');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Use <code>termo[::-1]</code> para inverter e verificar o palíndromo!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('arara') && (logText.toLowerCase().includes('palíndromo') || logText.toLowerCase().includes('confirmado'))) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Excelente! Fatiamento reverso com [::-1] aplicado com perfeição.</span>`;
+          
+          completedModules.mod2 = true;
+          document.getElementById('badge-mod-2').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-2').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Use termo[::-1] e compare termo == reverso antes de imprimir. Clique em "💡 Dica" para ajuda.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 3 EXERCISE ---
+    function runExercise3() {
+      const code = document.getElementById('code-ex3').value;
+      const outBox = document.getElementById('output-ex3');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Crie a lista filtrada e faça o print!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('a') && logText.includes('b') && logText.includes('c') && logText.includes('2')) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Perfeito! Elementos limpos e filtrados com sucesso.</span>`;
+          
+          completedModules.mod3 = true;
+          document.getElementById('badge-mod-3').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-3').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Certifique-se de filtrar apenas ['a', 'b', 'c', '2']. Clique em "💡 Dica" caso queira conferir a sintaxe.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 4 STEP-BY-STEP TWO POINTERS SIMULATOR ---
+    const visualWord = ['R', 'A', 'C', 'E', 'C', 'A', 'R'];
+    const tpSteps = [
+      { left: 0, right: 6, explanation: 'Início: <code>left = 0 (\'R\')</code> e <code>right = 6 (\'R\')</code>. Ambos caracteres são iguais! Avançamos <code>left += 1</code> e recuamos <code>right -= 1</code>.' },
+      { left: 1, right: 5, explanation: 'Passo 2: <code>left = 1 (\'A\')</code> e <code>right = 5 (\'A\')</code>. Caracteres idênticos! Avançamos <code>left += 1</code> e recuamos <code>right -= 1</code>.' },
+      { left: 2, right: 4, explanation: 'Passo 3: <code>left = 2 (\'C\')</code> e <code>right = 4 (\'C\')</code>. Iguais novamente! Avançamos <code>left += 1</code> e recuamos <code>right -= 1</code>.' },
+      { left: 3, right: 3, explanation: '🎉 Passo Final: <code>left = 3</code> e <code>right = 3</code> cruzam/encontram-se no centro (\'E\'). A condição <code>while left &lt; right:</code> encerra e confirma que a palavra é um <strong>Palíndromo Válido</strong> com zero alocação de memória extra (O(1))!', done: true }
+    ];
+
+    let currentTPStep = 0;
+
+    function renderTPVisual() {
+      const container = document.getElementById('tp-visual-container');
+      const step = tpSteps[currentTPStep];
+      
+      container.innerHTML = visualWord.map((char, idx) => {
+        let borderClass = 'border-slate-800 bg-slate-950 text-slate-300';
+        let badge = '';
+
+        if (idx === step.left && idx === step.right) {
+          borderClass = 'border-emerald-400 bg-emerald-500/20 text-emerald-300 scale-110 shadow-lg';
+          badge = '<div class="text-[9px] font-bold text-emerald-400">L & R</div>';
+        } else if (idx === step.left) {
+          borderClass = 'border-cyan-400 bg-cyan-500/20 text-cyan-300 scale-105 shadow-md';
+          badge = '<div class="text-[9px] font-bold text-cyan-400">LEFT</div>';
+        } else if (idx === step.right) {
+          borderClass = 'border-purple-400 bg-purple-500/20 text-purple-300 scale-105 shadow-md';
+          badge = '<div class="text-[9px] font-bold text-purple-400">RIGHT</div>';
+        }
+
+        return `
+          <div class="flex-1 min-w-[42px] p-2 rounded-xl border ${borderClass} transition-all">
+            <div class="text-[10px] text-slate-500">idx ${idx}</div>
+            <div class="text-base font-bold my-0.5">${char}</div>
+            ${badge || '<div class="text-[9px] text-transparent">-</div>'}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('tp-left-status').innerText = `left = ${step.left} ('${visualWord[step.left]}')`;
+      document.getElementById('tp-right-status').innerText = `right = ${step.right} ('${visualWord[step.right]}')`;
+      document.getElementById('tp-explanation').innerHTML = step.explanation;
+
+      document.getElementById('btn-prev-tp').disabled = (currentTPStep === 0);
+      document.getElementById('btn-next-tp').disabled = (currentTPStep === tpSteps.length - 1);
+
+      if (step.done) {
+        completedModules.mod4 = true;
+        document.getElementById('badge-mod-4').innerText = 'Concluído ✅';
+        document.getElementById('badge-mod-4').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        updateProgress();
+      }
+    }
+
+    function nextStepTP() {
+      if (currentTPStep < tpSteps.length - 1) {
+        currentTPStep++;
+        renderTPVisual();
+      }
+    }
+
+    function prevStepTP() {
+      if (currentTPStep > 0) {
+        currentTPStep--;
+        renderTPVisual();
+      }
+    }
+
+    function resetStepTP() {
+      currentTPStep = 0;
+      renderTPVisual();
+    }
+
+    // --- MODULE 5: LEETCODE #125 TEST SUITE ---
+    const testCases125 = [
+      { input: "A man, a plan, a canal: Panama", expected: true },
+      { input: "race a car", expected: false },
+      { input: " ", expected: true },
+      { input: "0P", expected: false }
+    ];
+
+    function toggleHints() {
+      document.getElementById('hints-box').classList.toggle('hidden');
+    }
+
+    function insertTemplate(type) {
+      const editor = document.getElementById('code-leetcode');
+      if (type === 'starter') {
+        editor.value = `def is_palindrome(s):
+    # Escreva sua solução aqui
+    pass`;
+      } else if (type === 'solution_tp') {
+        editor.value = `def is_palindrome(s):
+    l, r = 0, len(s) - 1
+    while l < r:
+        while l < r and not s[l].isalnum():
+            l += 1
+        while l < r and not s[r].isalnum():
+            r -= 1
+        if s[l].lower() != s[r].lower():
+            return False
+        l += 1
+        r -= 1
+    return True`;
+      } else if (type === 'solution_slice') {
+        editor.value = `def is_palindrome(s):
+    limpo = ""
+    for c in s:
+        if c.isalnum():
+            limpo += c.lower()
+    return limpo == limpo[::-1]`;
+      }
+    }
+
+    function detectComplexity125(code) {
+      if (code.includes('while') && (code.includes('l < r') || code.includes('left < right'))) {
+        return {
+          badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">🏆 Solução Ótima Two Pointers • Memória O(1) In-Place!</span>'
+        };
+      } else if (code.includes('[::-1]')) {
+        return {
+          badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">⚡ Solução Concisa Slicing • Tempo O(n) / Espaço O(n)</span>'
+        };
+      }
+      return {
+        badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Solução Aceita</span>'
+      };
+    }
+
+    function runLeetCodeTests() {
+      const pythonCode = document.getElementById('code-leetcode').value;
+      const consoleBox = document.getElementById('leetcode-console-box');
+      const consoleLogs = document.getElementById('leetcode-console-logs');
+      const complexityContainer = document.getElementById('complexity-badge-container');
+      const successBanner = document.getElementById('success-banner');
+
+      consoleBox.classList.add('hidden');
+      consoleLogs.innerText = '';
+      successBanner.classList.add('hidden');
+
+      let capturedLogs = [];
+
+      try {
+        const jsTranspiled = transpilePython(pythonCode);
+        
+        let fnNameMatch = pythonCode.match(/def\s+([a-zA-Z0-9_]+)\s*\(/);
+        if (!fnNameMatch) {
+          throw new Error("Nenhuma função Python definida. Use 'def is_palindrome(s):'");
+        }
+        const funcName = fnNameMatch[1];
+
+        const factory = new Function('__print', jsTranspiled + `\nreturn (typeof ${funcName} !== 'undefined') ? ${funcName} : null;`);
+        const userFunction = factory((...args) => capturedLogs.push(args.join(' ')));
+
+        if (typeof userFunction !== 'function') {
+          throw new Error(`A função '${funcName}' não foi encontrada.`);
+        }
+
+        let passedAll = true;
+
+        testCases125.forEach((tc, idx) => {
+          const card = document.getElementById(`test-card-${idx}`);
+          const status = document.getElementById(`test-status-${idx}`);
+          const resultElem = document.getElementById(`test-result-${idx}`);
+
+          try {
+            const start = performance.now();
+            const output = userFunction(tc.input);
+            const duration = (performance.now() - start).toFixed(2);
+
+            let passed = (output === tc.expected);
+
+            if (passed) {
+              card.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 space-y-2 text-xs';
+              status.className = 'px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 font-semibold';
+              status.innerText = `Aprovado (${duration}ms) ✅`;
+              resultElem.innerHTML = `Saída: <span class="text-emerald-400 font-bold">${output}</span>`;
+            } else {
+              passedAll = false;
+              card.className = 'p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 space-y-2 text-xs';
+              status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+              status.innerText = 'Falhou ❌';
+              resultElem.innerHTML = `Saída: <span class="text-rose-400 font-bold">${output}</span> (Esperado: ${tc.expected})`;
+            }
+          } catch (execErr) {
+            passedAll = false;
+            card.className = 'p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 space-y-2 text-xs';
+            status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+            status.innerText = 'Erro ❌';
+            resultElem.innerHTML = `Erro: <span class="text-rose-400">${execErr.message}</span>`;
+          }
+        });
+
+        if (capturedLogs.length > 0) {
+          consoleBox.classList.remove('hidden');
+          consoleLogs.innerText = capturedLogs.join('\n');
+        }
+
+        const comp = detectComplexity125(pythonCode);
+        complexityContainer.innerHTML = comp.badge;
+
+        if (passedAll) {
+          successBanner.classList.remove('hidden');
+          completedModules.mod5 = true;
+          document.getElementById('status-tag-leetcode').innerText = 'Resolvido 🏆';
+          document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          updateProgress();
+        } else {
+          document.getElementById('status-tag-leetcode').innerText = 'Testes Falhando';
+          document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+        }
+
+      } catch (globalErr) {
+        testCases125.forEach((tc, idx) => {
+          const card = document.getElementById(`test-card-${idx}`);
+          const status = document.getElementById(`test-status-${idx}`);
+          const resultElem = document.getElementById(`test-result-${idx}`);
+          if (idx === 0) {
+            card.className = 'p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/30 space-y-2 text-xs md:col-span-2';
+            status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+            status.innerText = 'Erro de Execução / Sintaxe ❌';
+            resultElem.innerHTML = `<div class="text-rose-300 font-mono mt-1"><strong>Erro:</strong> ${globalErr.message}</div><div class="text-slate-400 text-[11px] mt-1">💡 Dica: Verifique a indentação dos blocos if / elif / else ou a presença de dois-pontos (:).</div>`;
+          } else {
+            card.className = 'p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs opacity-40';
+            status.innerText = 'Interrompido';
+            resultElem.innerHTML = 'Saída: -';
+          }
+        });
+        document.getElementById('status-tag-leetcode').innerText = 'Erro no Código';
+        document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+      }
+    }
+
+    // Initialize visualizer
+    renderTPVisual();
+    updateProgress();
+  
+    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    function ensureCursorVisible(textarea) {
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const val = textarea.value;
+      const textBefore = val.substring(0, start);
+      const currentLine = textBefore.split('\n').length;
+      
+      const style = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
+      const paddingTop = parseFloat(style.paddingTop) || 12;
+      
+      const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
+      const visibleTop = textarea.scrollTop;
+      const visibleBottom = textarea.scrollTop + textarea.clientHeight;
+      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+
+      if (cursorTop + lineHeight > visibleBottom - margin) {
+        textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
+      } else if (cursorTop < visibleTop + margin) {
+        textarea.scrollTop = Math.max(0, cursorTop - margin);
+      }
+    }
+
+    function handleAutoGrow(textarea) {
+      if (!textarea || textarea.dataset.expanded === 'true') return;
+      const isLeet = textarea.id.includes('leetcode');
+      const minH = isLeet ? 360 : 240;
+      const maxH = isLeet ? 750 : 550;
+      
+      // Calculate needed height
+      textarea.style.height = 'auto';
+      const scrollH = textarea.scrollHeight;
+      const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
+      textarea.style.height = targetHeight + 'px';
+    }
+
+    function toggleExpandEditor(editorId, btn) {
+      const textarea = document.getElementById(editorId);
+      if (!textarea) return;
+      const isExpanded = textarea.dataset.expanded === 'true';
+      const isLeet = textarea.id.includes('leetcode');
+      const defaultH = isLeet ? 380 : 240;
+      const expandedH = isLeet ? 750 : 540;
+      
+      if (isExpanded) {
+        textarea.style.height = defaultH + 'px';
+        textarea.dataset.expanded = 'false';
+        if (btn) btn.innerHTML = '<span>⛶</span> Expandir';
+      } else {
+        textarea.style.height = expandedH + 'px';
+        textarea.dataset.expanded = 'true';
+        if (btn) btn.innerHTML = '<span>🗗</span> Reduzir';
+      }
+      ensureCursorVisible(textarea);
+    }
+
+    function setupCodeEditorFeatures() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.dataset.editorEnhanced) return;
+        textarea.dataset.editorEnhanced = 'true';
+
+        const isLeet = textarea.id.includes('leetcode');
+        const minH = isLeet ? 360 : 240;
+        textarea.style.minHeight = minH + 'px';
+        if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
+          textarea.style.height = minH + 'px';
+        }
+
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const value = this.value;
+
+            if (!e.shiftKey) {
+              if (start === end) {
+                this.value = value.substring(0, start) + '    ' + value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+              } else {
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\n', end);
+                const endPos = lineEnd === -1 ? value.length : lineEnd;
+                const selectedLines = value.substring(lineStart, endPos).split('\n');
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
+                this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
+                this.selectionStart = start + 4;
+                this.selectionEnd = end + (selectedLines.length * 4);
+              }
+            } else {
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? value.length : lineEnd;
+              const selectedLines = value.substring(lineStart, endPos).split('\n');
+              let removedTotal = 0;
+              let firstLineRemoved = 0;
+
+              const dedented = selectedLines.map((l, idx) => {
+                const match = l.match(/^ {1,4}/);
+                if (match) {
+                  const removed = match[0].length;
+                  removedTotal += removed;
+                  if (idx === 0) firstLineRemoved = removed;
+                  return l.substring(removed);
+                }
+                return l;
+              }).join('\n');
+
+              this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
+              this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
+              this.selectionEnd = Math.max(lineStart, end - removedTotal);
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          } else if (e.key === 'Enter') {
+            const start = this.selectionStart;
+            const value = this.value;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = value.substring(lineStart, start);
+            const indentMatch = currentLine.match(/^\s*/);
+            let indent = indentMatch ? indentMatch[0] : '';
+            if (currentLine.trim().endsWith(':')) {
+              indent += '    ';
+            }
+            if (indent.length > 0) {
+              e.preventDefault();
+              const before = value.substring(0, start);
+              const after = value.substring(this.selectionEnd);
+              this.value = before + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('input', function() {
+          handleAutoGrow(this);
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('keyup', function(e) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('click', function() {
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('focus', function() {
+          ensureCursorVisible(this);
+        });
+
+        handleAutoGrow(textarea);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', setupCodeEditorFeatures);
+    } else {
+      setupCodeEditorFeatures();
+    }
+  
+
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM ---
+    window.ProfileSystem = (function() {
+      const STORAGE_KEY = 'python_study_lab_profile_v1';
+      const CURRENT_LAB = 2;
+
+      const TASKS_CATALOG = {
+        // Fase 1
+        lab1_mod1: { lab: 1, xp: 50, title: 'Módulo 1: Tipos & F-Strings' },
+        lab1_mod2: { lab: 1, xp: 50, title: 'Módulo 2: Dict vs List O(1)' },
+        lab1_mod3: { lab: 1, xp: 50, title: 'Módulo 3: Loops & Enumerate' },
+        lab1_mod4: { lab: 1, xp: 50, title: 'Módulo 4: Simulador Hash Map' },
+        lab1_mod5: { lab: 1, xp: 150, title: '⚡ LeetCode #1: Two Sum', isLeet: true },
+        // Fase 2
+        lab2_mod1: { lab: 2, xp: 50, title: 'Módulo 1: Métodos de String' },
+        lab2_mod2: { lab: 2, xp: 50, title: 'Módulo 2: Slicing & [::-1]' },
+        lab2_mod3: { lab: 2, xp: 50, title: 'Módulo 3: List Comprehensions' },
+        lab2_mod4: { lab: 2, xp: 50, title: 'Módulo 4: Simulador Two Pointers' },
+        lab2_mod5: { lab: 2, xp: 150, title: '⚡ LeetCode #125: Valid Palindrome', isLeet: true },
+        // Fase 3
+        lab3_mod1: { lab: 3, xp: 50, title: 'Módulo 1: Pilhas & LIFO' },
+        lab3_mod2: { lab: 3, xp: 50, title: 'Módulo 2: Mapeamento de Pares' },
+        lab3_mod3: { lab: 3, xp: 50, title: 'Módulo 3: Diagnóstico de Erros' },
+        lab3_mod4: { lab: 3, xp: 50, title: 'Módulo 4: Stack Inspector' },
+        lab3_mod5: { lab: 3, xp: 150, title: '⚡ LeetCode #20: Valid Parentheses', isLeet: true },
+        // Fase 4
+        lab4_mod1: { lab: 4, xp: 50, title: 'Módulo 1: Memória do Menor Preço' },
+        lab4_mod2: { lab: 4, xp: 50, title: 'Módulo 2: Lucro Diário' },
+        lab4_mod3: { lab: 4, xp: 50, title: 'Módulo 3: Consultor da Bolsa' },
+        lab4_mod4: { lab: 4, xp: 50, title: 'Módulo 4: Simulador Wall Street' },
+        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true }
+      };
+
+      const LEVELS = [
+        { level: 1, minXp: 0, maxXp: 150, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 150, maxXp: 350, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 350, maxXp: 650, rank: '⚡ Caçador de Algoritmos' },
+        { level: 4, minXp: 650, maxXp: 1000, rank: '🏗️ Arquiteto de Estruturas' },
+        { level: 5, minXp: 1000, maxXp: 1350, rank: '🚀 Engenheiro Big Tech' },
+        { level: 6, minXp: 1350, maxXp: 2000, rank: '👑 Lenda do LeetCode' }
+      ];
+
+      const ACHIEVEMENTS = [
+        { id: 'first_blood', icon: '🩸', title: 'Primeiro Passo', desc: 'Concluiu sua primeira atividade prática', check: (p) => Object.keys(p.completedTasks).length >= 1 },
+        { id: 'hash_master', icon: '🗺️', title: 'Mestre do Hash Map', desc: 'Venceu o LeetCode #1: Two Sum', check: (p) => !!p.completedTasks['lab1_mod5'] },
+        { id: 'two_pointers', icon: '🎯', title: 'Olhos de Águia', desc: 'Venceu o LeetCode #125: Valid Palindrome', check: (p) => !!p.completedTasks['lab2_mod5'] },
+        { id: 'lifo_guardian', icon: '🥞', title: 'Guardião LIFO', desc: 'Venceu o LeetCode #20: Valid Parentheses', check: (p) => !!p.completedTasks['lab3_mod5'] },
+        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Venceu o LeetCode #121: Buy & Sell Stock', check: (p) => !!p.completedTasks['lab4_mod5'] },
+        { id: 'python_legend', icon: '👑', title: 'Maratonista Python', desc: 'Acumulou 1.000+ XP nos laboratórios', check: (p) => p.xp >= 1000 }
+      ];
+
+      function getDefaultProfile() {
+        return {
+          name: 'Claudio',
+          avatar: '🐍',
+          xp: 0,
+          completedTasks: {},
+          savedCode: {},
+          history: []
+        };
+      }
+
+      function loadProfile() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultProfile();
+          const parsed = JSON.parse(raw);
+          return Object.assign(getDefaultProfile(), parsed);
+        } catch (e) {
+          return getDefaultProfile();
+        }
+      }
+
+      function saveProfile(profile) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+        } catch (e) {}
+      }
+
+      function getLevelInfo(xp) {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) return LEVELS[i];
+        }
+        return LEVELS[0];
+      }
+
+      function showToast(message, subtext) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl text-xs text-white flex items-center gap-3 transform transition-all duration-300 pointer-events-auto';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center text-xl">✨</div>
+          <div>
+            <div class="font-extrabold text-emerald-400 text-sm">${message}</div>
+            <div class="text-slate-300 text-[11px]">${subtext || ''}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      function completeTask(taskKey) {
+        const taskDef = TASKS_CATALOG[taskKey];
+        if (!taskDef) return;
+        const profile = loadProfile();
+        if (profile.completedTasks[taskKey]) {
+          // Already completed before, just refresh UI
+          renderTopBar(profile);
+          return;
+        }
+
+        const oldLevel = getLevelInfo(profile.xp).level;
+        profile.completedTasks[taskKey] = {
+          completedAt: new Date().toISOString(),
+          xp: taskDef.xp
+        };
+        profile.xp += taskDef.xp;
+        profile.history.unshift({
+          date: new Date().toISOString(),
+          text: `+${taskDef.xp} XP • ${taskDef.title}`
+        });
+        if (profile.history.length > 25) profile.history.pop();
+
+        saveProfile(profile);
+        renderTopBar(profile);
+
+        const newLevelObj = getLevelInfo(profile.xp);
+        if (newLevelObj.level > oldLevel) {
+          showToast(`🎉 LEVEL UP! Nível ${newLevelObj.level}!`, `Nova Patente: ${newLevelObj.rank} (+${taskDef.xp} XP)`);
+        } else {
+          showToast(`+${taskDef.xp} XP Ganhos!`, taskDef.title);
+        }
+      }
+
+      function saveEditorCode(editorId, code) {
+        const profile = loadProfile();
+        profile.savedCode[`lab${CURRENT_LAB}_${editorId}`] = code;
+        saveProfile(profile);
+      }
+
+      function getLabStats(profile, labNum) {
+        const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
+        const done = keys.filter(k => !!profile.completedTasks[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        return { done, total: keys.length, pct, keys };
+      }
+
+      function renderTopBar(profile) {
+        profile = profile || loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        const avatarEl = document.getElementById('profile-bar-avatar');
+        const nameEl = document.getElementById('profile-bar-name');
+        const levelEl = document.getElementById('profile-bar-level');
+        const rankEl = document.getElementById('profile-bar-rank');
+        const xpTextEl = document.getElementById('profile-bar-xp-text');
+        const xpFillEl = document.getElementById('profile-bar-xp-fill');
+
+        if (avatarEl) avatarEl.innerText = profile.avatar;
+        if (nameEl) nameEl.innerText = profile.name;
+        if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
+        if (rankEl) rankEl.innerText = lvl.rank;
+        if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
+
+        if (xpFillEl) {
+          const span = Math.max(1, lvl.maxXp - lvl.minXp);
+          const inLevel = Math.min(span, Math.max(0, profile.xp - lvl.minXp));
+          xpFillEl.style.width = `${Math.round((inLevel / span) * 100)}%`;
+        }
+
+        for (let l = 1; l <= 4; l++) {
+          const st = getLabStats(profile, l);
+          const el = document.getElementById(`nav-pct-lab${l}`);
+          if (el) {
+            el.innerText = `${st.pct}%`;
+            if (st.pct === 100) {
+              el.className = 'text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+            }
+          }
+        }
+      }
+
+      function restoreLabState() {
+        const profile = loadProfile();
+        renderTopBar(profile);
+
+        // Restore saved editor code & bind auto-save
+        document.querySelectorAll('textarea').forEach(ta => {
+          const key = `lab${CURRENT_LAB}_${ta.id}`;
+          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key].trim() !== '') {
+            ta.value = profile.savedCode[key];
+            if (typeof handleAutoGrow === 'function') handleAutoGrow(ta);
+          }
+          ta.addEventListener('input', function() {
+            saveEditorCode(this.id, this.value);
+          });
+        });
+
+        // Restore badges & progress for current lab
+        for (let m = 1; m <= 5; m++) {
+          const taskKey = `lab${CURRENT_LAB}_mod${m}`;
+          if (profile.completedTasks[taskKey]) {
+            const badge = document.getElementById(`badge-mod-${m}`);
+            if (badge) {
+              badge.innerText = 'Concluído ✓';
+              badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+            }
+            if (m === 5) {
+              const lc1 = document.getElementById('leetcode-status');
+              if (lc1) {
+                lc1.className = 'px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2';
+                lc1.innerHTML = '<span>🎉</span> Desafio Resolvido!';
+              }
+              const lc2 = document.getElementById('status-tag-leetcode');
+              if (lc2) {
+                lc2.innerText = 'Concluído ✅';
+                lc2.className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+              }
+            }
+            if (typeof completedModules !== 'undefined') {
+              if (completedModules instanceof Set) {
+                completedModules.add(m === 5 ? 'leetcode' : `mod-${m}`);
+              } else if (typeof completedModules === 'object') {
+                completedModules[`mod${m}`] = true;
+              }
+            }
+          }
+        }
+
+        // Update current lab header progress bar
+        const st = getLabStats(profile, CURRENT_LAB);
+        const pctEl = document.getElementById('progress-percent');
+        const fillEl = document.getElementById('progress-bar-fill');
+        if (pctEl) pctEl.innerText = `${st.pct}% Concluído`;
+        if (fillEl) fillEl.style.width = `${st.pct}%`;
+        if (st.pct === 100) {
+          const trophy = document.getElementById('trophy-badge');
+          if (trophy) {
+            trophy.classList.remove('opacity-30');
+            trophy.classList.add('opacity-100', 'scale-125');
+          }
+        }
+      }
+
+      function openModal() {
+        const profile = loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        document.getElementById('modal-avatar-display').innerText = profile.avatar;
+        document.getElementById('modal-name-input').value = profile.name;
+        document.getElementById('modal-level-badge').innerText = `Nível ${lvl.level}`;
+        document.getElementById('modal-rank-title').innerText = lvl.rank;
+        document.getElementById('modal-xp-Next').innerText = `${profile.xp} / ${lvl.maxXp} XP`;
+
+        const totalTasks = Object.keys(TASKS_CATALOG).length;
+        const doneTasks = Object.keys(profile.completedTasks).length;
+        const leetsDone = ['lab1_mod5', 'lab2_mod5', 'lab3_mod5', 'lab4_mod5'].filter(k => !!profile.completedTasks[k]).length;
+
+        document.getElementById('stat-total-xp').innerText = `${profile.xp} XP`;
+        document.getElementById('stat-tasks-done').innerText = `${doneTasks} / ${totalTasks}`;
+        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 4`;
+        document.getElementById('stat-global-pct').innerText = `${Math.round((doneTasks / totalTasks) * 100)}%`;
+
+        // Render Labs breakdown
+        const labsInfo = [
+          { num: 1, name: 'Fase 1: Hash Maps & Two Sum', url: 'index.html', color: 'sky' },
+          { num: 2, name: 'Fase 2: Strings & Two Pointers', url: 'lab2_strings_twopointers.html', color: 'purple' },
+          { num: 3, name: 'Fase 3: Pilhas & Parênteses', url: 'lab3_stacks_valid_parentheses.html', color: 'indigo' },
+          { num: 4, name: 'Fase 4: Sliding Window & Ações', url: 'lab4_sliding_window_stocks.html', color: 'emerald' }
+        ];
+        const labsContainer = document.getElementById('modal-labs-breakdown');
+        labsContainer.innerHTML = labsInfo.map(l => {
+          const st = getLabStats(profile, l.num);
+          const taskItems = st.keys.map(k => {
+            const done = !!profile.completedTasks[k];
+            const t = TASKS_CATALOG[k];
+            return `<div class="flex items-center justify-between py-0.5 ${done ? 'text-emerald-300' : 'text-slate-500'}">
+              <span>${done ? '✅' : '⏳'} ${t.title}</span>
+              <span class="font-mono text-[10px]">+${t.xp} XP</span>
+            </div>`;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <a href="${l.url}" class="font-bold text-white hover:underline">${l.name}</a>
+                <span class="px-2 py-0.5 rounded bg-slate-950 font-mono font-bold text-emerald-400">${st.pct}%</span>
+              </div>
+              <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full" style="width: ${st.pct}%"></div>
+              </div>
+              <div class="space-y-0.5 pt-1 text-[11px]">
+                ${taskItems}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Achievements
+        const achContainer = document.getElementById('modal-achievements-grid');
+        achContainer.innerHTML = ACHIEVEMENTS.map(a => {
+          const unlocked = a.check(profile);
+          return `
+            <div class="p-3 rounded-xl border transition-all ${unlocked ? 'bg-indigo-950/30 border-indigo-500/40 text-white' : 'bg-slate-900/40 border-slate-800/60 text-slate-600 opacity-60'} flex items-start gap-2.5">
+              <span class="text-2xl">${a.icon}</span>
+              <div>
+                <div class="font-bold text-xs ${unlocked ? 'text-amber-300' : 'text-slate-500'}">${a.title}</div>
+                <div class="text-[11px] ${unlocked ? 'text-slate-300' : 'text-slate-600'} mt-0.5">${a.desc}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('profile-modal').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('profile-modal').classList.add('hidden');
+      }
+
+      function saveName() {
+        const input = document.getElementById('modal-name-input');
+        if (!input) return;
+        const val = input.value.trim() || 'Estudante Python';
+        const profile = loadProfile();
+        profile.name = val;
+        saveProfile(profile);
+        renderTopBar(profile);
+        showToast('Nome atualizado!', `Olá, ${val}!`);
+      }
+
+      function setAvatar(emoji) {
+        const profile = loadProfile();
+        profile.avatar = emoji;
+        saveProfile(profile);
+        document.getElementById('modal-avatar-display').innerText = emoji;
+        renderTopBar(profile);
+      }
+
+      function exportProfile() {
+        const profile = loadProfile();
+        const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `python_lab_perfil_${profile.name.toLowerCase().replace(/\s+/g, '_')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function resetProfile() {
+        if (!confirm('Tem certeza que deseja zerar todo o seu XP e progresso salvo?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      return {
+        completeTask,
+        saveEditorCode,
+        restoreLabState,
+        openModal,
+        closeModal,
+        saveName,
+        setAvatar,
+        exportProfile,
+        resetProfile
+      };
+    })();
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => window.ProfileSystem.restoreLabState());
+    } else {
+      window.ProfileSystem.restoreLabState();
+    }
+  </script>
+
+  <!-- PROFILE MODAL & XP TOAST CONTAINER -->
+  <div id="xp-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-4">
+          <div id="modal-avatar-display" class="w-16 h-16 rounded-2xl bg-indigo-500/15 border-2 border-indigo-500/40 flex items-center justify-center text-4xl shadow-inner">
+            🐍
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <input id="modal-name-input" type="text" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-lg font-extrabold text-white focus:outline-none focus:border-indigo-500" value="Estudante Python" maxlength="28">
+              <button onclick="window.ProfileSystem.saveName()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors">
+                Salvar Nome
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2 text-xs">
+              <span id="modal-level-badge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Nível 1</span>
+              <span id="modal-rank-title" class="text-amber-400 font-semibold">🌱 Iniciante Python</span>
+              <span class="text-slate-500">•</span>
+              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 150 XP para o próximo nível</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2 py-1">✕</button>
+      </div>
+
+      <!-- Avatar Selector -->
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-slate-400 font-medium">Escolher Avatar:</span>
+        <button onclick="window.ProfileSystem.setAvatar('🐍')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐍</button>
+        <button onclick="window.ProfileSystem.setAvatar('🚀')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🚀</button>
+        <button onclick="window.ProfileSystem.setAvatar('⚡')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">⚡</button>
+        <button onclick="window.ProfileSystem.setAvatar('🧙‍♂️')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🧙‍♂️</button>
+        <button onclick="window.ProfileSystem.setAvatar('🦊')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🦊</button>
+        <button onclick="window.ProfileSystem.setAvatar('🤖')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🤖</button>
+        <button onclick="window.ProfileSystem.setAvatar('🐉')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐉</button>
+        <button onclick="window.ProfileSystem.setAvatar('🔥')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🔥</button>
+      </div>
+
+      <!-- Top Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">XP Total</div>
+          <div id="stat-total-xp" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">0 XP</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Atividades</div>
+          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 20</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">LeetCodes</div>
+          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 4</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Progresso Geral</div>
+          <div id="stat-global-pct" class="text-2xl font-extrabold text-cyan-400 font-mono mt-1">0%</div>
+        </div>
+      </div>
+
+      <!-- Progress Across All 4 Labs -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado por Fase</h3>
+        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Achievements / Badges -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas</h3>
+        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Data Backup & Reset -->
+      <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <button onclick="window.ProfileSystem.exportProfile()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+            📥 Exportar Backup (.json)
+          </button>
+          <button onclick="window.ProfileSystem.resetProfile()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 border border-rose-500/30 transition-colors">
+            🗑️ Resetar Progresso
+          </button>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="px-5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

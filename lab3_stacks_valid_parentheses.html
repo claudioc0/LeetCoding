@@ -1,0 +1,2719 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Lab • Fase 3: Pilhas (Stacks) & LeetCode #20</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom dark scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .code-font {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .animate-stack-push {
+      animation: slideInUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+      textarea { tab-size: 4; -moz-tab-size: 4; }
+  
+    textarea {
+      tab-size: 4;
+      -moz-tab-size: 4;
+      resize: vertical !important;
+      line-height: 1.6 !important;
+      font-size: 13px !important;
+    }
+  
+  </style>
+</head>
+<body class="bg-[#090d16] text-[#f8fafc] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-5xl mx-auto space-y-8">
+
+    <!-- Header / Banner with Phase Switcher -->
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <!-- Left: Avatar, Name, Level & XP Bar -->
+      <div class="flex items-center gap-3.5 w-full lg:w-auto">
+        <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+          🐍
+        </button>
+        <div class="flex-1 min-w-[180px]">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
+            <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
+          </div>
+          <div class="mt-1.5 flex items-center gap-2.5">
+            <div class="flex-1 max-w-[200px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: 4 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs">
+        <a href="index.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F1: Hash Map</span>
+          <span id="nav-pct-lab1" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab2_strings_twopointers.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F2: Two Pointers</span>
+          <span id="nav-pct-lab2" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-indigo-500/15 border-indigo-500/40 text-indigo-300 font-bold">
+          <span>F3: Pilhas</span>
+          <span id="nav-pct-lab3" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab4_sliding_window_stocks.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F4: Sliding Window</span>
+          <span id="nav-pct-lab4" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+      </div>
+
+      <!-- Right: Open Profile Modal Button -->
+      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
+        <button onclick="window.ProfileSystem.openModal()" class="w-full lg:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+          <span>👤</span> Meu Perfil & Conquistas
+        </button>
+      </div>
+    </div>
+
+    <header class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/40">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold text-2xl shadow-inner">
+              🥞
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">Python Lab • Fase 3</h1>
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 font-semibold">Pilhas (Stacks) & LIFO</span>
+              </div>
+              <p class="text-sm text-slate-400 mt-0.5">Estrutura de dados LIFO, pares em tabelas hash e validação de parênteses</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Score & Progress indicator -->
+        <div class="flex items-center gap-4 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+          <div class="text-right">
+            <div class="text-xs text-slate-400">Progresso Fase 3</div>
+            <div class="font-bold text-sm text-indigo-400" id="progress-percent">0% Concluído</div>
+          </div>
+          <div class="w-24 bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+            <div id="progress-bar-fill" class="bg-gradient-to-r from-indigo-500 to-violet-500 h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div id="trophy-badge" class="text-2xl opacity-30 transition-all">🏆</div>
+        </div>
+      </div>
+
+      <!-- Navigation & Phase Switcher Tabs -->
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800 text-xs md:text-sm">
+        <nav class="flex flex-wrap gap-2">
+          <a href="#mod-1" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-indigo-400 transition-colors">1. Pilhas & LIFO</a>
+          <a href="#mod-2" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-indigo-400 transition-colors">2. Mapeamento de Pares</a>
+          <a href="#mod-3" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-indigo-400 transition-colors">3. Casos de Borda</a>
+          <a href="#mod-4" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-cyan-400 transition-colors">4. Simulador Visual</a>
+          <a href="#mod-5" class="px-3 py-1.5 rounded-lg border border-emerald-500/30 text-emerald-400 font-medium bg-emerald-500/5 hover:bg-emerald-500/15 transition-colors">⚡ 5. LeetCode #20</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <a href="index.html" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5">
+            <span>⏮️ Fase 1</span>
+          </a>
+          <a href="lab2_strings_twopointers.html" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1.5">
+            <span>⬅ Fase 2</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MÓDULO 1: O CONCEITO DE PILHA (STACK) E SEMÂNTICA LIFO -->
+    <section id="mod-1" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Módulo 1</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">O que é uma Pilha (Stack) & Semântica LIFO</h2>
+          <p class="text-sm text-slate-400">Uma pilha segue o princípio <strong>LIFO (Last-In, First-Out)</strong>: o último elemento a entrar é obrigatoriamente o primeiro a sair.</p>
+        </div>
+        <span id="badge-mod-1" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Mental Model & Intuition Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🍽️</span> O Modelo Mental: A Pilha de Pratos
+          </h3>
+          <p class="text-slate-400 leading-relaxed">
+            Imagine que você está lavando pratos e empilhando um sobre o outro:
+          </p>
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800/80 space-y-1.5 text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-indigo-500/20 text-indigo-300 font-bold flex items-center justify-center text-[11px]">1</span>
+              <span>Você coloca o <strong>Prato A</strong> na mesa (base da pilha).</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-indigo-500/20 text-indigo-300 font-bold flex items-center justify-center text-[11px]">2</span>
+              <span>Você coloca o <strong>Prato B</strong> em cima do A.</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded bg-indigo-500/20 text-indigo-300 font-bold flex items-center justify-center text-[11px]">3</span>
+              <span>Você coloca o <strong>Prato C</strong> em cima do B (<span class="text-indigo-400 font-bold">novo topo</span>).</span>
+            </div>
+            <div class="pt-2 text-slate-300 border-t border-slate-800 flex items-center gap-1.5 text-emerald-400 font-medium">
+              <span>👉</span> Se alguém for pegar um prato, qual ele pega primeiro? O <strong>Prato C</strong>! O último que entrou é o primeiro que sai.
+            </div>
+          </div>
+          <p class="text-slate-400 text-xs">
+            Na computação, usamos pilhas para tudo que exige <strong>"desfazer"</strong> ou <strong>"voltar"</strong>: botão <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">Ctrl+Z</kbd>, histórico do navegador, e validação de parênteses!
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🐍</span> As 4 Operações de Pilha em Python
+          </h3>
+          <p class="text-slate-400">Em Python, <strong>não precisamos importar nenhuma biblioteca especial</strong>. Usamos uma lista comum <code class="text-indigo-400 font-mono">stack = []</code>:</p>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-500">
+                  <th class="py-1">Operação</th>
+                  <th class="py-1">Em Python</th>
+                  <th class="py-1">O que faz?</th>
+                  <th class="py-1 text-right">Custo</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                <tr>
+                  <td class="py-1.5 font-bold text-indigo-300">Push (Empilhar)</td>
+                  <td class="text-cyan-300">stack.append(x)</td>
+                  <td class="text-slate-400 font-sans">Adiciona no topo</td>
+                  <td class="text-emerald-400 text-right">O(1)</td>
+                </tr>
+                <tr>
+                  <td class="py-1.5 font-bold text-indigo-300">Pop (Desempilhar)</td>
+                  <td class="text-emerald-300">x = stack.pop()</td>
+                  <td class="text-slate-400 font-sans">Remove e retorna o topo</td>
+                  <td class="text-emerald-400 text-right">O(1)</td>
+                </tr>
+                <tr>
+                  <td class="py-1.5 font-bold text-indigo-300">Peek (Olhar Topo)</td>
+                  <td class="text-purple-300">topo = stack[-1]</td>
+                  <td class="text-slate-400 font-sans">Lê o topo sem remover</td>
+                  <td class="text-emerald-400 text-right">O(1)</td>
+                </tr>
+                <tr>
+                  <td class="py-1.5 font-bold text-indigo-300">Is Empty?</td>
+                  <td class="text-pink-300">not stack</td>
+                  <td class="text-slate-400 font-sans">True se vazia, False se cheia</td>
+                  <td class="text-emerald-400 text-right">O(1)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="p-2.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300/90 text-xs">
+            ⚠️ <strong>Atenção ao Desempenho:</strong> Nunca use <code class="font-mono">stack.pop(0)</code> para pilhas! Remover do início (índice 0) força o Python a deslocar todos os outros $n$ elementos da lista para a esquerda, custando tempo <strong>O(n)</strong>. Remover do final com <code class="font-mono">stack.pop()</code> é imediato <strong>O(1)</strong>!
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini-Challenge 1 -->
+      <div class="p-5 rounded-xl bg-slate-900/90 border border-indigo-500/20 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-2">
+              <span>✏️</span> Mini-Desafio 1: Histórico do Navegador (Botão "Voltar")
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Veja como o seu próprio navegador web usa pilhas para voltar páginas!</p>
+          </div>
+          <span class="text-xs px-2.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">LIFO na Prática</span>
+        </div>
+
+        <!-- Problem Explanation & Trace Table -->
+        <div class="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-2">
+          <p class="text-slate-300 leading-relaxed">
+            <strong>O que o problema pede:</strong> Implemente a função <code class="text-indigo-400 font-mono">historico(acoes)</code>. Você recebe uma lista de comandos em texto:<br>
+            • Se a ação for <code class="text-amber-300 font-mono">"ACESSAR: &lt;site&gt;"</code> $	o$ empilhe o nome do site.<br>
+            • Se a ação for <code class="text-amber-300 font-mono">"VOLTAR"</code> $	o$ desempilhe a página anterior (se a pilha tiver páginas!).<br>
+            • Ao final de todas as ações, retorne a URL do <strong>site atual</strong> (o topo da pilha) ou <code class="text-amber-400 font-mono">"VAZIO"</code> se não houver nenhuma página na pilha.
+          </p>
+
+          <!-- Trace Table Example -->
+          <div class="pt-2 border-t border-slate-800">
+            <span class="text-slate-400 font-semibold block mb-1.5">📊 Tabela de Rastreamento (Trace Table) do Exemplo 1:</span>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left font-mono text-[11px] text-slate-400 border border-slate-800/60 rounded">
+                <thead class="bg-slate-900/60 text-slate-400 border-b border-slate-800">
+                  <tr>
+                    <th class="py-1 px-2">Passo</th>
+                    <th class="py-1 px-2">Comando Recebido</th>
+                    <th class="py-1 px-2">Pilha ANTES</th>
+                    <th class="py-1 px-2">Operação Feita</th>
+                    <th class="py-1 px-2">Pilha DEPOIS</th>
+                    <th class="py-1 px-2 text-emerald-400">Topo Atual</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/40">
+                  <tr>
+                    <td class="py-1 px-2 text-slate-500">1</td>
+                    <td class="py-1 px-2 text-amber-300">"ACESSAR: google.com"</td>
+                    <td class="py-1 px-2 text-slate-500">[]</td>
+                    <td class="py-1 px-2 text-cyan-300">stack.append('google.com')</td>
+                    <td class="py-1 px-2 text-slate-200">['google.com']</td>
+                    <td class="py-1 px-2 text-emerald-400">'google.com'</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1 px-2 text-slate-500">2</td>
+                    <td class="py-1 px-2 text-amber-300">"ACESSAR: leetcode.com"</td>
+                    <td class="py-1 px-2 text-slate-200">['google.com']</td>
+                    <td class="py-1 px-2 text-cyan-300">stack.append('leetcode.com')</td>
+                    <td class="py-1 px-2 text-slate-200">['google.com', 'leetcode.com']</td>
+                    <td class="py-1 px-2 text-emerald-400">'leetcode.com'</td>
+                  </tr>
+                  <tr>
+                    <td class="py-1 px-2 text-slate-500">3</td>
+                    <td class="py-1 px-2 text-amber-300">"VOLTAR"</td>
+                    <td class="py-1 px-2 text-slate-200">['google.com', 'leetcode.com']</td>
+                    <td class="py-1 px-2 text-rose-300">stack.pop()</td>
+                    <td class="py-1 px-2 text-slate-200">['google.com']</td>
+                    <td class="py-1 px-2 text-emerald-400 font-bold">'google.com' (Retorno!)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex items-center gap-2">
+            <button onclick="toggleHint('hint-1')" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica Rápida
+            </button>
+            <button onclick="toggleHint('explanation-1')" class="text-xs px-2.5 py-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition-colors flex items-center gap-1">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(1)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução Modelo
+            </button>
+            <button onclick="clearEditor(1)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-1', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
+          </div>
+          <button onclick="runChallenge(1)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>▶️</span> Executar Testes
+          </button>
+        </div>
+
+        <!-- Hint Box -->
+        <div id="hint-1" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica:</strong> Inicie com <code class="font-mono text-amber-300">stack = []</code>. Para extrair a URL de <code class="font-mono text-amber-300">"ACESSAR: site"</code>, use <code class="font-mono text-amber-300">acao.replace("ACESSAR: ", "")</code> ou <code class="font-mono text-amber-300">acao.split(": ")[1]</code>. Quando a ação for <code class="font-mono text-amber-300">"VOLTAR"</code>, verifique primeiro <code class="font-mono text-amber-300">if stack:</code> antes de chamar <code class="font-mono text-amber-300">stack.pop()</code> para evitar erro de pilha vazia!
+        </div>
+
+        <!-- Detailed Explanation Box -->
+        <div id="explanation-1" class="hidden p-4 rounded-lg bg-indigo-950/30 border border-indigo-500/30 text-xs text-slate-300 space-y-3">
+          <h4 class="font-bold text-indigo-300 flex items-center gap-2 text-sm">
+            <span>🔍</span> Como Raciocinar para Resolver este Desafio (Linha por Linha)
+          </h4>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed">
+            <li><strong>Criamos a lista vazia:</strong> <code class="font-mono text-indigo-300">stack = []</code>. Essa lista será a nossa pilha de histórico.</li>
+            <li><strong>Percorremos cada comando:</strong> <code class="font-mono text-indigo-300">for acao in acoes:</code>.</li>
+            <li><strong>Identificamos o comando de acesso:</strong> se <code class="font-mono text-indigo-300">acao.startswith("ACESSAR: ")</code>, pegamos apenas o nome do site e fazemos <code class="font-mono text-indigo-300">stack.append(site)</code>. O novo site foi parar no topo!</li>
+            <li><strong>Identificamos o comando de voltar:</strong> se <code class="font-mono text-indigo-300">acao == "VOLTAR"</code>, precisamos remover a página atual. <em>Atenção ao caso de borda:</em> se a pilha já estiver vazia, não podemos fazer <code class="font-mono">pop()</code> senão o Python travaria com <code class="font-mono text-rose-400">IndexError</code>! Por isso escrevemos <code class="font-mono text-indigo-300">if stack: stack.pop()</code>.</li>
+            <li><strong>Retornando o resultado:</strong> se houver algo na pilha (<code class="font-mono text-indigo-300">if stack:</code>), a página atual é a do topo: <code class="font-mono text-indigo-300">return stack[-1]</code>. Se a pilha estiver vazia, retornamos <code class="font-mono text-amber-300">"VAZIO"</code>.</li>
+          </ol>
+        </div>
+
+        <textarea id="editor-1" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-indigo-500 resize-y shadow-inner" placeholder="# Escreva sua solução aqui:
+def historico(acoes):
+    stack = []
+    # seu código aqui
+"></textarea>
+
+        <div id="result-1" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2: DICIONÁRIOS COMO TABELAS DE MAPEAMENTO DE PARES -->
+    <section id="mod-2" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Módulo 2</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Mapeamento de Pares & O Enigma da Contagem</h2>
+          <p class="text-sm text-slate-400">Por que contadores simples falham e como tabelas hash associam fechamento $	o$ abertura em tempo $O(1)$.</p>
+        </div>
+        <span id="badge-mod-2" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- THE BIG "AHA!" MOMENT: WHY NOT JUST COUNT? -->
+      <div class="p-4 rounded-xl bg-purple-950/20 border border-purple-500/30 text-xs md:text-sm space-y-3">
+        <div class="flex items-center gap-2 text-purple-300 font-bold">
+          <span class="text-lg">🤔</span> O Grande Enigma: "Por que não posso apenas CONTAR os parênteses?"
+        </div>
+        <p class="text-slate-300 leading-relaxed">
+          Quase todo iniciante pensa: <em>"Basta somar +1 quando abrir '(' e subtrair -1 quando fechar ')'! Se der 0 no final, está certo!"</em>
+        </p>
+        <p class="text-slate-300 leading-relaxed">
+          Para <strong>apenas um tipo</strong> de parêntese isso até funciona, mas veja o que acontece com múltiplos tipos, como na string <code class="text-rose-300 font-mono font-bold bg-slate-900 px-1.5 py-0.5 rounded">"([)]"</code>:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-1">
+            <span class="text-rose-400 font-sans font-bold block">❌ Com Contador (Falha!):</span>
+            <div>1. Lê '(' $	o$ abertos = 1</div>
+            <div>2. Lê '[' $	o$ abertos = 2</div>
+            <div>3. Lê ')' $	o$ fechados = 1</div>
+            <div>4. Lê ']' $	o$ fechados = 2</div>
+            <div class="text-rose-400 font-bold pt-1">Total: 2 abertos e 2 fechados. O contador diria: "VÁLIDO!" (Errado!)</div>
+          </div>
+
+          <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-1">
+            <span class="text-emerald-400 font-sans font-bold block">✅ Com Pilha (Sucesso!):</span>
+            <div>1. Empilha '(' $	o$ stack = ['(']</div>
+            <div>2. Empilha '[' $	o$ stack = ['(', '['] (Topo é '[')</div>
+            <div>3. Chega ')' $	o$ Topo é '[', não '('! <strong class="text-rose-400">ERRO!</strong></div>
+            <div class="text-emerald-400 font-bold pt-1">A Pilha sabe que o '[' abriu por último e TINHA que fechar primeiro!</div>
+          </div>
+        </div>
+        <div class="text-purple-300 font-medium text-xs pt-1">
+          💡 <strong>Moral da história:</strong> Contadores guardam apenas a <em>quantidade</em>. A Pilha guarda a <strong>ordem cronológica exata</strong> dos acontecimentos!
+        </div>
+      </div>
+
+      <!-- The Closing -> Opening Dictionary Card -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🗺️</span> Por que Mapear Fechamento $	o$ Abertura?
+          </h3>
+          <p class="text-slate-400 leading-relaxed">
+            Criamos o dicionário com os caracteres de <strong>fechamento como chave</strong> e suas <strong>aberturas como valor</strong>:
+          </p>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-slate-300 text-xs space-y-1">
+            <div class="text-slate-500"># Chave = Fechamento | Valor = Abertura esperada:</div>
+            <div>pares = {</div>
+            <div class="pl-4"><span class="text-amber-300">')'</span>: <span class="text-emerald-400">'('</span>,  <span class="text-slate-500"># ')' espera '(' no topo</span></div>
+            <div class="pl-4"><span class="text-amber-300">'}'</span>: <span class="text-emerald-400">'{'</span>,  <span class="text-slate-500"># '}' espera '{' no topo</span></div>
+            <div class="pl-4"><span class="text-amber-300">']'</span>: <span class="text-emerald-400">'['</span>   <span class="text-slate-500"># ']' espera '[' no topo</span></div>
+            <div>}</div>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>⚡</span> Como o Código Usa esse Dicionário
+          </h3>
+          <p class="text-slate-400">Ao ler cada caractere <code class="text-slate-200">char</code> da string:</p>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-slate-300 text-xs space-y-1.5">
+            <div><span class="text-pink-400">if</span> char <span class="text-indigo-400">in</span> pares:</div>
+            <div class="pl-4 text-slate-400"># 1. É de fechamento! O par esperado é:</div>
+            <div class="pl-4 text-emerald-300">esperado = pares[char]</div>
+            <div class="pl-4 text-slate-400"># 2. O topo da pilha precisa ser igual a 'esperado'!</div>
+            <div><span class="text-pink-400">else</span>:</div>
+            <div class="pl-4 text-slate-400"># É de abertura: guarda na pilha!</div>
+            <div class="pl-4 text-cyan-300">stack.append(char)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini-Challenge 2 -->
+      <div class="p-5 rounded-xl bg-slate-900/90 border border-indigo-500/20 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-2">
+              <span>✏️</span> Mini-Desafio 2: Validador de Parênteses Simples
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Trabalhando apenas com os caracteres '(' e ')'</p>
+          </div>
+          <span class="text-xs px-2.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Básico</span>
+        </div>
+
+        <!-- Problem Details & Trace Table -->
+        <div class="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-2">
+          <p class="text-slate-300 leading-relaxed">
+            <strong>O que fazer:</strong> Crie a função <code class="text-indigo-400 font-mono">valida_parenteses_simples(s)</code>. Ela recebe uma string contendo apenas <code class="text-slate-200">'('</code> e <code class="text-slate-200">')'</code>. Retorne <code class="text-emerald-400 font-mono">True</code> se todos estiverem corretamente abertos e fechados, ou <code class="text-rose-400 font-mono">False</code> se houver qualquer erro.
+          </p>
+
+          <!-- Trace Table -->
+          <div class="pt-2 border-t border-slate-800">
+            <span class="text-slate-400 font-semibold block mb-1.5">📊 Casos de Teste Rastreados:</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 font-mono text-[11px]">
+              <div class="p-2.5 bg-slate-900/80 rounded border border-slate-800">
+                <span class="text-emerald-400 font-sans font-bold block mb-1">Caso 1: "()" $	o$ True</span>
+                <div>1. '(' $	o$ empilha: ['(']</div>
+                <div>2. ')' $	o$ desempilha: []</div>
+                <div class="text-emerald-400 pt-1">Pilha vazia no fim $	o$ True!</div>
+              </div>
+              <div class="p-2.5 bg-slate-900/80 rounded border border-slate-800">
+                <span class="text-rose-400 font-sans font-bold block mb-1">Caso 2: ")(" $	o$ False</span>
+                <div>1. ')' $	o$ pilha vazia!</div>
+                <div class="text-rose-400 pt-1">Tentou fechar sem abrir $	o$ False!</div>
+              </div>
+              <div class="p-2.5 bg-slate-900/80 rounded border border-slate-800">
+                <span class="text-rose-400 font-sans font-bold block mb-1">Caso 3: "(()" $	o$ False</span>
+                <div>1. '(' $	o$ ['(']</div>
+                <div>2. '(' $	o$ ['(', '(']</div>
+                <div>3. ')' $	o$ ['(']</div>
+                <div class="text-rose-400 pt-1">Sobrou '(' na pilha $	o$ False!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex items-center gap-2">
+            <button onclick="toggleHint('hint-2')" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica Rápida
+            </button>
+            <button onclick="toggleHint('explanation-2')" class="text-xs px-2.5 py-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition-colors flex items-center gap-1">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(2)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução Modelo
+            </button>
+            <button onclick="clearEditor(2)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-2', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
+          </div>
+          <button onclick="runChallenge(2)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>▶️</span> Executar Testes
+          </button>
+        </div>
+
+        <!-- Hint Box -->
+        <div id="hint-2" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica:</strong> Para cada caractere da string: se for <code class="font-mono text-amber-300">'('</code>, faça <code class="font-mono text-amber-300">stack.append(char)</code>. Se for <code class="font-mono text-amber-300">')'</code>: se a pilha estiver vazia (<code class="font-mono text-amber-300">not stack</code>), significa que apareceu um fechamento sem ninguém antes, então retorne <code class="font-mono text-amber-300">False</code> na hora! Se não estiver vazia, faça <code class="font-mono text-amber-300">stack.pop()</code>. Ao sair do loop, retorne <code class="font-mono text-amber-300">len(stack) == 0</code>.
+        </div>
+
+        <!-- Detailed Explanation Box -->
+        <div id="explanation-2" class="hidden p-4 rounded-lg bg-indigo-950/30 border border-indigo-500/30 text-xs text-slate-300 space-y-3">
+          <h4 class="font-bold text-indigo-300 flex items-center gap-2 text-sm">
+            <span>🔍</span> Como Raciocinar para Resolver este Desafio (Linha por Linha)
+          </h4>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed">
+            <li><strong>Criamos a pilha vazia:</strong> <code class="font-mono text-indigo-300">stack = []</code>.</li>
+            <li><strong>Loop por cada caractere:</strong> <code class="font-mono text-indigo-300">for char in s:</code>.</li>
+            <li><strong>Se for abertura '(':</strong> empilhamos <code class="font-mono text-indigo-300">stack.append(char)</code>.</li>
+            <li><strong>Se for fechamento ')':</strong>
+              <ul class="list-disc list-inside pl-4 text-slate-400 space-y-0.5">
+                <li>Primeiro checamos: a pilha está vazia? Se sim (<code class="font-mono text-rose-300">if not stack: return False</code>), tentamos fechar algo que nunca abriu!</li>
+                <li>Se não estiver vazia: desempilhamos o par que acabou de ser fechado com <code class="font-mono text-emerald-300">stack.pop()</code>.</li>
+              </ul>
+            </li>
+            <li><strong>A checagem de ouro no final:</strong> <code class="font-mono text-indigo-300">return len(stack) == 0</code>. Por que não simplesmente <code class="font-mono">return True</code>? Porque se a string for <code class="font-mono">"(()"</code>, o loop termina e sobra um parêntese na pilha! Se sobrar algo, a expressão é inválida.</li>
+          </ol>
+        </div>
+
+        <textarea id="editor-2" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-indigo-500 resize-y shadow-inner" placeholder="# Escreva sua solução aqui:
+def valida_parenteses_simples(s):
+    stack = []
+    # seu código aqui
+"></textarea>
+
+        <div id="result-2" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: CASOS DE BORDA CRÍTICOS EM ALGORITMOS DE PILHA -->
+    <section id="mod-3" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Módulo 3</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Casos de Borda & O "Curto-Circuito" do Python</h2>
+          <p class="text-sm text-slate-400">Em entrevistas de código, a maioria dos candidatos reprova nos casos de borda. Conheça as 4 armadilhas clássicas e como se proteger.</p>
+        </div>
+        <span id="badge-mod-3" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Edge Cases Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-rose-500/20 space-y-1.5">
+          <div class="flex items-center gap-1.5 text-rose-400 font-bold">
+            <span>⚠️</span> 1. Fechar Vazio
+          </div>
+          <p class="text-slate-400">Ex: <code class="text-rose-300 font-mono">")"</code> ou <code class="text-rose-300 font-mono">")("</code></p>
+          <p class="text-slate-400">Chega um fechamento, mas não há nenhuma abertura na pilha para fechar. Retorne <code class="text-rose-400 font-bold">False</code> na hora.</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-amber-500/20 space-y-1.5">
+          <div class="flex items-center gap-1.5 text-amber-400 font-bold">
+            <span>⚠️</span> 2. Sobra no Final
+          </div>
+          <p class="text-slate-400">Ex: <code class="text-amber-300 font-mono">"(()"</code> ou <code class="text-amber-300 font-mono">"["</code></p>
+          <p class="text-slate-400">A string acaba mas a pilha ainda tem abertura pendente sem par. Retorne <code class="text-amber-400 font-bold">False</code>.</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-purple-500/20 space-y-1.5">
+          <div class="flex items-center gap-1.5 text-purple-400 font-bold">
+            <span>⚠️</span> 3. Tipos Opostos
+          </div>
+          <p class="text-slate-400">Ex: <code class="text-purple-300 font-mono">"(]"</code></p>
+          <p class="text-slate-400">O fechamento <code class="font-mono">]</code> não combina com a abertura <code class="font-mono">(</code> que estava no topo. Retorne <code class="text-purple-400 font-bold">False</code>.</p>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-slate-900/80 border border-cyan-500/20 space-y-1.5">
+          <div class="flex items-center gap-1.5 text-cyan-400 font-bold">
+            <span>⚠️</span> 4. Ordem Cruzada
+          </div>
+          <p class="text-slate-400">Ex: <code class="text-cyan-300 font-mono">"([)]"</code></p>
+          <p class="text-slate-400">O colchete <code class="font-mono">[</code> abriu por último, logo ele devia fechar antes do parêntese. Retorne <code class="text-cyan-400 font-bold">False</code>.</p>
+        </div>
+      </div>
+
+      <!-- SHORT-CIRCUIT EVALUATION IN PYTHON -->
+      <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs md:text-sm space-y-2">
+        <h3 class="font-semibold text-sm text-indigo-300 flex items-center gap-2">
+          <span>🛡️</span> A Proteção Contra Falhas: Curto-Circuito com <code class="text-indigo-400 font-mono">if stack and stack[-1] == ...</code>
+        </h3>
+        <p class="text-slate-300 leading-relaxed">
+          Veja por que esta linha em Python é tão genial e segura:
+        </p>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-indigo-200">
+          if <span class="text-pink-400 font-bold">stack</span> <span class="text-cyan-400 font-bold">and</span> <span class="text-amber-300">stack[-1] == esperado</span>:
+        </div>
+        <p class="text-slate-400 text-xs leading-relaxed">
+          Em Python, o operador <code class="text-cyan-400 font-mono">and</code> avalia da esquerda para a direita. Se a pilha estiver vazia, <code class="text-pink-400 font-mono">stack</code> é avaliado como <code class="font-bold text-slate-300">False</code> e o Python <strong>nem tenta ler <code class="font-mono">stack[-1]</code></strong>! Se tentasse ler <code class="font-mono">stack[-1]</code> com a pilha vazia, o programa travaria com erro fatal <code class="text-rose-400 font-mono">IndexError: list index out of range</code>!
+        </p>
+      </div>
+
+      <!-- Mini-Challenge 3 -->
+      <div class="p-5 rounded-xl bg-slate-900/90 border border-indigo-500/20 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-bold text-sm text-indigo-300 flex items-center gap-2">
+              <span>✏️</span> Mini-Desafio 3: Diagnóstico Preciso de Erros
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Retorne o diagnóstico exato do que aconteceu com a expressão</p>
+          </div>
+          <span class="text-xs px-2.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono">Diagnóstico</span>
+        </div>
+
+        <!-- Problem Statement & Decisions -->
+        <div class="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-2">
+          <p class="text-slate-300 leading-relaxed">
+            <strong>O que fazer:</strong> Crie a função <code class="text-indigo-400 font-mono">diagnosticar(s)</code>. Usando uma pilha, retorne uma das 3 mensagens exatas:<br>
+            • <code class="text-emerald-400 font-mono">"OK"</code>: Se todos os parênteses estiverem perfeitamente balanceados.<br>
+            • <code class="text-rose-400 font-mono">"FECHOU_SEM_ABERTURA"</code>: Se tentar fechar um <code class="text-slate-300 font-mono">')'</code> quando a pilha já estiver vazia.<br>
+            • <code class="text-amber-400 font-mono">"ABERTURA_PENDENTE"</code>: Se o loop terminar e ainda sobrar alguma abertura na pilha.
+          </p>
+
+          <div class="pt-2 border-t border-slate-800">
+            <span class="text-slate-400 font-semibold block mb-1">Raciocínio dos 3 Retornos:</span>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 font-mono text-[11px] text-slate-400">
+              <div class="p-2 bg-slate-900 rounded border border-slate-800">
+                <span class="text-emerald-400 font-sans font-bold block">1. Sucesso ("(())"):</span>
+                Abre 2x, fecha 2x. Pilha esvaziou $	o$ retorne "OK".
+              </div>
+              <div class="p-2 bg-slate-900 rounded border border-slate-800">
+                <span class="text-rose-400 font-sans font-bold block">2. Erro Precoce ("())"):</span>
+                No 3º caractere ')', a pilha já está vazia $	o$ retorne "FECHOU_SEM_ABERTURA".
+              </div>
+              <div class="p-2 bg-slate-900 rounded border border-slate-800">
+                <span class="text-amber-400 font-sans font-bold block">3. Erro Tardio ("((()"):</span>
+                Fim da string, mas sobrou um '(' na pilha $	o$ retorne "ABERTURA_PENDENTE".
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Editor Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex items-center gap-2">
+            <button onclick="toggleHint('hint-3')" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica Rápida
+            </button>
+            <button onclick="toggleHint('explanation-3')" class="text-xs px-2.5 py-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 transition-colors flex items-center gap-1">
+              <span>📖</span> Passo a Passo Explicado
+            </button>
+            <button onclick="revealSolution(3)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução Modelo
+            </button>
+            <button onclick="clearEditor(3)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-3', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
+          </div>
+          <button onclick="runChallenge(3)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>▶️</span> Executar Testes
+          </button>
+        </div>
+
+        <!-- Hint Box -->
+        <div id="hint-3" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica:</strong> Em cada <code class="font-mono text-amber-300">')'</code>, confira primeiro: <code class="font-mono text-amber-300">if not stack: return "FECHOU_SEM_ABERTURA"</code>. Se não estiver vazia, faça <code class="font-mono text-amber-300">stack.pop()</code>. Após o loop terminar, confira: <code class="font-mono text-amber-300">if stack: return "ABERTURA_PENDENTE"</code>. Se passar pelos dois, retorne <code class="font-mono text-amber-300">"OK"</code>!
+        </div>
+
+        <!-- Detailed Explanation Box -->
+        <div id="explanation-3" class="hidden p-4 rounded-lg bg-indigo-950/30 border border-indigo-500/30 text-xs text-slate-300 space-y-3">
+          <h4 class="font-bold text-indigo-300 flex items-center gap-2 text-sm">
+            <span>🔍</span> Como Raciocinar para Resolver este Desafio (Linha por Linha)
+          </h4>
+          <ol class="list-decimal list-inside space-y-1.5 text-slate-300 leading-relaxed">
+            <li><strong>Inicie a pilha vazia:</strong> <code class="font-mono text-indigo-300">stack = []</code>.</li>
+            <li><strong>Percorra a string:</strong> <code class="font-mono text-indigo-300">for char in s:</code>.</li>
+            <li><strong>Para cada '(':</strong> adicione com <code class="font-mono text-indigo-300">stack.append(char)</code>.</li>
+            <li><strong>Para cada ')':</strong> teste imediatamente se a pilha está vazia (<code class="font-mono text-indigo-300">if not stack: return "FECHOU_SEM_ABERTURA"</code>). Se não estiver, desempilhe com <code class="font-mono text-indigo-300">stack.pop()</code>.</li>
+            <li><strong>Depois do fim do loop:</strong> se a pilha ainda tiver elementos (<code class="font-mono text-indigo-300">if stack:</code>), retorne <code class="font-mono text-amber-300">"ABERTURA_PENDENTE"</code>. Caso contrário, todos os pares fecharam perfeitamente: retorne <code class="font-mono text-emerald-300">"OK"</code>!</li>
+          </ol>
+        </div>
+
+        <textarea id="editor-3" class="w-full min-h-[240px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-indigo-500 resize-y shadow-inner" placeholder="# Escreva sua solução aqui:
+def diagnosticar(s):
+    stack = []
+    # seu código aqui
+"></textarea>
+
+        <div id="result-3" class="hidden text-xs p-3 rounded-lg border"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 4: SIMULADOR VISUAL DE PILHA (STACK INSPECTOR) -->
+    <section id="mod-4" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Módulo 4</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Simulador Visual: Stack Inspector</h2>
+          <p class="text-sm text-slate-400">Veja a pilha operar ao vivo! Acompanhe cada operação de <strong>Push</strong>, <strong>Pop</strong> e detecção de erro passo a passo.</p>
+        </div>
+        <span class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Interativo</span>
+      </div>
+
+      <!-- Controls & Input -->
+      <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <div class="flex flex-col md:flex-row gap-3">
+          <div class="flex-1">
+            <label class="block text-xs text-slate-400 mb-1 font-medium">Expressão de Entrada (use () {} []):</label>
+            <input type="text" id="sim-input" value="{[()]}" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-cyan-500" placeholder="Ex: {[()]}">
+          </div>
+          <div class="flex items-end gap-2">
+            <button onclick="startSimulation()" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
+              <span>▶️</span> Iniciar
+            </button>
+            <button onclick="stepSimulation()" id="btn-sim-step" disabled class="px-4 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-40 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5">
+              <span>⏭️</span> Próximo Passo
+            </button>
+            <button onclick="resetSimulation()" class="px-3 py-2 bg-slate-800 text-slate-400 hover:bg-slate-700 rounded-lg text-xs font-semibold transition-colors">
+              Resetar
+            </button>
+          </div>
+        </div>
+
+        <!-- Presets -->
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="text-slate-500">Exemplos didáticos:</span>
+          <button onclick="loadPreset('{[()]}')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 rounded border border-slate-800 text-slate-300">✅ Válido Aninhado: {[()]}</button>
+          <button onclick="loadPreset('()[]{}')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 rounded border border-slate-800 text-slate-300">✅ Válido Múltiplos: ()[]{}</button>
+          <button onclick="loadPreset('([)]')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 rounded border border-slate-800 text-rose-300 border-rose-500/20">❌ Erro Cruzado: ([)]</button>
+          <button onclick="loadPreset('(]')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 rounded border border-slate-800 text-rose-300 border-rose-500/20">❌ Erro Tipo: (]</button>
+          <button onclick="loadPreset('((()')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 rounded border border-slate-800 text-amber-300 border-amber-500/20">❌ Sobra no Final: ((()</button>
+        </div>
+      </div>
+
+      <!-- Simulator Stage -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 rounded-2xl bg-slate-950 border border-slate-800">
+        
+        <!-- Left: String Stream Viewer (7 cols) -->
+        <div class="md:col-span-7 space-y-4">
+          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+            <span>Fita de Entrada (String Stream)</span>
+            <span id="sim-index-label" class="text-cyan-400">Índice: -</span>
+          </div>
+
+          <!-- Characters Strip -->
+          <div id="sim-chars-strip" class="flex flex-wrap gap-2 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 min-h-[64px] items-center">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Execution Status Log -->
+          <div class="bg-slate-900/90 rounded-xl p-4 border border-slate-800 space-y-2 text-xs">
+            <div class="text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+              <span>Diagnóstico da Operação</span>
+              <span id="sim-status-badge" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400 font-mono">Aguardando início</span>
+            </div>
+            <div id="sim-log-text" class="text-slate-300 font-mono leading-relaxed">
+              Clique em <strong class="text-cyan-400">"Iniciar"</strong> para carregar os caracteres e avançar passo a passo.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Visual Stack Cup (5 cols) -->
+        <div class="md:col-span-5 flex flex-col items-center">
+          <div class="w-full flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+            <span>Pilha (Stack LIFO)</span>
+            <span id="sim-stack-size" class="text-indigo-400">0 itens</span>
+          </div>
+
+          <!-- The Stack Cup (Glass container) -->
+          <div class="w-full max-w-[240px] h-[280px] bg-slate-900/40 border-2 border-t-0 border-slate-700 rounded-b-2xl p-3 flex flex-col-reverse justify-start items-center gap-2 overflow-y-auto relative shadow-2xl shadow-indigo-950/20">
+            <!-- Background guideline for Top -->
+            <div class="absolute top-2 right-2 text-[10px] text-slate-600 font-mono uppercase">Topo ⬆</div>
+            <!-- Stack elements injected here -->
+            <div id="sim-stack-elements" class="w-full flex flex-col-reverse gap-2 items-center">
+              <div id="sim-empty-msg" class="text-xs text-slate-600 font-mono py-12 text-center">Pilha vazia</div>
+            </div>
+          </div>
+          <div class="w-full max-w-[240px] h-2 bg-slate-800 rounded-b-full"></div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MÓDULO 5: DESAFIO LEETCODE FINAL #20: VALID PARENTHESES -->
+    <section id="mod-5" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/60 space-y-6">
+      
+      <!-- Challenge Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Desafio LeetCode Final</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">Easy #20</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Stacks</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Hash Table</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold mt-2 text-white">20. Valid Parentheses (Parênteses Válidos)</h2>
+          <p class="text-sm text-slate-400 mt-1">O problema clássico número 1 para dominar pilhas em entrevistas de Big Techs.</p>
+        </div>
+        <div id="leetcode-status" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-sm font-semibold text-slate-400 flex items-center gap-2">
+          <span>⏳</span> Pendente de Resolução
+        </div>
+      </div>
+
+      <!-- Problem Statement & Rules -->
+      <div class="space-y-4 text-xs md:text-sm text-slate-300">
+        <p class="leading-relaxed">
+          Dada uma string <code class="text-indigo-400 font-mono">s</code> contendo apenas os caracteres <code class="text-amber-300 font-mono">'('</code>, <code class="text-amber-300 font-mono">')'</code>, <code class="text-amber-300 font-mono">'{'</code>, <code class="text-amber-300 font-mono">'}'</code>, <code class="text-amber-300 font-mono">'['</code> e <code class="text-amber-300 font-mono">']'</code>, determine se a string de entrada é <strong>válida</strong>.
+        </p>
+
+        <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">
+          <div class="font-semibold text-white">As 3 Regras de Validade:</div>
+          <ol class="list-decimal list-inside space-y-1 text-slate-400">
+            <li>Parênteses abertos devem ser fechados pelo <strong>mesmo tipo</strong> (<code class="font-mono text-emerald-400">()</code>, <code class="font-mono text-emerald-400">[]</code>, <code class="font-mono text-emerald-400">{}</code>).</li>
+            <li>Parênteses abertos devem ser fechados na <strong>ordem correta</strong> (LIFO: o último que abriu fecha primeiro).</li>
+            <li>Cada parêntese de fechamento tem que ter um parêntese de abertura correspondente.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- COMPLETE PEDAGOGICAL BREAKDOWN GUIDE -->
+      <div class="p-5 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 space-y-4 text-xs md:text-sm">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-sm md:text-base text-indigo-300 flex items-center gap-2">
+            <span>📚</span> Guia Completo de Resolução Passo a Passo (A Estratégia de Big Techs)
+          </h3>
+          <span class="text-xs px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-mono">Teoria Clara</span>
+        </div>
+
+        <p class="text-slate-300 leading-relaxed">
+          Este problema é resolvido com um algoritmo elegante de <strong>3 Etapas</strong>:
+        </p>
+
+        <!-- The 3 Steps Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+            <span class="font-bold text-indigo-400 block">Etapa 1: Tamanho Ímpar O(1)</span>
+            <p class="text-slate-400">
+              Se <code class="font-mono text-indigo-300">len(s) % 2 != 0</code>, é impossível formar pares completos! Podemos retornar <code class="font-mono text-rose-400">False</code> imediatamente sem nem olhar a string.
+            </p>
+          </div>
+          <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+            <span class="font-bold text-indigo-400 block">Etapa 2: Pilha + Dicionário O(n)</span>
+            <p class="text-slate-400">
+              Percorremos a string. Se o caractere for de fechamento, olhamos se o topo bate com a abertura esperada. Se bater, removemos (<code class="font-mono text-emerald-400">pop</code>). Se for de abertura, empilhamos.
+            </p>
+          </div>
+          <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5">
+            <span class="font-bold text-indigo-400 block">Etapa 3: Pilha Vazia no Final</span>
+            <p class="text-slate-400">
+              Ao terminar a string, a expressão é válida se e somente se a pilha estiver vazia (<code class="font-mono text-emerald-400">return not stack</code>). Se sobrou algo, faltou fechar!
+            </p>
+          </div>
+        </div>
+
+        <!-- Complete Trace Table for {[()]} -->
+        <div class="pt-2">
+          <span class="font-bold text-slate-200 block mb-2">📊 Rastreamento Completo de Exemplo Válido: <code class="text-emerald-300">s = "{[()]}"</code></span>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px] text-slate-300 border border-slate-800 rounded bg-slate-950">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-2">Passo</th>
+                  <th class="p-2">Char</th>
+                  <th class="p-2">Tipo</th>
+                  <th class="p-2">Pilha Antes</th>
+                  <th class="p-2">Decisão / Operação</th>
+                  <th class="p-2">Pilha Depois</th>
+                  <th class="p-2 text-emerald-400">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                <tr>
+                  <td class="p-2 text-slate-500">1</td>
+                  <td class="p-2 text-indigo-400 font-bold">'{'</td>
+                  <td class="p-2 text-slate-400">Abertura</td>
+                  <td class="p-2 text-slate-500">[]</td>
+                  <td class="p-2 text-cyan-300">Empilha: stack.append('{')</td>
+                  <td class="p-2 text-slate-200">['{']</td>
+                  <td class="p-2 text-emerald-400">Ok</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">2</td>
+                  <td class="p-2 text-indigo-400 font-bold">'['</td>
+                  <td class="p-2 text-slate-400">Abertura</td>
+                  <td class="p-2 text-slate-200">['{']</td>
+                  <td class="p-2 text-cyan-300">Empilha: stack.append('[')</td>
+                  <td class="p-2 text-slate-200">['{', '[']</td>
+                  <td class="p-2 text-emerald-400">Ok</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">3</td>
+                  <td class="p-2 text-indigo-400 font-bold">'('</td>
+                  <td class="p-2 text-slate-400">Abertura</td>
+                  <td class="p-2 text-slate-200">['{', '[']</td>
+                  <td class="p-2 text-cyan-300">Empilha: stack.append('(')</td>
+                  <td class="p-2 text-slate-200">['{', '[', '(']</td>
+                  <td class="p-2 text-emerald-400">Ok (Topo é '(')</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">4</td>
+                  <td class="p-2 text-amber-300 font-bold">')'</td>
+                  <td class="p-2 text-slate-400">Fechamento</td>
+                  <td class="p-2 text-slate-200">['{', '[', '(']</td>
+                  <td class="p-2 text-emerald-300">Topo é '('? Sim! stack.pop()</td>
+                  <td class="p-2 text-slate-200">['{', '[']</td>
+                  <td class="p-2 text-emerald-400">Match '(' e ')'!</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">5</td>
+                  <td class="p-2 text-amber-300 font-bold">']'</td>
+                  <td class="p-2 text-slate-400">Fechamento</td>
+                  <td class="p-2 text-slate-200">['{', '[']</td>
+                  <td class="p-2 text-emerald-300">Topo é '['? Sim! stack.pop()</td>
+                  <td class="p-2 text-slate-200">['{']</td>
+                  <td class="p-2 text-emerald-400">Match '[' e ']'!</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">6</td>
+                  <td class="p-2 text-amber-300 font-bold">'}'</td>
+                  <td class="p-2 text-slate-400">Fechamento</td>
+                  <td class="p-2 text-slate-200">['{']</td>
+                  <td class="p-2 text-emerald-300">Topo é '{'? Sim! stack.pop()</td>
+                  <td class="p-2 text-slate-500">[]</td>
+                  <td class="p-2 text-emerald-400 font-bold">Match '{' e '}'!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-emerald-400 mt-2 font-medium">
+            ✅ <strong>Fim da String:</strong> A pilha terminou com 0 elementos (<code class="font-mono">len(stack) == 0</code>), logo a função retorna <code class="font-bold">True</code>!
+          </p>
+        </div>
+
+        <!-- Complete Trace Table for ([)] -->
+        <div class="pt-2">
+          <span class="font-bold text-slate-200 block mb-2">📊 Rastreamento Completo de Exemplo Inválido: <code class="text-rose-300">s = "([)]"</code></span>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-[11px] text-slate-300 border border-slate-800 rounded bg-slate-950">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-2">Passo</th>
+                  <th class="p-2">Char</th>
+                  <th class="p-2">Tipo</th>
+                  <th class="p-2">Pilha Antes</th>
+                  <th class="p-2">Decisão / Operação</th>
+                  <th class="p-2 text-rose-400">Resultado Imediato</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                <tr>
+                  <td class="p-2 text-slate-500">1</td>
+                  <td class="p-2 text-indigo-400 font-bold">'('</td>
+                  <td class="p-2 text-slate-400">Abertura</td>
+                  <td class="p-2 text-slate-500">[]</td>
+                  <td class="p-2 text-cyan-300">Empilha '(' $	o$ stack = ['(']</td>
+                  <td class="p-2 text-emerald-400">Ok</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-slate-500">2</td>
+                  <td class="p-2 text-indigo-400 font-bold">'['</td>
+                  <td class="p-2 text-slate-400">Abertura</td>
+                  <td class="p-2 text-slate-200">['(']</td>
+                  <td class="p-2 text-cyan-300">Empilha '[' $	o$ stack = ['(', '[']</td>
+                  <td class="p-2 text-emerald-400">Ok (Topo é '[')</td>
+                </tr>
+                <tr class="bg-rose-950/20">
+                  <td class="p-2 text-slate-500">3</td>
+                  <td class="p-2 text-amber-300 font-bold">')'</td>
+                  <td class="p-2 text-slate-400">Fechamento</td>
+                  <td class="p-2 text-slate-200">['(', '[']</td>
+                  <td class="p-2 text-rose-300 font-bold">')' espera '(' mas o topo é '['! Descasou!</td>
+                  <td class="p-2 text-rose-400 font-bold">Retorna False imediatamente!</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Line by Line Annotated Code Table -->
+        <div class="pt-3 border-t border-indigo-500/30">
+          <span class="font-bold text-indigo-300 block mb-2 text-sm">🔍 Anatomia da Solução Linha por Linha:</span>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs text-slate-300 border border-slate-800 rounded bg-slate-950">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-2 w-1/2">Linha de Código em Python</th>
+                  <th class="p-2 w-1/2 font-sans">O que ela faz em português simples?</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-[11px]">
+                <tr>
+                  <td class="p-2 text-indigo-300">if len(s) % 2 != 0: return False</td>
+                  <td class="p-2 font-sans text-slate-400">Se o total for ímpar, é impossível fechar todos os pares. Corta o caminho logo de cara.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">stack = []</td>
+                  <td class="p-2 font-sans text-slate-400">Cria a pilha vazia para armazenar as aberturas que ainda não foram fechadas.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">pares = {')': '(', '}': '{', ']': '['}</td>
+                  <td class="p-2 font-sans text-slate-400">Mapeia cada fechamento para a respectiva abertura que deve estar no topo da pilha.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">for char in s:</td>
+                  <td class="p-2 font-sans text-slate-400">Percorre a string caractere por caractere, da esquerda para a direita.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">if char in pares:</td>
+                  <td class="p-2 font-sans text-slate-400">Testa se o caractere atual é de fechamento (isto é, uma chave do dicionário).</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">if stack and stack[-1] == pares[char]:</td>
+                  <td class="p-2 font-sans text-slate-400">Confere se a pilha NÃO está vazia E se o topo é o par exato esperado.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">stack.pop()</td>
+                  <td class="p-2 font-sans text-slate-400">Se for o par exato, remove a abertura do topo (par fechado com sucesso!).</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">else: return False</td>
+                  <td class="p-2 font-sans text-slate-400">Se a pilha estiver vazia ou o topo não bater, a string é inválida na hora.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300">else: stack.append(char)</td>
+                  <td class="p-2 font-sans text-slate-400">Se o caractere for de abertura ('(', '{', '['), apenas empilha no topo.</td>
+                </tr>
+                <tr>
+                  <td class="p-2 text-indigo-300 font-bold">return not stack</td>
+                  <td class="p-2 font-sans text-emerald-400 font-medium">Se a pilha esvaziou totalmente, retorna True. Se sobrou alguma abertura, False.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LeetCode Interactive Editor -->
+      <div class="space-y-3 pt-2">
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <button onclick="toggleHint('hint-leetcode-1')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica 1 (Mapeamento & Estrutura)
+            </button>
+            <button onclick="toggleHint('hint-leetcode-2')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+              <span>💡</span> Dica 2 (Verificação de Topo)
+            </button>
+            <button onclick="revealLeetCodeSolution()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              👁️ Ver Solução Modelo
+            </button>
+            <button onclick="clearLeetCodeEditor()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+              🔄 Limpar
+            </button>
+            <button onclick="toggleExpandEditor('editor-leetcode', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1"><span>⛶</span> Expandir</button>
+          </div>
+
+          <button onclick="runLeetCodeTests()" class="text-xs md:text-sm font-bold px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all transform hover:scale-[1.02] flex items-center gap-2 shadow-lg shadow-emerald-950/40">
+            <span>▶️</span> Executar Todos os Casos de Teste
+          </button>
+        </div>
+
+        <!-- Collapsible Hints -->
+        <div id="hint-leetcode-1" class="hidden p-3.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica 1:</strong> Crie um mapa de fechamento para abertura: <code class="font-mono text-amber-300">pares = {')': '(', '}': '{', ']': '['}</code> e uma lista <code class="font-mono text-amber-300">stack = []</code>. Se o caractere for uma chave de <code class="font-mono text-amber-300">pares</code>, significa que é um caractere de fechamento!
+        </div>
+
+        <div id="hint-leetcode-2" class="hidden p-3.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+          <strong>Dica 2:</strong> Quando encontrar um caractere de fechamento, confira se a pilha NÃO está vazia e se o topo bate com a abertura esperada:
+          <pre class="mt-1 font-mono text-amber-300">if stack and stack[-1] == pares[char]:
+    stack.pop()
+else:
+    return False</pre>
+          Se não for fechamento, empilhe: <code class="font-mono text-amber-300">stack.append(char)</code>. Ao final de tudo, retorne <code class="font-mono text-amber-300">not stack</code>.
+        </div>
+
+        <!-- Code Editor -->
+        <div class="relative rounded-xl overflow-hidden border border-slate-800 shadow-inner">
+          <div class="bg-slate-900 px-4 py-2 text-xs font-mono text-slate-400 border-b border-slate-800 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 inline-block"></span> solution.py
+            </span>
+            <span class="text-[11px] text-slate-500">Python 3 (Suporta Tab e Auto-indent)</span>
+          </div>
+          <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-indigo-500 resize-y leading-relaxed" placeholder="# Escreva sua solução aqui:
+class Solution:
+    def isValid(self, s: str) -> bool:
+        # sua implementação aqui
+"></textarea>
+        </div>
+
+        <!-- In-page Test Results Console -->
+        <div id="leetcode-results-panel" class="hidden space-y-3">
+          <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-slate-400">
+            <span>Resultados dos Testes Automatizados</span>
+            <span id="tests-summary-badge" class="px-2 py-0.5 rounded text-[11px]"></span>
+          </div>
+
+          <div id="test-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <!-- Dynamically populated test result cards -->
+          </div>
+
+          <!-- Complexity & Big-O Breakdown -->
+          <div id="complexity-card" class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-2">
+            <h4 class="font-bold text-white flex items-center gap-2">
+              <span>📊</span> Análise de Complexidade de Algoritmo (Big-O)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-slate-400">
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800/80">
+                <span class="font-semibold text-emerald-400 block mb-0.5">Complexidade de Tempo: O(n)</span>
+                Iteramos pelos caracteres da string exatamente uma vez. Cada operação de <code class="text-slate-300 font-mono">append</code> e <code class="text-slate-300 font-mono">pop</code> na lista de Python leva tempo $O(1)$ amortizado.
+              </div>
+              <div class="p-2.5 rounded bg-slate-950 border border-slate-800/80">
+                <span class="font-semibold text-indigo-400 block mb-0.5">Complexidade de Espaço: O(n)</span>
+                No pior caso (ex: string com apenas caracteres de abertura <code class="text-slate-300 font-mono">"((((("</code>), todos os $n$ elementos serão armazenados na pilha.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 border-t border-slate-800/60">
+      <p>Python Study Lab • Desenvolvido para Estudo Ativo e Preparação para LeetCode & Big Techs</p>
+      <div class="mt-2 flex justify-center gap-4 text-slate-400">
+        <a href="index.html" class="hover:text-indigo-400 transition-colors">Fase 1: Hash Maps & Two Sum</a>
+        <span>•</span>
+        <a href="lab2_strings_twopointers.html" class="hover:text-indigo-400 transition-colors">Fase 2: Strings & Two Pointers</a>
+        <span>•</span>
+        <span class="text-indigo-400 font-semibold">Fase 3: Pilhas & Valid Parentheses</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT LOGIC: Transpiler, Simulators, Challenges & Tests -->
+  <script>
+    // --- ROBUST PYTHON TRANSPILER ---
+    function transpilePython(pythonCode) {
+    const lines = pythonCode.split('\n');
+    let jsLines = [];
+
+    let preamble = `
+      function print(...args) {
+        if (typeof __print === 'function') {
+          __print(...args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)));
+        }
+      }
+      function range(start, stop, step) {
+        if (stop === undefined) { stop = start; start = 0; }
+        if (step === undefined) step = 1;
+        let res = [];
+        if (step > 0) {
+          for (let i = start; i < stop; i += step) res.push(i);
+        } else {
+          for (let i = start; i > stop; i += step) res.push(i);
+        }
+        return res;
+      }
+      function len(obj) {
+        if (obj === undefined || obj === null) return 0;
+        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
+        if (obj instanceof Set || obj instanceof Map) return obj.size;
+        if (typeof obj === 'object') return Object.keys(obj).length;
+        return 0;
+      }
+      function enumerate(arr) {
+        let res = [];
+        for (let i = 0; i < arr.length; i++) {
+          res.push([i, arr[i]]);
+        }
+        return res;
+      }
+      function pyIn(item, container) {
+        if (Array.isArray(container) || typeof container === 'string') {
+          return container.includes(item);
+        }
+        if (container instanceof Set) {
+          return container.has(item);
+        }
+        if (typeof container === 'object' && container !== null) {
+          return Object.prototype.hasOwnProperty.call(container, item) || (String(item) in container);
+        }
+        return false;
+      }
+      function pySlice(obj, step) {
+        if (typeof obj === 'string') {
+          if (step === -1) return obj.split('').reverse().join('');
+        }
+        if (Array.isArray(obj)) {
+          if (step === -1) return [...obj].reverse();
+        }
+        return obj;
+      }
+      function pyIsAlnum(str) {
+        return /^[a-zA-Z0-9]+$/.test(str);
+      }
+      function pyTruth(val) {
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'number') return val !== 0;
+        if (typeof val === 'string') return val.length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (val instanceof Set || val instanceof Map) return val.size > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return Boolean(val);
+      }
+      function pyNot(val) {
+        return !pyTruth(val);
+      }
+      function pyEq(a, b) {
+        if (a === b) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return a.length === b.length && a.every((v, i) => pyEq(v, b[i]));
+        }
+        return a == b;
+      }
+      function pySet(iterable) {
+        let s = new Set();
+        if (iterable) {
+          for (let item of iterable) s.add(item);
+        }
+        return s;
+      }
+      function pyList(iterable) {
+        return iterable ? Array.from(iterable) : [];
+      }
+      function pyDict() {
+        return {};
+      }
+      function int(val) {
+        return parseInt(val, 10);
+      }
+      function float(val) {
+        if (val === 'inf' || val === '+inf' || val === 'Infinity') return Infinity;
+        if (val === '-inf' || val === '-Infinity') return -Infinity;
+        return parseFloat(val);
+      }
+      function str(val) {
+        return String(val);
+      }
+      function abs(val) {
+        return Math.abs(val);
+      }
+      function min(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]);
+        return Math.min(...args);
+      }
+      function max(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]);
+        return Math.max(...args);
+      }
+      if (!Array.prototype.append) {
+        Object.defineProperty(Array.prototype, 'append', {
+          value: function(x) { this.push(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.startswith) {
+        Object.defineProperty(String.prototype, 'startswith', {
+          value: function(prefix) { return this.startsWith(prefix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.endswith) {
+        Object.defineProperty(String.prototype, 'endswith', {
+          value: function(suffix) { return this.endsWith(suffix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Object.prototype.get) {
+        Object.defineProperty(Object.prototype, 'get', {
+          value: function(k, d) { return this[k] !== undefined ? this[k] : d; },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      function Solution() {
+        if (!(this instanceof Solution)) return new Solution();
+      }
+    `;
+
+    let blockStack = [{ indent: -1, type: 'root', vars: new Set() }];
+
+    function isVarDeclared(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].vars && blockStack[i].vars.has(name)) return true;
+      }
+      return false;
+    }
+
+    function declareVar(name) {
+      // Declare in current function scope or root scope so Python function-level scoping works!
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
+          blockStack[i].vars.add(name);
+          return;
+        }
+      }
+      blockStack[0].vars.add(name);
+    }
+
+    for (let rawLine of lines) {
+      let trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      let indent = rawLine.search(/\S/);
+      if (indent === -1) indent = 0;
+
+      // Strip end comments
+      let inStr = false, quote = '';
+      let commentIdx = -1;
+      for (let i = 0; i < trimmed.length; i++) {
+        let ch = trimmed[i];
+        if ((ch === '"' || ch === "'") && (i === 0 || trimmed[i-1] !== '\\')) {
+          if (!inStr) { inStr = true; quote = ch; }
+          else if (quote === ch) { inStr = false; }
+        }
+        if (!inStr && ch === '#') {
+          commentIdx = i;
+          break;
+        }
+      }
+      let line = (commentIdx !== -1 ? trimmed.substring(0, commentIdx) : trimmed).trim();
+      if (!line) continue;
+
+      // Dedent blocks
+      while (blockStack.length > 1 && indent <= blockStack[blockStack.length - 1].indent) {
+        let top = blockStack.pop();
+        jsLines.push(' '.repeat(top.indent) + '}');
+        if (top.type === 'def' && top.funcName) {
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+        }
+      }
+
+      // Convert Python f-strings: f"..." or f'...'
+      line = line.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      line = line.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // Methods and conversions
+      line = line.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      line = line.replace(/\.lower\(\)/g, '.toLowerCase()');
+      line = line.replace(/\.upper\(\)/g, '.toUpperCase()');
+      line = line.replace(/\.startswith\(/g, '.startsWith(');
+      line = line.replace(/\.endswith\(/g, '.endsWith(');
+      line = line.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      line = line.replace(/([a-zA-Z0-9_]+)\[-1\]/g, '$1.at(-1)');
+
+      // class Solution:
+      if (line.match(/^class\s+Solution.*?:\s*$/)) {
+        continue;
+      }
+
+      // def func(self, a, b): or def func(a, b):
+      let defMatch = line.match(/^def\s+([a-zA-Z0-9_]+)\s*\((.*?)\)(?:\s*->\s*[^:]+)?\s*:\s*$/);
+      if (defMatch) {
+        let funcName = defMatch[1];
+        let paramList = defMatch[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(p => p && p !== 'self');
+        let params = paramList.join(', ');
+        jsLines.push(' '.repeat(indent) + `function ${funcName}(${params}) {`);
+        blockStack.push({ indent: indent, type: 'def', funcName: funcName, vars: new Set(paramList) });
+        continue;
+      }
+
+      // for i, val in enumerate(arr):
+      let forEnumMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+enumerate\((.*?)\)\s*:\s*$/);
+      if (forEnumMatch) {
+        let iVar = forEnumMatch[1];
+        let valVar = forEnumMatch[2];
+        let targetArr = forEnumMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for var in iter:
+      let forInMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forInMatch) {
+        let varName = forInMatch[1];
+        let iterable = forInMatch[2];
+        jsLines.push(' '.repeat(indent) + `for (let ${varName} of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([varName]) });
+        continue;
+      }
+
+      // while cond:
+      let whileMatch = line.match(/^while\s+(.*?)\s*:\s*$/);
+      if (whileMatch) {
+        let cond = transpileCondition(whileMatch[1]);
+        jsLines.push(' '.repeat(indent) + `while (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'while', vars: new Set() });
+        continue;
+      }
+
+      // elif cond:
+      let elifMatch = line.match(/^elif\s+(.*?)\s*:\s*$/);
+      if (elifMatch) {
+        let cond = transpileCondition(elifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `else if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'elif', vars: new Set() });
+        continue;
+      }
+
+      // else:
+      let elseMatch = line.match(/^else\s*:\s*$/);
+      if (elseMatch) {
+        jsLines.push(' '.repeat(indent) + `else {`);
+        blockStack.push({ indent: indent, type: 'else', vars: new Set() });
+        continue;
+      }
+
+      // if cond:
+      let ifMatch = line.match(/^if\s+(.*?)\s*:\s*$/);
+      if (ifMatch) {
+        let cond = transpileCondition(ifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'if', vars: new Set() });
+        continue;
+      }
+
+      // return statement
+      if (line.startsWith('return ') || line === 'return') {
+        let expr = line.replace(/^return\s*/, '').trim();
+        if (!expr) {
+          jsLines.push(' '.repeat(indent) + 'return;');
+          continue;
+        }
+        expr = transpileExpression(expr);
+        jsLines.push(' '.repeat(indent) + `return ${expr};`);
+        continue;
+      }
+
+      // regular statement
+      let stmt = transpileStatement(line);
+      jsLines.push(' '.repeat(indent) + stmt + ';');
+    }
+
+    while (blockStack.length > 1) {
+      let top = blockStack.pop();
+      jsLines.push(' '.repeat(top.indent) + '}');
+      if (top.type === 'def' && top.funcName) {
+        jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+      }
+    }
+
+    function transpileCondition(cond) {
+      cond = cond.trim();
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+/g, '!');
+      cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+      cond = cond.replace(/^([a-zA-Z0-9_]+)$/, 'pyTruth($1)');
+      cond = cond.replace(/^([a-zA-Z0-9_]+)\s+&&/, 'pyTruth($1) &&');
+      cond = cond.replace(/&&\s+([a-zA-Z0-9_]+)\s*$/, '&& pyTruth($1)');
+      cond = cond.replace(/\|\|\s+([a-zA-Z0-9_]+)\s*$/, '|| pyTruth($1)');
+
+      return cond;
+    }
+
+    function transpileListComp(expr) {
+      const listCompWithIf = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+if\s+(.*?)\s*\]/;
+      const matchIf = expr.match(listCompWithIf);
+      if (matchIf) {
+        const mapExpr = matchIf[1];
+        const itemVar = matchIf[2];
+        const iterVar = matchIf[3];
+        const ifCond = matchIf[4];
+        return expr.replace(listCompWithIf, `Array.from(${iterVar}).filter(${itemVar} => ${ifCond}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      const listCompSimple = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*\]/;
+      const matchSimple = expr.match(listCompSimple);
+      if (matchSimple) {
+        const mapExpr = matchSimple[1];
+        const itemVar = matchSimple[2];
+        const iterVar = matchSimple[3];
+        return expr.replace(listCompSimple, `Array.from(${iterVar}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      return expr;
+    }
+
+    function transpileExpression(expr) {
+      expr = transpileListComp(expr);
+
+      let ternaryMatch = expr.match(/^(.*?)\s+if\s+(.*?)\s+else\s+(.*)$/);
+      if (ternaryMatch) {
+        let valTrue = transpileExpression(ternaryMatch[1].trim());
+        let cond = transpileCondition(ternaryMatch[2].trim());
+        let valFalse = transpileExpression(ternaryMatch[3].trim());
+        return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
+      }
+
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+/g, '!');
+      expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*==\s*([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyEq($1, $2)');
+      expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+      return expr;
+    }
+
+    function transpileStatement(stmt) {
+      stmt = transpileListComp(stmt);
+      stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+/g, '!');
+
+      // Tuple unpacking assignment: a, b = 1, 2
+      let tupleAssign = stmt.match(/^([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s*=\s*(.+?)\s*,\s*(.+)$/);
+      if (tupleAssign) {
+        let v1 = tupleAssign[1], v2 = tupleAssign[2];
+        let r1 = transpileExpression(tupleAssign[3]), r2 = transpileExpression(tupleAssign[4]);
+        let prefix = (!isVarDeclared(v1) && !isVarDeclared(v2)) ? 'let ' : '';
+        declareVar(v1);
+        declareVar(v2);
+        return `${prefix}[${v1}, ${v2}] = [${r1}, ${r2}]`;
+      }
+
+      // Single variable assignment (not ==, !=, <=, >=, +=, -=, *=, /=)
+      let assignMatch = stmt.match(/^([a-zA-Z0-9_]+)\s*=(?!=)\s*(.*)/);
+      if (assignMatch) {
+        let varName = assignMatch[1];
+        let rhs = transpileExpression(assignMatch[2]);
+        if (isVarDeclared(varName)) {
+          return `${varName} = ${rhs}`;
+        } else {
+          declareVar(varName);
+          return `let ${varName} = ${rhs}`;
+        }
+      }
+      return stmt;
+    }
+
+    return preamble + '\n' + jsLines.join('\n');
+    }
+
+    // --- PROGRESS TRACKER ---
+    let completedModules = new Set();
+    function markModuleComplete(modId) {
+      completedModules.add(modId);
+      if (window.ProfileSystem) {
+        const mapKey = { 'mod-1': 'lab3_mod1', 'mod-2': 'lab3_mod2', 'mod-3': 'lab3_mod3', 'mod-4': 'lab3_mod4', 'leetcode': 'lab3_mod5' }[modId];
+        if (mapKey) window.ProfileSystem.completeTask(mapKey);
+      }
+      const total = 4; // Mod 1, 2, 3 and LeetCode
+      const pct = Math.round((completedModules.size / total) * 100);
+      document.getElementById('progress-percent').innerText = `${pct}% Concluído`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+
+      if (pct === 100) {
+        const badge = document.getElementById('trophy-badge');
+        badge.classList.remove('opacity-30');
+        badge.classList.add('scale-125', 'opacity-100');
+      }
+    }
+
+    // --- TOGGLE HINTS & REVEAL SOLUTIONS ---
+    function toggleHint(hintId) {
+      const el = document.getElementById(hintId);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function clearEditor(num) {
+      document.getElementById(`editor-${num}`).value = '';
+      const res = document.getElementById(`result-${num}`);
+      res.classList.add('hidden');
+      res.innerHTML = '';
+    }
+
+    function revealSolution(num) {
+      const solutions = {
+        1: `def historico(acoes):
+    stack = []
+    for acao in acoes:
+        if acao.startswith("ACESSAR: "):
+            url = acao.split(": ")[1]
+            stack.append(url)
+        elif acao == "VOLTAR":
+            if stack:
+                stack.pop()
+    return stack[-1] if stack else "VAZIO"`,
+        2: `def valida_parenteses_simples(s):
+    stack = []
+    for char in s:
+        if char == '(':
+            stack.append(char)
+        elif char == ')':
+            if not stack:
+                return False
+            stack.pop()
+    return len(stack) == 0`,
+        3: `def diagnosticar(s):
+    stack = []
+    for char in s:
+        if char == '(':
+            stack.append(char)
+        elif char == ')':
+            if not stack:
+                return "FECHOU_SEM_ABERTURA"
+            stack.pop()
+    if stack:
+        return "ABERTURA_PENDENTE"
+    return "OK"`
+      };
+      document.getElementById(`editor-${num}`).value = solutions[num];
+    }
+
+    // --- RUN MINI-CHALLENGES ---
+    function runChallenge(num) {
+      const code = document.getElementById(`editor-${num}`).value.trim();
+      const resEl = document.getElementById(`result-${num}`);
+      resEl.classList.remove('hidden');
+
+      if (!code) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-amber-500/10 border-amber-500/30 text-amber-300";
+        resEl.innerHTML = "⚠️ O campo de código está vazio. Escreva sua função antes de executar!";
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        let runner;
+
+        if (num === 1) {
+          runner = new Function(transpiled + `
+            if (typeof historico !== 'function') throw new Error("Função 'historico(acoes)' não encontrada.");
+            const t1 = historico(["ACESSAR: google.com", "ACESSAR: leetcode.com", "VOLTAR"]);
+            const t2 = historico(["ACESSAR: siteA", "ACESSAR: siteB", "ACESSAR: siteC", "VOLTAR", "ACESSAR: siteD"]);
+            const t3 = historico(["ACESSAR: siteA", "VOLTAR"]);
+            return [
+              { name: 'Navegação e 1x Voltar', got: t1, expected: 'google.com', pass: t1 === 'google.com' },
+              { name: 'Vários acessos e voltar', got: t2, expected: 'siteD', pass: t2 === 'siteD' },
+              { name: 'Voltar até esvaziar', got: t3, expected: 'VAZIO', pass: t3 === 'VAZIO' }
+            ];
+          `);
+        } else if (num === 2) {
+          runner = new Function(transpiled + `
+            if (typeof valida_parenteses_simples !== 'function') throw new Error("Função 'valida_parenteses_simples(s)' não encontrada.");
+            const t1 = valida_parenteses_simples("()");
+            const t2 = valida_parenteses_simples("(())");
+            const t3 = valida_parenteses_simples(")(");
+            const t4 = valida_parenteses_simples("(()");
+            return [
+              { name: 'Básico "()"', got: t1, expected: true, pass: t1 === true },
+              { name: 'Aninhado "(())"', got: t2, expected: true, pass: t2 === true },
+              { name: 'Fechamento primeiro ")("', got: t3, expected: false, pass: t3 === false },
+              { name: 'Sobra no final "(()"', got: t4, expected: false, pass: t4 === false }
+            ];
+          `);
+        } else if (num === 3) {
+          runner = new Function(transpiled + `
+            if (typeof diagnosticar !== 'function') throw new Error("Função 'diagnosticar(s)' não encontrada.");
+            const t1 = diagnosticar("(())");
+            const t2 = diagnosticar("())");
+            const t3 = diagnosticar("((()");
+            return [
+              { name: 'Balanceada "(())"', got: t1, expected: 'OK', pass: t1 === 'OK' },
+              { name: 'Fechou a mais "())"', got: t2, expected: 'FECHOU_SEM_ABERTURA', pass: t2 === 'FECHOU_SEM_ABERTURA' },
+              { name: 'Sobra pendente "((()"', got: t3, expected: 'ABERTURA_PENDENTE', pass: t3 === 'ABERTURA_PENDENTE' }
+            ];
+          `);
+        }
+
+        const tests = runner();
+        const allPassed = tests.every(t => t.pass);
+
+        if (allPassed) {
+          resEl.className = "text-xs p-3 rounded-lg border bg-emerald-500/10 border-emerald-500/30 text-emerald-300 space-y-1.5";
+          resEl.innerHTML = `
+            <div class="font-bold flex items-center gap-1.5">
+              <span>✅</span> Todos os testes passaram com sucesso!
+            </div>
+            <div class="text-[11px] text-emerald-400/80 font-mono space-y-0.5">
+              ${tests.map(t => `<div>• ${t.name}: <strong>${t.got}</strong></div>`).join('')}
+            </div>
+          `;
+          const badge = document.getElementById(`badge-mod-${num}`);
+          badge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+          badge.innerText = "Concluído ✓";
+          markModuleComplete(`mod-${num}`);
+        } else {
+          resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/10 border-rose-500/30 text-rose-300 space-y-1";
+          resEl.innerHTML = `
+            <div class="font-bold">❌ Alguns testes falharam:</div>
+            ${tests.map(t => `
+              <div class="font-mono text-[11px] ${t.pass ? 'text-emerald-400' : 'text-rose-300'}">
+                ${t.pass ? '✓' : '✗'} ${t.name} -> Esperado: ${JSON.stringify(t.expected)}, Obtido: ${JSON.stringify(t.got)}
+              </div>
+            `).join('')}
+          `;
+        }
+      } catch (err) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/15 border-rose-500/40 text-rose-200 space-y-1";
+        resEl.innerHTML = `
+          <div class="font-bold flex items-center gap-1.5">
+            <span>⚠️</span> Erro ao executar código Python:
+          </div>
+          <div class="font-mono text-[11px] bg-slate-950 p-2 rounded text-rose-300 whitespace-pre-wrap">${err.message}</div>
+        `;
+      }
+    }
+
+    // --- MODULE 4: INTERACTIVE STACK SIMULATOR ---
+    let simState = {
+      str: '',
+      idx: -1,
+      stack: [],
+      pairs: { ')': '(', '}': '{', ']': '[' },
+      isRunning: false,
+      isFinished: false,
+      isValid: true,
+      timer: null
+    };
+
+    function loadPreset(val) {
+      document.getElementById('sim-input').value = val;
+      resetSimulation();
+      startSimulation();
+    }
+
+    function resetSimulation() {
+      if (simState.timer) clearInterval(simState.timer);
+      simState.str = document.getElementById('sim-input').value.trim();
+      simState.idx = -1;
+      simState.stack = [];
+      simState.isRunning = false;
+      simState.isFinished = false;
+      simState.isValid = true;
+
+      document.getElementById('btn-sim-step').disabled = true;
+      document.getElementById('sim-index-label').innerText = 'Índice: -';
+      document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400 font-mono';
+      document.getElementById('sim-status-badge').innerText = 'Resetado';
+      document.getElementById('sim-log-text').innerHTML = 'Pressione <strong>"Iniciar"</strong> para começar a análise.';
+
+      renderSimStrip();
+      renderSimStack();
+    }
+
+    function startSimulation() {
+      resetSimulation();
+      simState.str = document.getElementById('sim-input').value.trim();
+      if (!simState.str) {
+        alert('Digite uma expressão para simular.');
+        return;
+      }
+      simState.isRunning = true;
+      document.getElementById('btn-sim-step').disabled = false;
+      document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-cyan-500/20 text-cyan-400 font-mono';
+      document.getElementById('sim-status-badge').innerText = 'Em execução';
+      document.getElementById('sim-log-text').innerHTML = `Expressão carregada: <code class="text-cyan-300 font-bold">${simState.str}</code>. Clique em <strong>"Passo"</strong> para avançar.`;
+
+      renderSimStrip();
+    }
+
+    function stepSimulation() {
+      if (!simState.isRunning || simState.isFinished) return;
+
+      simState.idx++;
+
+      // Check if finished scanning
+      if (simState.idx >= simState.str.length) {
+        simState.isFinished = true;
+        document.getElementById('btn-sim-step').disabled = true;
+        renderSimStrip();
+
+        if (simState.stack.length === 0 && simState.isValid) {
+          document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 font-bold font-mono';
+          document.getElementById('sim-status-badge').innerText = '✅ VÁLIDA';
+          markModuleComplete('mod-4');
+          document.getElementById('sim-log-text').innerHTML = `
+            <span class="text-emerald-400 font-bold">Fim da string atingido com sucesso!</span><br>
+            A pilha está vazia (todos os pares foram fechados na ordem correta). A expressão é <strong class="text-emerald-300">VÁLIDA</strong>!
+          `;
+        } else {
+          document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-bold font-mono';
+          document.getElementById('sim-status-badge').innerText = '❌ INVÁLIDA';
+          document.getElementById('sim-log-text').innerHTML = `
+            <span class="text-rose-400 font-bold">Erro: Sobraram ${simState.stack.length} caractere(s) na pilha!</span><br>
+            Ficaram símbolos de abertura sem fechamento correspondente: <code class="text-rose-300 font-mono">[${simState.stack.join(', ')}]</code>.
+          `;
+        }
+        return;
+      }
+
+      const ch = simState.str[simState.idx];
+      document.getElementById('sim-index-label').innerText = `Índice: ${simState.idx} / ${simState.str.length - 1}`;
+
+      renderSimStrip();
+
+      // Logic check
+      if (ch in simState.pairs) {
+        // Fechamento
+        const expectedOpen = simState.pairs[ch];
+        if (simState.stack.length === 0) {
+          simState.isValid = false;
+          simState.isFinished = true;
+          document.getElementById('btn-sim-step').disabled = true;
+          document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-bold font-mono';
+          document.getElementById('sim-status-badge').innerText = '❌ ERRO (PILHA VAZIA)';
+          document.getElementById('sim-log-text').innerHTML = `
+            <span class="text-rose-400 font-bold">Erro no caractere '${ch}' (índice ${simState.idx}):</span><br>
+            Encontrado caractere de fechamento, mas a <strong class="text-rose-300">pilha está vazia</strong>! Não há abertura para fechar.
+          `;
+          return;
+        }
+
+        const top = simState.stack[simState.stack.length - 1];
+        if (top === expectedOpen) {
+          simState.stack.pop();
+          renderSimStack();
+          document.getElementById('sim-log-text').innerHTML = `
+            <span class="text-emerald-400 font-bold">Match perfeito!</span> Caractere <code class="text-amber-300 font-mono">'${ch}'</code> fecha o topo <code class="text-indigo-300 font-mono">'${top}'</code>.<br>
+            Ação: <strong class="text-emerald-300">stack.pop()</strong> executado. Topo removido.
+          `;
+        } else {
+          simState.isValid = false;
+          simState.isFinished = true;
+          document.getElementById('btn-sim-step').disabled = true;
+          document.getElementById('sim-status-badge').className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-bold font-mono';
+          document.getElementById('sim-status-badge').innerText = '❌ ERRO (INCOMPATÍVEL)';
+          document.getElementById('sim-log-text').innerHTML = `
+            <span class="text-rose-400 font-bold">Incompatibilidade no caractere '${ch}' (índice ${simState.idx}):</span><br>
+            O fechamento <code class="text-amber-300 font-mono">'${ch}'</code> esperava <code class="text-emerald-300 font-mono">'${expectedOpen}'</code>, mas encontrou <code class="text-rose-300 font-mono">'${top}'</code> no topo da pilha!
+          `;
+          return;
+        }
+      } else {
+        // Abertura -> Push
+        simState.stack.push(ch);
+        renderSimStack();
+        document.getElementById('sim-log-text').innerHTML = `
+          <span class="text-indigo-400 font-bold">Caractere de abertura:</span> <code class="text-indigo-300 font-mono">'${ch}'</code>.<br>
+          Ação: <strong class="text-indigo-300">stack.append('${ch}')</strong>. Elemento empilhado no topo.
+        `;
+      }
+    }
+
+    function renderSimStrip() {
+      const container = document.getElementById('sim-chars-strip');
+      container.innerHTML = '';
+      for (let i = 0; i < simState.str.length; i++) {
+        const ch = simState.str[i];
+        const isCurrent = (i === simState.idx);
+        const isPast = (i < simState.idx);
+
+        const box = document.createElement('div');
+        box.className = `w-10 h-10 rounded-lg flex flex-col items-center justify-center font-mono text-sm font-bold border transition-all ${
+          isCurrent
+            ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 scale-110 shadow-lg shadow-cyan-500/30'
+            : isPast
+            ? 'bg-slate-900 border-slate-800 text-slate-500'
+            : 'bg-slate-950 border-slate-800 text-slate-300'
+        }`;
+        box.innerHTML = `
+          <span>${ch}</span>
+          <span class="text-[9px] font-normal text-slate-500">${i}</span>
+        `;
+        container.appendChild(box);
+      }
+    }
+
+    function renderSimStack() {
+      const container = document.getElementById('sim-stack-elements');
+      const sizeEl = document.getElementById('sim-stack-size');
+      sizeEl.innerText = `${simState.stack.length} ${simState.stack.length === 1 ? 'item' : 'itens'}`;
+
+      if (simState.stack.length === 0) {
+        container.innerHTML = '<div id="sim-empty-msg" class="text-xs text-slate-600 font-mono py-12 text-center">Pilha vazia</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      for (let i = 0; i < simState.stack.length; i++) {
+        const item = simState.stack[i];
+        const isTop = (i === simState.stack.length - 1);
+
+        const el = document.createElement('div');
+        el.className = `w-full py-2.5 px-4 rounded-xl font-mono font-bold text-center border animate-stack-push transition-all ${
+          isTop
+            ? 'bg-indigo-600/30 border-indigo-400 text-indigo-200 shadow-md shadow-indigo-500/20'
+            : 'bg-slate-800/80 border-slate-700 text-slate-300'
+        }`;
+        el.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-500 text-[10px]">#${i}</span>
+            <span class="text-base">${item}</span>
+            <span class="text-[10px] ${isTop ? 'text-indigo-400 font-semibold' : 'opacity-0'}">TOPO</span>
+          </div>
+        `;
+        container.appendChild(el);
+      }
+    }
+
+    // --- LEETCODE FINAL TEST RUNNER ---
+    function clearLeetCodeEditor() {
+      document.getElementById('editor-leetcode').value = '';
+      document.getElementById('leetcode-results-panel').classList.add('hidden');
+    }
+
+    function revealLeetCodeSolution() {
+      document.getElementById('editor-leetcode').value = `class Solution:
+    def isValid(self, s: str) -> bool:
+        # Se o comprimento for ímpar, é impossível fechar todos
+        if len(s) % 2 != 0:
+            return False
+            
+        stack = []
+        # Mapeamento do fechamento para a respectiva abertura
+        close_to_open = {')': '(', '}': '{', ']': '['}
+        
+        for char in s:
+            if char in close_to_open:
+                # Se for fechamento, verifica se o topo bate com a abertura
+                if stack and stack[-1] == close_to_open[char]:
+                    stack.pop()
+                else:
+                    return False
+            else:
+                # Se for abertura, adiciona na pilha
+                stack.append(char)
+                
+        # Válido somente se a pilha estiver vazia ao final
+        return not stack`;
+    }
+
+    function runLeetCodeTests() {
+      const code = document.getElementById('editor-leetcode').value.trim();
+      const resultsPanel = document.getElementById('leetcode-results-panel');
+      const container = document.getElementById('test-cards-container');
+      const badge = document.getElementById('tests-summary-badge');
+      const statusTop = document.getElementById('leetcode-status');
+
+      resultsPanel.classList.remove('hidden');
+      container.innerHTML = '';
+
+      if (!code) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-amber-500/20 text-amber-300";
+        badge.innerText = "Código Vazio";
+        container.innerHTML = `
+          <div class="col-span-2 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">
+            ⚠️ O campo de código está vazio. Escreva sua classe Solution ou clique em "💡 Dica" / "Ver Solução Modelo".
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        const testCases = [
+          { input: "()", expected: true, desc: "Caso Básico de Parênteses" },
+          { input: "()[]{}", expected: true, desc: "Múltiplos Pares Sequenciais" },
+          { input: "(]", expected: false, desc: "Incompatibilidade de Tipos" },
+          { input: "([)]", expected: false, desc: "Ordem Cruzada Inválida" },
+          { input: "{[]}", expected: true, desc: "Aninhamento Profundo Correto" },
+          { input: "]", expected: false, desc: "Fechamento Inicial com Pilha Vazia" },
+          { input: "((", expected: false, desc: "Sobra de Aberturas na Pilha" }
+        ];
+
+        const runner = new Function(transpiled + `
+          let sol;
+          if (typeof Solution === 'function') sol = new Solution();
+          const targetFunc = (sol && typeof sol.isValid === 'function') ? sol.isValid.bind(sol) : (typeof isValid === 'function' ? isValid : null);
+          if (!targetFunc) throw new Error("Método 'isValid(s)' ou 'Solution.isValid' não encontrado.");
+          
+          return [
+            ${testCases.map((tc, idx) => `
+              (() => {
+                const start = performance.now();
+                const res = targetFunc(${JSON.stringify(tc.input)});
+                const time = (performance.now() - start).toFixed(3);
+                return {
+                  idx: ${idx + 1},
+                  input: ${JSON.stringify(tc.input)},
+                  expected: ${tc.expected},
+                  got: res,
+                  pass: res === ${tc.expected},
+                  time: time,
+                  desc: ${JSON.stringify(tc.desc)}
+                };
+              })()
+            `).join(',\n')}
+          ];
+        `);
+
+        const results = runner();
+        const allPassed = results.every(r => r.pass);
+
+        if (allPassed) {
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-300 font-bold";
+          badge.innerText = `${results.length}/${results.length} PASSARAM`;
+
+          statusTop.className = "px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2";
+          statusTop.innerHTML = "<span>🎉</span> Desafio Resolvido!";
+
+          markModuleComplete('leetcode');
+        } else {
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300 font-bold";
+          const passedCount = results.filter(r => r.pass).length;
+          badge.innerText = `${passedCount}/${results.length} PASSARAM`;
+
+          statusTop.className = "px-4 py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-sm font-bold text-rose-400 flex items-center gap-2";
+          statusTop.innerHTML = "<span>❌</span> Casos Falhando";
+        }
+
+        results.forEach(r => {
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-xl border ${
+            r.pass ? 'bg-slate-900/80 border-emerald-500/30 text-slate-300' : 'bg-rose-950/20 border-rose-500/40 text-rose-200'
+          } space-y-1.5`;
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="font-bold flex items-center gap-1.5">
+                <span>${r.pass ? '✅' : '❌'}</span> Caso ${r.idx}: ${r.desc}
+              </span>
+              <span class="text-[10px] font-mono text-slate-500">${r.time}ms</span>
+            </div>
+            <div class="font-mono text-[11px] bg-slate-950 p-2 rounded border border-slate-800/80 space-y-0.5">
+              <div><span class="text-slate-500">Entrada:</span> s = <span class="text-amber-300">"${r.input}"</span></div>
+              <div><span class="text-slate-500">Esperado:</span> <span class="${r.expected ? 'text-emerald-400' : 'text-rose-400'}">${r.expected}</span></div>
+              <div><span class="text-slate-500">Obtido:</span> <span class="${r.pass ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}">${r.got}</span></div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+      } catch (err) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300";
+        badge.innerText = "Erro de Execução";
+        container.innerHTML = `
+          <div class="col-span-2 p-4 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 space-y-2">
+            <div class="font-bold flex items-center gap-2">
+              <span>⚠️</span> Erro ao interpretar o código Python:
+            </div>
+            <div class="font-mono text-xs bg-slate-950 p-3 rounded text-rose-300 whitespace-pre-wrap">${err.message}</div>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize simulation on load
+    window.addEventListener('DOMContentLoaded', () => {
+      resetSimulation();
+    });
+  
+    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    function ensureCursorVisible(textarea) {
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const val = textarea.value;
+      const textBefore = val.substring(0, start);
+      const currentLine = textBefore.split('\n').length;
+      
+      const style = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
+      const paddingTop = parseFloat(style.paddingTop) || 12;
+      
+      const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
+      const visibleTop = textarea.scrollTop;
+      const visibleBottom = textarea.scrollTop + textarea.clientHeight;
+      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+
+      if (cursorTop + lineHeight > visibleBottom - margin) {
+        textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
+      } else if (cursorTop < visibleTop + margin) {
+        textarea.scrollTop = Math.max(0, cursorTop - margin);
+      }
+    }
+
+    function handleAutoGrow(textarea) {
+      if (!textarea || textarea.dataset.expanded === 'true') return;
+      const isLeet = textarea.id.includes('leetcode');
+      const minH = isLeet ? 360 : 240;
+      const maxH = isLeet ? 750 : 550;
+      
+      // Calculate needed height
+      textarea.style.height = 'auto';
+      const scrollH = textarea.scrollHeight;
+      const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
+      textarea.style.height = targetHeight + 'px';
+    }
+
+    function toggleExpandEditor(editorId, btn) {
+      const textarea = document.getElementById(editorId);
+      if (!textarea) return;
+      const isExpanded = textarea.dataset.expanded === 'true';
+      const isLeet = textarea.id.includes('leetcode');
+      const defaultH = isLeet ? 380 : 240;
+      const expandedH = isLeet ? 750 : 540;
+      
+      if (isExpanded) {
+        textarea.style.height = defaultH + 'px';
+        textarea.dataset.expanded = 'false';
+        if (btn) btn.innerHTML = '<span>⛶</span> Expandir';
+      } else {
+        textarea.style.height = expandedH + 'px';
+        textarea.dataset.expanded = 'true';
+        if (btn) btn.innerHTML = '<span>🗗</span> Reduzir';
+      }
+      ensureCursorVisible(textarea);
+    }
+
+    function setupCodeEditorFeatures() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.dataset.editorEnhanced) return;
+        textarea.dataset.editorEnhanced = 'true';
+
+        const isLeet = textarea.id.includes('leetcode');
+        const minH = isLeet ? 360 : 240;
+        textarea.style.minHeight = minH + 'px';
+        if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
+          textarea.style.height = minH + 'px';
+        }
+
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const value = this.value;
+
+            if (!e.shiftKey) {
+              if (start === end) {
+                this.value = value.substring(0, start) + '    ' + value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+              } else {
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\n', end);
+                const endPos = lineEnd === -1 ? value.length : lineEnd;
+                const selectedLines = value.substring(lineStart, endPos).split('\n');
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
+                this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
+                this.selectionStart = start + 4;
+                this.selectionEnd = end + (selectedLines.length * 4);
+              }
+            } else {
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? value.length : lineEnd;
+              const selectedLines = value.substring(lineStart, endPos).split('\n');
+              let removedTotal = 0;
+              let firstLineRemoved = 0;
+
+              const dedented = selectedLines.map((l, idx) => {
+                const match = l.match(/^ {1,4}/);
+                if (match) {
+                  const removed = match[0].length;
+                  removedTotal += removed;
+                  if (idx === 0) firstLineRemoved = removed;
+                  return l.substring(removed);
+                }
+                return l;
+              }).join('\n');
+
+              this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
+              this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
+              this.selectionEnd = Math.max(lineStart, end - removedTotal);
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          } else if (e.key === 'Enter') {
+            const start = this.selectionStart;
+            const value = this.value;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = value.substring(lineStart, start);
+            const indentMatch = currentLine.match(/^\s*/);
+            let indent = indentMatch ? indentMatch[0] : '';
+            if (currentLine.trim().endsWith(':')) {
+              indent += '    ';
+            }
+            if (indent.length > 0) {
+              e.preventDefault();
+              const before = value.substring(0, start);
+              const after = value.substring(this.selectionEnd);
+              this.value = before + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('input', function() {
+          handleAutoGrow(this);
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('keyup', function(e) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('click', function() {
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('focus', function() {
+          ensureCursorVisible(this);
+        });
+
+        handleAutoGrow(textarea);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', setupCodeEditorFeatures);
+    } else {
+      setupCodeEditorFeatures();
+    }
+  
+
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM ---
+    window.ProfileSystem = (function() {
+      const STORAGE_KEY = 'python_study_lab_profile_v1';
+      const CURRENT_LAB = 3;
+
+      const TASKS_CATALOG = {
+        // Fase 1
+        lab1_mod1: { lab: 1, xp: 50, title: 'Módulo 1: Tipos & F-Strings' },
+        lab1_mod2: { lab: 1, xp: 50, title: 'Módulo 2: Dict vs List O(1)' },
+        lab1_mod3: { lab: 1, xp: 50, title: 'Módulo 3: Loops & Enumerate' },
+        lab1_mod4: { lab: 1, xp: 50, title: 'Módulo 4: Simulador Hash Map' },
+        lab1_mod5: { lab: 1, xp: 150, title: '⚡ LeetCode #1: Two Sum', isLeet: true },
+        // Fase 2
+        lab2_mod1: { lab: 2, xp: 50, title: 'Módulo 1: Métodos de String' },
+        lab2_mod2: { lab: 2, xp: 50, title: 'Módulo 2: Slicing & [::-1]' },
+        lab2_mod3: { lab: 2, xp: 50, title: 'Módulo 3: List Comprehensions' },
+        lab2_mod4: { lab: 2, xp: 50, title: 'Módulo 4: Simulador Two Pointers' },
+        lab2_mod5: { lab: 2, xp: 150, title: '⚡ LeetCode #125: Valid Palindrome', isLeet: true },
+        // Fase 3
+        lab3_mod1: { lab: 3, xp: 50, title: 'Módulo 1: Pilhas & LIFO' },
+        lab3_mod2: { lab: 3, xp: 50, title: 'Módulo 2: Mapeamento de Pares' },
+        lab3_mod3: { lab: 3, xp: 50, title: 'Módulo 3: Diagnóstico de Erros' },
+        lab3_mod4: { lab: 3, xp: 50, title: 'Módulo 4: Stack Inspector' },
+        lab3_mod5: { lab: 3, xp: 150, title: '⚡ LeetCode #20: Valid Parentheses', isLeet: true },
+        // Fase 4
+        lab4_mod1: { lab: 4, xp: 50, title: 'Módulo 1: Memória do Menor Preço' },
+        lab4_mod2: { lab: 4, xp: 50, title: 'Módulo 2: Lucro Diário' },
+        lab4_mod3: { lab: 4, xp: 50, title: 'Módulo 3: Consultor da Bolsa' },
+        lab4_mod4: { lab: 4, xp: 50, title: 'Módulo 4: Simulador Wall Street' },
+        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true }
+      };
+
+      const LEVELS = [
+        { level: 1, minXp: 0, maxXp: 150, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 150, maxXp: 350, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 350, maxXp: 650, rank: '⚡ Caçador de Algoritmos' },
+        { level: 4, minXp: 650, maxXp: 1000, rank: '🏗️ Arquiteto de Estruturas' },
+        { level: 5, minXp: 1000, maxXp: 1350, rank: '🚀 Engenheiro Big Tech' },
+        { level: 6, minXp: 1350, maxXp: 2000, rank: '👑 Lenda do LeetCode' }
+      ];
+
+      const ACHIEVEMENTS = [
+        { id: 'first_blood', icon: '🩸', title: 'Primeiro Passo', desc: 'Concluiu sua primeira atividade prática', check: (p) => Object.keys(p.completedTasks).length >= 1 },
+        { id: 'hash_master', icon: '🗺️', title: 'Mestre do Hash Map', desc: 'Venceu o LeetCode #1: Two Sum', check: (p) => !!p.completedTasks['lab1_mod5'] },
+        { id: 'two_pointers', icon: '🎯', title: 'Olhos de Águia', desc: 'Venceu o LeetCode #125: Valid Palindrome', check: (p) => !!p.completedTasks['lab2_mod5'] },
+        { id: 'lifo_guardian', icon: '🥞', title: 'Guardião LIFO', desc: 'Venceu o LeetCode #20: Valid Parentheses', check: (p) => !!p.completedTasks['lab3_mod5'] },
+        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Venceu o LeetCode #121: Buy & Sell Stock', check: (p) => !!p.completedTasks['lab4_mod5'] },
+        { id: 'python_legend', icon: '👑', title: 'Maratonista Python', desc: 'Acumulou 1.000+ XP nos laboratórios', check: (p) => p.xp >= 1000 }
+      ];
+
+      function getDefaultProfile() {
+        return {
+          name: 'Claudio',
+          avatar: '🐍',
+          xp: 0,
+          completedTasks: {},
+          savedCode: {},
+          history: []
+        };
+      }
+
+      function loadProfile() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultProfile();
+          const parsed = JSON.parse(raw);
+          return Object.assign(getDefaultProfile(), parsed);
+        } catch (e) {
+          return getDefaultProfile();
+        }
+      }
+
+      function saveProfile(profile) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+        } catch (e) {}
+      }
+
+      function getLevelInfo(xp) {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) return LEVELS[i];
+        }
+        return LEVELS[0];
+      }
+
+      function showToast(message, subtext) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl text-xs text-white flex items-center gap-3 transform transition-all duration-300 pointer-events-auto';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center text-xl">✨</div>
+          <div>
+            <div class="font-extrabold text-emerald-400 text-sm">${message}</div>
+            <div class="text-slate-300 text-[11px]">${subtext || ''}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      function completeTask(taskKey) {
+        const taskDef = TASKS_CATALOG[taskKey];
+        if (!taskDef) return;
+        const profile = loadProfile();
+        if (profile.completedTasks[taskKey]) {
+          // Already completed before, just refresh UI
+          renderTopBar(profile);
+          return;
+        }
+
+        const oldLevel = getLevelInfo(profile.xp).level;
+        profile.completedTasks[taskKey] = {
+          completedAt: new Date().toISOString(),
+          xp: taskDef.xp
+        };
+        profile.xp += taskDef.xp;
+        profile.history.unshift({
+          date: new Date().toISOString(),
+          text: `+${taskDef.xp} XP • ${taskDef.title}`
+        });
+        if (profile.history.length > 25) profile.history.pop();
+
+        saveProfile(profile);
+        renderTopBar(profile);
+
+        const newLevelObj = getLevelInfo(profile.xp);
+        if (newLevelObj.level > oldLevel) {
+          showToast(`🎉 LEVEL UP! Nível ${newLevelObj.level}!`, `Nova Patente: ${newLevelObj.rank} (+${taskDef.xp} XP)`);
+        } else {
+          showToast(`+${taskDef.xp} XP Ganhos!`, taskDef.title);
+        }
+      }
+
+      function saveEditorCode(editorId, code) {
+        const profile = loadProfile();
+        profile.savedCode[`lab${CURRENT_LAB}_${editorId}`] = code;
+        saveProfile(profile);
+      }
+
+      function getLabStats(profile, labNum) {
+        const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
+        const done = keys.filter(k => !!profile.completedTasks[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        return { done, total: keys.length, pct, keys };
+      }
+
+      function renderTopBar(profile) {
+        profile = profile || loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        const avatarEl = document.getElementById('profile-bar-avatar');
+        const nameEl = document.getElementById('profile-bar-name');
+        const levelEl = document.getElementById('profile-bar-level');
+        const rankEl = document.getElementById('profile-bar-rank');
+        const xpTextEl = document.getElementById('profile-bar-xp-text');
+        const xpFillEl = document.getElementById('profile-bar-xp-fill');
+
+        if (avatarEl) avatarEl.innerText = profile.avatar;
+        if (nameEl) nameEl.innerText = profile.name;
+        if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
+        if (rankEl) rankEl.innerText = lvl.rank;
+        if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
+
+        if (xpFillEl) {
+          const span = Math.max(1, lvl.maxXp - lvl.minXp);
+          const inLevel = Math.min(span, Math.max(0, profile.xp - lvl.minXp));
+          xpFillEl.style.width = `${Math.round((inLevel / span) * 100)}%`;
+        }
+
+        for (let l = 1; l <= 4; l++) {
+          const st = getLabStats(profile, l);
+          const el = document.getElementById(`nav-pct-lab${l}`);
+          if (el) {
+            el.innerText = `${st.pct}%`;
+            if (st.pct === 100) {
+              el.className = 'text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+            }
+          }
+        }
+      }
+
+      function restoreLabState() {
+        const profile = loadProfile();
+        renderTopBar(profile);
+
+        // Restore saved editor code & bind auto-save
+        document.querySelectorAll('textarea').forEach(ta => {
+          const key = `lab${CURRENT_LAB}_${ta.id}`;
+          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key].trim() !== '') {
+            ta.value = profile.savedCode[key];
+            if (typeof handleAutoGrow === 'function') handleAutoGrow(ta);
+          }
+          ta.addEventListener('input', function() {
+            saveEditorCode(this.id, this.value);
+          });
+        });
+
+        // Restore badges & progress for current lab
+        for (let m = 1; m <= 5; m++) {
+          const taskKey = `lab${CURRENT_LAB}_mod${m}`;
+          if (profile.completedTasks[taskKey]) {
+            const badge = document.getElementById(`badge-mod-${m}`);
+            if (badge) {
+              badge.innerText = 'Concluído ✓';
+              badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+            }
+            if (m === 5) {
+              const lc1 = document.getElementById('leetcode-status');
+              if (lc1) {
+                lc1.className = 'px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2';
+                lc1.innerHTML = '<span>🎉</span> Desafio Resolvido!';
+              }
+              const lc2 = document.getElementById('status-tag-leetcode');
+              if (lc2) {
+                lc2.innerText = 'Concluído ✅';
+                lc2.className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+              }
+            }
+            if (typeof completedModules !== 'undefined') {
+              if (completedModules instanceof Set) {
+                completedModules.add(m === 5 ? 'leetcode' : `mod-${m}`);
+              } else if (typeof completedModules === 'object') {
+                completedModules[`mod${m}`] = true;
+              }
+            }
+          }
+        }
+
+        // Update current lab header progress bar
+        const st = getLabStats(profile, CURRENT_LAB);
+        const pctEl = document.getElementById('progress-percent');
+        const fillEl = document.getElementById('progress-bar-fill');
+        if (pctEl) pctEl.innerText = `${st.pct}% Concluído`;
+        if (fillEl) fillEl.style.width = `${st.pct}%`;
+        if (st.pct === 100) {
+          const trophy = document.getElementById('trophy-badge');
+          if (trophy) {
+            trophy.classList.remove('opacity-30');
+            trophy.classList.add('opacity-100', 'scale-125');
+          }
+        }
+      }
+
+      function openModal() {
+        const profile = loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        document.getElementById('modal-avatar-display').innerText = profile.avatar;
+        document.getElementById('modal-name-input').value = profile.name;
+        document.getElementById('modal-level-badge').innerText = `Nível ${lvl.level}`;
+        document.getElementById('modal-rank-title').innerText = lvl.rank;
+        document.getElementById('modal-xp-Next').innerText = `${profile.xp} / ${lvl.maxXp} XP`;
+
+        const totalTasks = Object.keys(TASKS_CATALOG).length;
+        const doneTasks = Object.keys(profile.completedTasks).length;
+        const leetsDone = ['lab1_mod5', 'lab2_mod5', 'lab3_mod5', 'lab4_mod5'].filter(k => !!profile.completedTasks[k]).length;
+
+        document.getElementById('stat-total-xp').innerText = `${profile.xp} XP`;
+        document.getElementById('stat-tasks-done').innerText = `${doneTasks} / ${totalTasks}`;
+        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 4`;
+        document.getElementById('stat-global-pct').innerText = `${Math.round((doneTasks / totalTasks) * 100)}%`;
+
+        // Render Labs breakdown
+        const labsInfo = [
+          { num: 1, name: 'Fase 1: Hash Maps & Two Sum', url: 'index.html', color: 'sky' },
+          { num: 2, name: 'Fase 2: Strings & Two Pointers', url: 'lab2_strings_twopointers.html', color: 'purple' },
+          { num: 3, name: 'Fase 3: Pilhas & Parênteses', url: 'lab3_stacks_valid_parentheses.html', color: 'indigo' },
+          { num: 4, name: 'Fase 4: Sliding Window & Ações', url: 'lab4_sliding_window_stocks.html', color: 'emerald' }
+        ];
+        const labsContainer = document.getElementById('modal-labs-breakdown');
+        labsContainer.innerHTML = labsInfo.map(l => {
+          const st = getLabStats(profile, l.num);
+          const taskItems = st.keys.map(k => {
+            const done = !!profile.completedTasks[k];
+            const t = TASKS_CATALOG[k];
+            return `<div class="flex items-center justify-between py-0.5 ${done ? 'text-emerald-300' : 'text-slate-500'}">
+              <span>${done ? '✅' : '⏳'} ${t.title}</span>
+              <span class="font-mono text-[10px]">+${t.xp} XP</span>
+            </div>`;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <a href="${l.url}" class="font-bold text-white hover:underline">${l.name}</a>
+                <span class="px-2 py-0.5 rounded bg-slate-950 font-mono font-bold text-emerald-400">${st.pct}%</span>
+              </div>
+              <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full" style="width: ${st.pct}%"></div>
+              </div>
+              <div class="space-y-0.5 pt-1 text-[11px]">
+                ${taskItems}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Achievements
+        const achContainer = document.getElementById('modal-achievements-grid');
+        achContainer.innerHTML = ACHIEVEMENTS.map(a => {
+          const unlocked = a.check(profile);
+          return `
+            <div class="p-3 rounded-xl border transition-all ${unlocked ? 'bg-indigo-950/30 border-indigo-500/40 text-white' : 'bg-slate-900/40 border-slate-800/60 text-slate-600 opacity-60'} flex items-start gap-2.5">
+              <span class="text-2xl">${a.icon}</span>
+              <div>
+                <div class="font-bold text-xs ${unlocked ? 'text-amber-300' : 'text-slate-500'}">${a.title}</div>
+                <div class="text-[11px] ${unlocked ? 'text-slate-300' : 'text-slate-600'} mt-0.5">${a.desc}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('profile-modal').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('profile-modal').classList.add('hidden');
+      }
+
+      function saveName() {
+        const input = document.getElementById('modal-name-input');
+        if (!input) return;
+        const val = input.value.trim() || 'Estudante Python';
+        const profile = loadProfile();
+        profile.name = val;
+        saveProfile(profile);
+        renderTopBar(profile);
+        showToast('Nome atualizado!', `Olá, ${val}!`);
+      }
+
+      function setAvatar(emoji) {
+        const profile = loadProfile();
+        profile.avatar = emoji;
+        saveProfile(profile);
+        document.getElementById('modal-avatar-display').innerText = emoji;
+        renderTopBar(profile);
+      }
+
+      function exportProfile() {
+        const profile = loadProfile();
+        const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `python_lab_perfil_${profile.name.toLowerCase().replace(/\s+/g, '_')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function resetProfile() {
+        if (!confirm('Tem certeza que deseja zerar todo o seu XP e progresso salvo?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      return {
+        completeTask,
+        saveEditorCode,
+        restoreLabState,
+        openModal,
+        closeModal,
+        saveName,
+        setAvatar,
+        exportProfile,
+        resetProfile
+      };
+    })();
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => window.ProfileSystem.restoreLabState());
+    } else {
+      window.ProfileSystem.restoreLabState();
+    }
+  </script>
+
+  <!-- PROFILE MODAL & XP TOAST CONTAINER -->
+  <div id="xp-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-4">
+          <div id="modal-avatar-display" class="w-16 h-16 rounded-2xl bg-indigo-500/15 border-2 border-indigo-500/40 flex items-center justify-center text-4xl shadow-inner">
+            🐍
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <input id="modal-name-input" type="text" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-lg font-extrabold text-white focus:outline-none focus:border-indigo-500" value="Estudante Python" maxlength="28">
+              <button onclick="window.ProfileSystem.saveName()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors">
+                Salvar Nome
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2 text-xs">
+              <span id="modal-level-badge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Nível 1</span>
+              <span id="modal-rank-title" class="text-amber-400 font-semibold">🌱 Iniciante Python</span>
+              <span class="text-slate-500">•</span>
+              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 150 XP para o próximo nível</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2 py-1">✕</button>
+      </div>
+
+      <!-- Avatar Selector -->
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-slate-400 font-medium">Escolher Avatar:</span>
+        <button onclick="window.ProfileSystem.setAvatar('🐍')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐍</button>
+        <button onclick="window.ProfileSystem.setAvatar('🚀')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🚀</button>
+        <button onclick="window.ProfileSystem.setAvatar('⚡')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">⚡</button>
+        <button onclick="window.ProfileSystem.setAvatar('🧙‍♂️')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🧙‍♂️</button>
+        <button onclick="window.ProfileSystem.setAvatar('🦊')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🦊</button>
+        <button onclick="window.ProfileSystem.setAvatar('🤖')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🤖</button>
+        <button onclick="window.ProfileSystem.setAvatar('🐉')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐉</button>
+        <button onclick="window.ProfileSystem.setAvatar('🔥')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🔥</button>
+      </div>
+
+      <!-- Top Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">XP Total</div>
+          <div id="stat-total-xp" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">0 XP</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Atividades</div>
+          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 20</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">LeetCodes</div>
+          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 4</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Progresso Geral</div>
+          <div id="stat-global-pct" class="text-2xl font-extrabold text-cyan-400 font-mono mt-1">0%</div>
+        </div>
+      </div>
+
+      <!-- Progress Across All 4 Labs -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado por Fase</h3>
+        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Achievements / Badges -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas</h3>
+        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Data Backup & Reset -->
+      <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <button onclick="window.ProfileSystem.exportProfile()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+            📥 Exportar Backup (.json)
+          </button>
+          <button onclick="window.ProfileSystem.resetProfile()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 border border-rose-500/30 transition-colors">
+            🗑️ Resetar Progresso
+          </button>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="px-5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

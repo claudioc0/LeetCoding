@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Study Lab: Fundamentos & LeetCode (Modo Escuro)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    /* Dark Theme Base Variables */
+    :root {
+      --background: #090d16;
+      --card: #0f172a;
+      --card-hover: #1e293b;
+      --secondary: #1e293b;
+      --border: #334155;
+      --foreground: #f8fafc;
+      --muted-foreground: #94a3b8;
+      --primary: #38bdf8;
+      --primary-foreground: #020617;
+    }
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+    }
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    .code-font {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+      textarea { tab-size: 4; -moz-tab-size: 4; }
+  
+    textarea {
+      tab-size: 4;
+      -moz-tab-size: 4;
+      resize: vertical !important;
+      line-height: 1.6 !important;
+      font-size: 13px !important;
+    }
+  
+  </style>
+</head>
+<body class="bg-[#090d16] text-[#f8fafc] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-5xl mx-auto space-y-8">
+
+    <!-- Header / Banner -->
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col lg:flex-row items-center justify-between gap-4">
+      <!-- Left: Avatar, Name, Level & XP Bar -->
+      <div class="flex items-center gap-3.5 w-full lg:w-auto">
+        <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+          🐍
+        </button>
+        <div class="flex-1 min-w-[180px]">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-extrabold text-white text-sm md:text-base tracking-tight" id="profile-bar-name">Estudante Python</span>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold" id="profile-bar-level">Nível 1</span>
+            <span class="text-[11px] text-amber-400 font-semibold" id="profile-bar-rank">🌱 Iniciante Python</span>
+          </div>
+          <div class="mt-1.5 flex items-center gap-2.5">
+            <div class="flex-1 max-w-[200px] bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: 4 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-xs">
+        <a href="index.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-sky-500/15 border-sky-500/40 text-sky-300 font-bold">
+          <span>F1: Hash Map</span>
+          <span id="nav-pct-lab1" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab2_strings_twopointers.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F2: Two Pointers</span>
+          <span id="nav-pct-lab2" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F3: Pilhas</span>
+          <span id="nav-pct-lab3" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab4_sliding_window_stocks.html" class="px-2.5 py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F4: Sliding Window</span>
+          <span id="nav-pct-lab4" class="text-[10px] px-1.5 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+      </div>
+
+      <!-- Right: Open Profile Modal Button -->
+      <div class="flex items-center gap-2 w-full lg:w-auto justify-end">
+        <button onclick="window.ProfileSystem.openModal()" class="w-full lg:w-auto px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-sm">
+          <span>👤</span> Meu Perfil & Conquistas
+        </button>
+      </div>
+    </div>
+
+    <header class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl shadow-black/40">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 font-bold text-2xl shadow-inner">
+              🐍
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-white">Python Learning Lab</h1>
+                <span class="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-sky-400 border border-slate-700 font-mono">🌙 Modo Escuro</span>
+              </div>
+              <p class="text-sm text-slate-400 mt-0.5">Do fundamento da linguagem à solução ótima no LeetCode</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Score & Progress indicator -->
+        <div class="flex items-center gap-4 bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 shadow-sm">
+          <div class="text-right">
+            <div class="text-xs text-slate-400">Progresso Geral</div>
+            <div class="font-bold text-sm text-sky-400" id="progress-percent">0% Concluído</div>
+          </div>
+          <div class="w-24 bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800">
+            <div id="progress-bar-fill" class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div id="trophy-badge" class="text-2xl opacity-30 transition-all">🏆</div>
+        </div>
+      </div>
+
+      <!-- Quick Nav Pills & Phase 2 link -->
+      <div class="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800 text-xs md:text-sm">
+        <nav class="flex flex-wrap gap-2">
+          <a href="#mod-1" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-sky-400 transition-colors">1. Tipos & F-Strings</a>
+          <a href="#mod-2" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-emerald-400 transition-colors">2. Coleções (Dict & List)</a>
+          <a href="#mod-3" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-purple-400 transition-colors">3. Loops & Enumerate</a>
+          <a href="#mod-4" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 hover:text-amber-400 transition-colors">4. O Padrão Hash Map</a>
+          <a href="#mod-5" class="px-3 py-1.5 rounded-lg border border-yellow-500/30 text-yellow-400 font-medium bg-yellow-500/5 hover:bg-yellow-500/15 transition-colors">⚡ 5. LeetCode: Two Sum</a>
+        </nav>
+        <div class="flex items-center gap-2">
+          <a href="lab2_strings_twopointers.html" class="px-3 py-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 font-medium transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>Fase 2: Two Pointers ➡</span>
+          </a>
+          <a href="lab3_stacks_valid_parentheses.html" class="px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-medium transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>Fase 3: Pilhas ➡</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- MÓDULO 1: TIPOS PRIMITIVOS E F-STRINGS -->
+    <section id="mod-1" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">Módulo 1</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Variáveis, Tipos de Dados e F-Strings</h2>
+          <p class="text-sm text-slate-400">Em Python, a tipagem é dinâmica e fortemente tipada. Conhecer os tipos fundamentais e a formatação limpa é essencial.</p>
+        </div>
+        <span id="badge-mod-1" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Theory cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>🏷️</span> Tipos Primitivos Básicos
+          </h3>
+          <ul class="space-y-1.5 text-slate-400">
+            <li><code class="text-sky-400 font-mono bg-slate-950 px-1 py-0.5 rounded">int</code>: Números inteiros (<code class="font-mono text-slate-300">42</code>, <code class="font-mono text-slate-300">-7</code>)</li>
+            <li><code class="text-sky-400 font-mono bg-slate-950 px-1 py-0.5 rounded">float</code>: Ponto flutuante (<code class="font-mono text-slate-300">3.14</code>, <code class="font-mono text-slate-300">-0.5</code>)</li>
+            <li><code class="text-sky-400 font-mono bg-slate-950 px-1 py-0.5 rounded">str</code>: Textos / strings (<code class="font-mono text-slate-300">"LeetCode"</code>)</li>
+            <li><code class="text-sky-400 font-mono bg-slate-950 px-1 py-0.5 rounded">bool</code>: Booleanos (<code class="font-mono text-slate-300">True</code>, <code class="font-mono text-slate-300">False</code>)</li>
+          </ul>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>⚡</span> F-Strings (Interpolação Moderna)
+          </h3>
+          <p class="text-slate-400">Permite interpolar variáveis diretamente na string com alta legibilidade:</p>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-emerald-400 overflow-x-auto">
+nome = "Dev"
+idade = 25
+msg = f"{nome} tem {idade} anos"
+# Saída: "Dev tem 25 anos"</pre>
+        </div>
+      </div>
+
+      <!-- Interactive Mini-Exercise 1 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 1: Calcule a média e formate com f-string
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Você recebeu as notas <code class="font-mono text-sky-400">nota1 = 8.0</code> e <code class="font-mono text-sky-400">nota2 = 6.0</code>. 
+          Calcule a <code class="font-mono text-sky-400">media</code> aritmética entre elas, gere a string <code class="font-mono text-sky-400">resultado = f"Média final: {media}"</code> e imprima com <code class="font-mono text-sky-400">print(resultado)</code>.
+        </p>
+
+        <!-- Code Playground 1 (INICIADO VAZIO) -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">exercicio_1.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex1" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500 leading-relaxed font-mono resize-y" placeholder="# Declare as variáveis, calcule a média e imprima o resultado com print()
+nota1 = 8.0
+nota2 = 6.0
+
+# Seu código aqui..."></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise1()" class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(1)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx1()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise1()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 1 -->
+        <div id="hint-box-ex1" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-sky-400 flex items-center gap-1">💡 Dica para o Desafio 1:</div>
+          <p>1. Para calcular a média, some as duas notas e divida por 2: <code class="font-mono text-emerald-400">media = (nota1 + nota2) / 2</code>.</p>
+          <p>2. Para criar a f-string: <code class="font-mono text-emerald-400">resultado = f"Média final: {media}"</code>.</p>
+          <p>3. Não se esqueça de exibir a saída: <code class="font-mono text-emerald-400">print(resultado)</code>.</p>
+        </div>
+
+        <!-- Terminal Output 1 -->
+        <div id="output-ex1" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2: COLEÇÕES (LISTAS E DICIONÁRIOS) -->
+    <section id="mod-2" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Módulo 2</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Estruturas de Dados: Listas & Dicionários (Hash Maps)</h2>
+          <p class="text-sm text-slate-400">A escolha da estrutura correta define a diferença entre um código lento e uma solução ótima aceita no LeetCode.</p>
+        </div>
+        <span id="badge-mod-2" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- List vs Dict comparison -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+              <span>📋</span> Lista (<code class="font-mono text-emerald-400">list</code>)
+            </h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">Busca O(n)</span>
+          </div>
+          <p class="text-slate-400">Coleção ordenada indexada numericamente por inteiros (0, 1, 2...):</p>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-emerald-400 overflow-x-auto">
+nums = [10, 20, 30]
+nums.append(40)      # Adiciona ao fim
+print(nums[0])       # Acesso por índice: 10
+# Buscar 'if x in nums': percorre todos os itens O(n)</pre>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-sm text-white flex items-center gap-2">
+              <span>🗄️</span> Dicionário (<code class="font-mono text-sky-400">dict</code>)
+            </h3>
+            <span class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Busca O(1) Instantânea</span>
+          </div>
+          <p class="text-slate-400">Mapeia <code class="font-mono text-sky-400">chave: valor</code>. A busca por chave usa tabela hash e leva tempo constante:</p>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-sky-400 overflow-x-auto">
+vistos = {}
+vistos[2] = 0        # chave: 2, valor: índice 0
+if 2 in vistos:      # Verificação instantânea O(1)!
+    print(vistos[2]) # Retorna 0</pre>
+        </div>
+      </div>
+
+      <!-- Key Concept Note -->
+      <div class="p-4 rounded-xl bg-sky-950/40 border border-sky-800/50 text-xs text-sky-300 space-y-1">
+        <div class="font-bold flex items-center gap-1.5 text-sky-200">
+          <span>💡</span> Por que Dicionários são o superpoder para o LeetCode?
+        </div>
+        <p>Se você precisa verificar se um número já apareceu antes, buscar numa lista leva <code class="font-mono font-bold text-white">O(n)</code> passos. Fazer isso para cada elemento resulta em <code class="font-mono font-bold text-red-400">O(n²)</code>. Guardando os números vistos em um <strong>Dicionário</strong>, cada consulta leva apenas <code class="font-mono font-bold text-emerald-400">O(1)</code>!</p>
+      </div>
+
+      <!-- Interactive Mini-Exercise 2 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 2: Memorizando dados em um Dicionário
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Crie um dicionário chamado <code class="font-mono text-sky-400">tabela</code>, adicione a chave <code class="font-mono text-sky-400">"alvo"</code> com valor <code class="font-mono text-sky-400">100</code>, e verifique com <code class="font-mono text-sky-400">in</code> se <code class="font-mono">"alvo"</code> existe na tabela antes de imprimir com <code class="font-mono">print()</code>.
+        </p>
+
+        <!-- Code Playground 2 (INICIADO VAZIO) -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">exercicio_2.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex2" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500 leading-relaxed font-mono resize-y" placeholder="# Crie o dicionário vazio: tabela = {}
+# Adicione a chave 'alvo' com valor 100
+# Verifique com 'in' e faça o print()
+
+"></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise2()" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(2)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx2()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise2()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 2 -->
+        <div id="hint-box-ex2" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-emerald-400 flex items-center gap-1">💡 Dica para o Desafio 2:</div>
+          <p>1. Crie o dicionário vazio: <code class="font-mono text-emerald-400">tabela = {}</code>.</p>
+          <p>2. Adicione a chave com: <code class="font-mono text-emerald-400">tabela["alvo"] = 100</code>.</p>
+          <p>3. Faça a verificação de existência com <code class="font-mono text-emerald-400">in</code>: <code class="font-mono text-emerald-400">if "alvo" in tabela: print(tabela["alvo"])</code>.</p>
+        </div>
+
+        <!-- Terminal Output 2 -->
+        <div id="output-ex2" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 3: CONDICIONAIS E ENUMERATE -->
+    <section id="mod-3" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20">Módulo 3</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">Loops Inteligentes: A Função <code>enumerate()</code></h2>
+          <p class="text-sm text-slate-400">Muitos iniciantes usam contadores manuais ou <code class="font-mono">range(len(nums))</code>. O modo idiomático em Python é <code class="font-mono">enumerate()</code>.</p>
+        </div>
+        <span id="badge-mod-3" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-slate-400 flex items-center gap-2">
+            <span>❌</span> Menos Idiomático em Python
+          </h3>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-rose-400 overflow-x-auto">
+nums = [10, 20, 30]
+# Usando range(len(...))
+for i in range(len(nums)):
+    valor = nums[i]
+    print(i, valor)</pre>
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+          <h3 class="font-semibold text-sm text-emerald-400 flex items-center gap-2">
+            <span>✅</span> Pythonico com enumerate()
+          </h3>
+          <pre class="code-font text-xs p-3 rounded-lg bg-slate-950 border border-slate-800/80 text-emerald-400 overflow-x-auto">
+nums = [10, 20, 30]
+# Recebe simultaneamente (índice, valor)
+for i, num in enumerate(nums):
+    print(f"Posição {i}: {num}")</pre>
+        </div>
+      </div>
+
+      <!-- Interactive Mini-Exercise 3 -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-4">
+        <div class="flex items-center justify-between">
+          <h4 class="font-semibold text-sm text-white flex items-center gap-2">
+            <span>✏️</span> Mini-Desafio 3: Encontrando o índice do número especial
+          </h4>
+          <span class="text-xs text-slate-400">Pratique escrevendo o código:</span>
+        </div>
+        <p class="text-xs text-slate-300">
+          Você tem a lista <code class="font-mono text-sky-400">nums = [2, 11, 7, 15]</code>.
+          Percorra-a usando <code class="font-mono text-sky-400">enumerate(nums)</code>. Quando o valor for igual a <code class="font-mono text-sky-400">7</code>, imprima a mensagem <code class="font-mono text-sky-400">f"Achei o 7 no índice {i}"</code>.
+        </p>
+
+        <!-- Code Playground 3 (INICIADO VAZIO) -->
+        <div class="space-y-2">
+          <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div class="px-3 py-1.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+              <span class="font-mono">exercicio_3.py</span>
+              <span class="text-[11px] text-slate-500">Escreva seu código abaixo</span>
+            </div>
+            <textarea id="code-ex3" rows="9" style="min-height: 240px;" class="w-full code-font text-xs p-3 bg-transparent text-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500 leading-relaxed font-mono resize-y" placeholder="nums = [2, 11, 7, 15]
+
+# Itere com 'for i, num in enumerate(nums):'
+# Verifique se num == 7 e imprima a mensagem:"></textarea>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+            <div class="flex items-center gap-2">
+              <button onclick="runExercise3()" class="px-4 py-2 rounded-lg bg-purple-500 hover:bg-purple-400 text-slate-950 text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <span>▶ Executar Código</span>
+              </button>
+              <button onclick="toggleHintEx(3)" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 transition-colors flex items-center gap-1">
+                <span>💡 Dica</span>
+              </button>
+            </div>
+            <div class="flex items-center gap-3">
+              <button onclick="loadSolutionEx3()" class="text-xs text-amber-400 hover:underline">Ver Solução</button>
+              <button onclick="clearExercise3()" class="text-xs text-slate-400 hover:text-slate-200">Limpar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dica Box 3 -->
+        <div id="hint-box-ex3" class="hidden p-3.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 space-y-1.5">
+          <div class="font-semibold text-purple-400 flex items-center gap-1">💡 Dica para o Desafio 3:</div>
+          <p>1. Estrutura do loop: <code class="font-mono text-purple-300">for i, num in enumerate(nums):</code>.</p>
+          <p>2. Condicional interna: <code class="font-mono text-purple-300">if num == 7:</code>.</p>
+          <p>3. Imprima o índice usando f-string: <code class="font-mono text-purple-300">print(f"Achei o 7 no índice {i}")</code>.</p>
+        </div>
+
+        <!-- Terminal Output 3 -->
+        <div id="output-ex3" class="hidden p-3 rounded-lg border text-xs code-font"></div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 4: O PADRÃO ALGORÍTMICO DO LEETCODE (SIMULADOR VISUAL) -->
+    <section id="mod-4" class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Módulo 4</span>
+          <h2 class="text-xl md:text-2xl font-bold mt-2 text-white">O Padrão de Complementos (Hash Map)</h2>
+          <p class="text-sm text-slate-400">Veja passo a passo como o raciocínio matemático se conecta com Dicionários para resolver o problema em tempo linear O(n).</p>
+        </div>
+        <span id="badge-mod-4" class="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Logic formula box -->
+      <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2 text-xs md:text-sm">
+        <div class="font-bold text-white">A Equação Chave:</div>
+        <p class="text-slate-400">
+          Se queremos que <code class="font-mono text-amber-400">A + B = Target</code>, isso significa que para qualquer número <code class="font-mono text-amber-400">A</code> que estamos visitando, o número que precisamos encontrar é:
+        </p>
+        <div class="p-3 bg-slate-950 rounded-lg text-center font-mono text-sm md:text-base font-bold text-emerald-400 border border-slate-800">
+          complemento = target - num
+        </div>
+        <p class="text-slate-400">
+          Em vez de fazer outro loop para procurar o complemento (o que levaria $O(n^2)$), basta verificar se ele já foi salvo no nosso dicionário <code class="font-mono text-sky-400">vistos = {}</code> em apenas $O(1)$!
+        </p>
+      </div>
+
+      <!-- Interactive Step-by-Step Visualizer -->
+      <div class="border border-slate-800 rounded-xl p-5 bg-slate-900/40 space-y-5">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h4 class="font-semibold text-sm text-white">Simulador Visual do Algoritmo</h4>
+            <p class="text-xs text-slate-400">Array: <code class="font-mono text-sky-400">[2, 7, 11, 15]</code> | Alvo (Target): <code class="font-mono text-amber-400">9</code></p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="prevStep()" id="btn-prev-step" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-medium hover:bg-slate-700 text-slate-200 disabled:opacity-30 disabled:cursor-not-allowed">
+              ⬅ Anterior
+            </button>
+            <button onclick="nextStep()" id="btn-next-step" class="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold transition-colors">
+              Próximo Passo ➡
+            </button>
+            <button onclick="resetStep()" class="px-2 py-1.5 text-xs text-slate-400 hover:text-slate-200 hover:underline">
+              Reiniciar
+            </button>
+          </div>
+        </div>
+
+        <!-- Array Elements Visualization -->
+        <div>
+          <div class="text-xs font-medium text-slate-400 mb-2">Elementos da Lista:</div>
+          <div class="grid grid-cols-4 gap-2 text-center" id="array-visual-container">
+            <div id="elem-0" class="p-3 rounded-xl border border-slate-800 bg-slate-950 transition-all">
+              <div class="text-xs text-slate-500">idx: 0</div>
+              <div class="text-lg font-bold text-slate-200">2</div>
+            </div>
+            <div id="elem-1" class="p-3 rounded-xl border border-slate-800 bg-slate-950 transition-all">
+              <div class="text-xs text-slate-500">idx: 1</div>
+              <div class="text-lg font-bold text-slate-200">7</div>
+            </div>
+            <div id="elem-2" class="p-3 rounded-xl border border-slate-800 bg-slate-950 transition-all">
+              <div class="text-xs text-slate-500">idx: 2</div>
+              <div class="text-lg font-bold text-slate-200">11</div>
+            </div>
+            <div id="elem-3" class="p-3 rounded-xl border border-slate-800 bg-slate-950 transition-all">
+              <div class="text-xs text-slate-500">idx: 3</div>
+              <div class="text-lg font-bold text-slate-200">15</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- State Inspector -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+            <div class="text-slate-400">Variáveis do Passo Atual:</div>
+            <div id="step-vars" class="font-mono text-xs text-slate-200">Aguardando início... Clique em "Próximo Passo ➡".</div>
+          </div>
+          <div class="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+            <div class="text-slate-400">Dicionário de Memória (<code class="font-mono text-sky-400">vistos</code>):</div>
+            <div id="step-dict" class="font-mono text-xs text-sky-400">{}</div>
+          </div>
+        </div>
+
+        <!-- Step Explanation -->
+        <div id="step-explanation" class="p-3.5 rounded-lg bg-sky-950/40 border border-sky-800/50 text-xs text-sky-200">
+          💡 Clique em <strong>"Próximo Passo ➡"</strong> para observar a iteração do algoritmo e como o dicionário é consultado e preenchido em tempo real.
+        </div>
+      </div>
+    </section>
+
+    <!-- MÓDULO 5: O DESAFIO LEETCODE #1: TWO SUM -->
+    <section id="mod-5" class="bg-[#0f172a] border-2 border-yellow-500/30 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
+      <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">LeetCode #1</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Dificuldade: Easy</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold mt-2 text-white">Desafio Prático: Two Sum (Soma de Dois)</h2>
+          <p class="text-sm text-slate-400 mt-1">Aplique todos os conceitos aprendidos: listas, dicionários, loops com enumerate e retorno de função.</p>
+        </div>
+        <div id="status-tag-leetcode" class="self-start px-3 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700">
+          Não Resolvido
+        </div>
+      </div>
+
+      <!-- Problem Statement -->
+      <div class="space-y-3 text-xs md:text-sm text-slate-300 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+        <p class="text-white font-medium">
+          <strong>Enunciado:</strong> Dado um array de números inteiros <code class="font-mono text-sky-400">nums</code> e um número inteiro <code class="font-mono text-amber-400">target</code>, retorne os <strong>índices</strong> dos dois números de modo que a soma deles seja igual a <code class="font-mono text-amber-400">target</code>.
+        </p>
+        <ul class="list-disc list-inside space-y-1 pl-2 text-slate-400">
+          <li>Você pode assumir que cada entrada tem <strong>exatamente uma solução válida</strong>.</li>
+          <li>Você <strong>não pode</strong> usar o mesmo elemento duas vezes.</li>
+          <li>Você pode retornar a resposta com os índices em qualquer ordem (ex: <code class="font-mono text-slate-200">[0, 1]</code> ou <code class="font-mono text-slate-200">[1, 0]</code>).</li>
+        </ul>
+      </div>
+
+      <!-- Examples Accordion / Tabs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 1:</div>
+          <div class="text-slate-400 font-mono">Entrada: nums = [2,7,11,15], target = 9</div>
+          <div class="text-emerald-400 font-mono mt-1 font-bold">Saída: [0, 1]</div>
+          <div class="text-slate-500 text-[11px] mt-1">Porque nums[0] + nums[1] == 9</div>
+        </div>
+
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 2:</div>
+          <div class="text-slate-400 font-mono">Entrada: nums = [3,2,4], target = 6</div>
+          <div class="text-emerald-400 font-mono mt-1 font-bold">Saída: [1, 2]</div>
+          <div class="text-slate-500 text-[11px] mt-1">Porque nums[1] + nums[2] == 6</div>
+        </div>
+
+        <div class="p-3.5 rounded-lg bg-slate-900/80 border border-slate-800">
+          <div class="font-semibold text-white mb-1">Exemplo 3 (Duplicado):</div>
+          <div class="text-slate-400 font-mono">Entrada: nums = [3,3], target = 6</div>
+          <div class="text-emerald-400 font-mono mt-1 font-bold">Saída: [0, 1]</div>
+          <div class="text-slate-500 text-[11px] mt-1">Dois elementos iguais em posições diferentes</div>
+        </div>
+      </div>
+
+      <!-- Code Editor Component -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Editor Python</span>
+            <span class="text-[11px] text-slate-500">(Pressione Tab para identar)</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="insertTemplate('starter')" class="text-xs text-slate-400 hover:text-white transition-colors">Reiniciar Template</button>
+            <span class="text-slate-700">|</span>
+            <button onclick="insertTemplate('solution')" class="text-xs text-amber-400 hover:underline">Carregar Solução Ótima</button>
+          </div>
+        </div>
+
+        <div class="relative rounded-xl border border-slate-800 bg-slate-950 overflow-hidden shadow-inner">
+          <div class="px-4 py-2 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+              <span class="font-mono text-xs ml-2 text-slate-200">solution.py</span>
+            </div>
+            <span class="text-xs text-slate-500">Python 3.11</span>
+          </div>
+
+          <textarea id="code-leetcode" rows="16" style="min-height: 380px;" class="w-full code-font text-xs md:text-sm p-4 bg-transparent text-slate-200 focus:outline-none resize-y leading-relaxed font-mono" spellcheck="false">
+def two_sum(nums, target):
+    # Escreva sua solução aqui
+    pass
+</textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div class="flex items-center gap-2">
+            <button onclick="runLeetCodeTests()" id="btn-run-tests" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs md:text-sm transition-all flex items-center gap-2 shadow-lg shadow-sky-500/20">
+              <span>🚀 Executar Todos os Testes</span>
+            </button>
+            <button onclick="toggleHints()" class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors">
+              💡 Dicas Progressivas
+            </button>
+          </div>
+
+          <div id="complexity-badge-container"></div>
+        </div>
+      </div>
+
+      <!-- Collapsible Hints -->
+      <div id="hints-box" class="hidden space-y-3 p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs">
+        <h4 class="font-bold text-white flex items-center gap-2">
+          <span>💡</span> Dicas Progressivas para o Two Sum
+        </h4>
+        <div class="space-y-2 text-slate-300">
+          <p><strong>Dica 1:</strong> Ao iterar no índice <code class="font-mono text-sky-400">i</code> olhando para <code class="font-mono text-sky-400">num</code>, o complemento necessário para fechar a soma é <code class="font-mono text-emerald-400">complemento = target - num</code>.</p>
+          <p><strong>Dica 2:</strong> Crie um dicionário <code class="font-mono text-sky-400">vistos = {}</code> onde a <em>chave</em> é o número e o <em>valor</em> é a posição (<em>índice</em>) onde ele apareceu.</p>
+          <p><strong>Dica 3:</strong> Em cada passo, verifique <code class="font-mono text-emerald-400">if complemento in vistos:</code>. Se estiver, retorne <code class="font-mono text-emerald-400">[vistos[complemento], i]</code>! Se não estiver, salve o número atual no dicionário: <code class="font-mono text-emerald-400">vistos[num] = i</code>.</p>
+        </div>
+      </div>
+
+      <!-- Test Cases Results Panel -->
+      <div class="space-y-3 pt-2">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <span>🧪</span> Casos de Teste (Test Suite)
+          </h3>
+          <span id="test-summary" class="text-xs text-slate-400">4 casos de teste prontos</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="test-cases-grid">
+          <!-- Case 1 -->
+          <div id="test-card-0" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 1: nums = [2, 7, 11, 15], target = 9</span>
+              <span id="test-status-0" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">[0, 1]</span></div>
+            <div id="test-result-0" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 2 -->
+          <div id="test-card-1" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 2: nums = [3, 2, 4], target = 6</span>
+              <span id="test-status-1" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">[1, 2]</span></div>
+            <div id="test-result-1" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 3 -->
+          <div id="test-card-2" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 3: nums = [3, 3], target = 6</span>
+              <span id="test-status-2" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">[0, 1]</span></div>
+            <div id="test-result-2" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+
+          <!-- Case 4 (Edge case) -->
+          <div id="test-card-3" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs">
+            <div class="flex items-center justify-between">
+              <span class="font-semibold text-slate-200">Caso 4: nums = [-1, -2, -3, -4, -5], target = -8</span>
+              <span id="test-status-3" class="px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-400">Pronto</span>
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">Esperado: <span class="text-emerald-400 font-bold">[2, 4]</span></div>
+            <div id="test-result-3" class="font-mono text-[11px] text-slate-500">Saída: -</div>
+          </div>
+        </div>
+
+        <!-- Terminal Console Logs if print() is used -->
+        <div id="leetcode-console-box" class="hidden p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono space-y-1">
+          <div class="text-slate-400 font-bold text-[11px] uppercase tracking-wide">Saída do Console (print):</div>
+          <div id="leetcode-console-logs" class="text-emerald-400 whitespace-pre-wrap"></div>
+        </div>
+
+        <!-- Success Celebration Banner -->
+        <div id="success-banner" class="hidden p-6 rounded-2xl bg-emerald-950/40 border-2 border-emerald-500/40 text-center space-y-3">
+          <div class="text-3xl">🎉 🏆 ✨</div>
+          <h4 class="text-lg md:text-xl font-bold text-emerald-400">Parabéns! Todos os Casos de Teste Passaram!</h4>
+          <p class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto">
+            Você praticou os conceitos fundamentais de Python (estruturas de dados, listas, dicionários e laços) e resolveu com sucesso o problema <strong>#1 do LeetCode</strong>!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-500 py-6 space-y-1">
+      <p>Python Learning Lab • Desenvolvido para Prática Interativa</p>
+      <p>Bons estudos e rumo aos próximos desafios!</p>
+    </footer>
+
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // Tab key support in textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+          this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+          this.selectionStart = this.selectionEnd = start + 4;
+        }
+      });
+    });
+
+    // Global Progress Tracking
+    const completedModules = {
+      mod1: false,
+      mod2: false,
+      mod3: false,
+      mod4: false,
+      mod5: false
+    };
+
+    function updateProgress() {
+      const keys = Object.keys(completedModules);
+      const doneCount = keys.filter(k => completedModules[k]).length;
+      const pct = Math.round((doneCount / keys.length) * 100);
+      
+      document.getElementById('progress-percent').innerText = `${pct}% Concluído`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      if (window.ProfileSystem) {
+        ['mod1','mod2','mod3','mod4','mod5'].forEach((k, idx) => {
+          if (completedModules[k]) window.ProfileSystem.completeTask('lab1_mod' + (idx + 1));
+        });
+      }
+
+      if (pct === 100) {
+        document.getElementById('trophy-badge').classList.remove('opacity-30');
+        document.getElementById('trophy-badge').classList.add('opacity-100', 'scale-125');
+      }
+    }
+
+    // Toggle Hints for Mini Exercises
+    function toggleHintEx(exNum) {
+      const box = document.getElementById(`hint-box-ex${exNum}`);
+      if (box) box.classList.toggle('hidden');
+    }
+
+    // Load Solutions for Mini Exercises
+    function loadSolutionEx1() {
+      document.getElementById('code-ex1').value = `nota1 = 8.0\nnota2 = 6.0\nmedia = (nota1 + nota2) / 2\nresultado = f"Média final: {media}"\nprint(resultado)`;
+    }
+    function clearExercise1() {
+      document.getElementById('code-ex1').value = `nota1 = 8.0\nnota2 = 6.0\n\n`;
+      document.getElementById('output-ex1').classList.add('hidden');
+    }
+
+    function loadSolutionEx2() {
+      document.getElementById('code-ex2').value = `tabela = {}\ntabela["alvo"] = 100\n\nif "alvo" in tabela:\n    print(f"Alvo encontrado com valor: {tabela['alvo']}")`;
+    }
+    function clearExercise2() {
+      document.getElementById('code-ex2').value = ``;
+      document.getElementById('output-ex2').classList.add('hidden');
+    }
+
+    function loadSolutionEx3() {
+      document.getElementById('code-ex3').value = `nums = [2, 11, 7, 15]\n\nfor i, num in enumerate(nums):\n    if num == 7:\n        print(f"Achei o 7 no índice {i}")`;
+    }
+    function clearExercise3() {
+      document.getElementById('code-ex3').value = `nums = [2, 11, 7, 15]\n\n`;
+      document.getElementById('output-ex3').classList.add('hidden');
+    }
+
+    // Python-to-JS Mini Transpiler Engine
+    function transpilePython(pythonCode) {
+    const lines = pythonCode.split('\n');
+    let jsLines = [];
+
+    let preamble = `
+      function print(...args) {
+        if (typeof __print === 'function') {
+          __print(...args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)));
+        }
+      }
+      function range(start, stop, step) {
+        if (stop === undefined) { stop = start; start = 0; }
+        if (step === undefined) step = 1;
+        let res = [];
+        if (step > 0) {
+          for (let i = start; i < stop; i += step) res.push(i);
+        } else {
+          for (let i = start; i > stop; i += step) res.push(i);
+        }
+        return res;
+      }
+      function len(obj) {
+        if (obj === undefined || obj === null) return 0;
+        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
+        if (obj instanceof Set || obj instanceof Map) return obj.size;
+        if (typeof obj === 'object') return Object.keys(obj).length;
+        return 0;
+      }
+      function enumerate(arr) {
+        let res = [];
+        for (let i = 0; i < arr.length; i++) {
+          res.push([i, arr[i]]);
+        }
+        return res;
+      }
+      function pyIn(item, container) {
+        if (Array.isArray(container) || typeof container === 'string') {
+          return container.includes(item);
+        }
+        if (container instanceof Set) {
+          return container.has(item);
+        }
+        if (typeof container === 'object' && container !== null) {
+          return Object.prototype.hasOwnProperty.call(container, item) || (String(item) in container);
+        }
+        return false;
+      }
+      function pySlice(obj, step) {
+        if (typeof obj === 'string') {
+          if (step === -1) return obj.split('').reverse().join('');
+        }
+        if (Array.isArray(obj)) {
+          if (step === -1) return [...obj].reverse();
+        }
+        return obj;
+      }
+      function pyIsAlnum(str) {
+        return /^[a-zA-Z0-9]+$/.test(str);
+      }
+      function pyTruth(val) {
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'number') return val !== 0;
+        if (typeof val === 'string') return val.length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (val instanceof Set || val instanceof Map) return val.size > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return Boolean(val);
+      }
+      function pyNot(val) {
+        return !pyTruth(val);
+      }
+      function pyEq(a, b) {
+        if (a === b) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return a.length === b.length && a.every((v, i) => pyEq(v, b[i]));
+        }
+        return a == b;
+      }
+      function pySet(iterable) {
+        let s = new Set();
+        if (iterable) {
+          for (let item of iterable) s.add(item);
+        }
+        return s;
+      }
+      function pyList(iterable) {
+        return iterable ? Array.from(iterable) : [];
+      }
+      function pyDict() {
+        return {};
+      }
+      function int(val) {
+        return parseInt(val, 10);
+      }
+      function float(val) {
+        if (val === 'inf' || val === '+inf' || val === 'Infinity') return Infinity;
+        if (val === '-inf' || val === '-Infinity') return -Infinity;
+        return parseFloat(val);
+      }
+      function str(val) {
+        return String(val);
+      }
+      function abs(val) {
+        return Math.abs(val);
+      }
+      function min(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]);
+        return Math.min(...args);
+      }
+      function max(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]);
+        return Math.max(...args);
+      }
+      if (!Array.prototype.append) {
+        Object.defineProperty(Array.prototype, 'append', {
+          value: function(x) { this.push(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.startswith) {
+        Object.defineProperty(String.prototype, 'startswith', {
+          value: function(prefix) { return this.startsWith(prefix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.endswith) {
+        Object.defineProperty(String.prototype, 'endswith', {
+          value: function(suffix) { return this.endsWith(suffix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Object.prototype.get) {
+        Object.defineProperty(Object.prototype, 'get', {
+          value: function(k, d) { return this[k] !== undefined ? this[k] : d; },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      function Solution() {
+        if (!(this instanceof Solution)) return new Solution();
+      }
+    `;
+
+    let blockStack = [{ indent: -1, type: 'root', vars: new Set() }];
+
+    function isVarDeclared(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].vars && blockStack[i].vars.has(name)) return true;
+      }
+      return false;
+    }
+
+    function declareVar(name) {
+      // Declare in current function scope or root scope so Python function-level scoping works!
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
+          blockStack[i].vars.add(name);
+          return;
+        }
+      }
+      blockStack[0].vars.add(name);
+    }
+
+    for (let rawLine of lines) {
+      let trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      let indent = rawLine.search(/\S/);
+      if (indent === -1) indent = 0;
+
+      // Strip end comments
+      let inStr = false, quote = '';
+      let commentIdx = -1;
+      for (let i = 0; i < trimmed.length; i++) {
+        let ch = trimmed[i];
+        if ((ch === '"' || ch === "'") && (i === 0 || trimmed[i-1] !== '\\')) {
+          if (!inStr) { inStr = true; quote = ch; }
+          else if (quote === ch) { inStr = false; }
+        }
+        if (!inStr && ch === '#') {
+          commentIdx = i;
+          break;
+        }
+      }
+      let line = (commentIdx !== -1 ? trimmed.substring(0, commentIdx) : trimmed).trim();
+      if (!line) continue;
+
+      // Dedent blocks
+      while (blockStack.length > 1 && indent <= blockStack[blockStack.length - 1].indent) {
+        let top = blockStack.pop();
+        jsLines.push(' '.repeat(top.indent) + '}');
+        if (top.type === 'def' && top.funcName) {
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+        }
+      }
+
+      // Convert Python f-strings: f"..." or f'...'
+      line = line.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      line = line.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // Methods and conversions
+      line = line.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      line = line.replace(/\.lower\(\)/g, '.toLowerCase()');
+      line = line.replace(/\.upper\(\)/g, '.toUpperCase()');
+      line = line.replace(/\.startswith\(/g, '.startsWith(');
+      line = line.replace(/\.endswith\(/g, '.endsWith(');
+      line = line.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      line = line.replace(/([a-zA-Z0-9_]+)\[-1\]/g, '$1.at(-1)');
+
+      // class Solution:
+      if (line.match(/^class\s+Solution.*?:\s*$/)) {
+        continue;
+      }
+
+      // def func(self, a, b): or def func(a, b):
+      let defMatch = line.match(/^def\s+([a-zA-Z0-9_]+)\s*\((.*?)\)(?:\s*->\s*[^:]+)?\s*:\s*$/);
+      if (defMatch) {
+        let funcName = defMatch[1];
+        let paramList = defMatch[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(p => p && p !== 'self');
+        let params = paramList.join(', ');
+        jsLines.push(' '.repeat(indent) + `function ${funcName}(${params}) {`);
+        blockStack.push({ indent: indent, type: 'def', funcName: funcName, vars: new Set(paramList) });
+        continue;
+      }
+
+      // for i, val in enumerate(arr):
+      let forEnumMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+enumerate\((.*?)\)\s*:\s*$/);
+      if (forEnumMatch) {
+        let iVar = forEnumMatch[1];
+        let valVar = forEnumMatch[2];
+        let targetArr = forEnumMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for var in iter:
+      let forInMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forInMatch) {
+        let varName = forInMatch[1];
+        let iterable = forInMatch[2];
+        jsLines.push(' '.repeat(indent) + `for (let ${varName} of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([varName]) });
+        continue;
+      }
+
+      // while cond:
+      let whileMatch = line.match(/^while\s+(.*?)\s*:\s*$/);
+      if (whileMatch) {
+        let cond = transpileCondition(whileMatch[1]);
+        jsLines.push(' '.repeat(indent) + `while (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'while', vars: new Set() });
+        continue;
+      }
+
+      // elif cond:
+      let elifMatch = line.match(/^elif\s+(.*?)\s*:\s*$/);
+      if (elifMatch) {
+        let cond = transpileCondition(elifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `else if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'elif', vars: new Set() });
+        continue;
+      }
+
+      // else:
+      let elseMatch = line.match(/^else\s*:\s*$/);
+      if (elseMatch) {
+        jsLines.push(' '.repeat(indent) + `else {`);
+        blockStack.push({ indent: indent, type: 'else', vars: new Set() });
+        continue;
+      }
+
+      // if cond:
+      let ifMatch = line.match(/^if\s+(.*?)\s*:\s*$/);
+      if (ifMatch) {
+        let cond = transpileCondition(ifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'if', vars: new Set() });
+        continue;
+      }
+
+      // return statement
+      if (line.startsWith('return ') || line === 'return') {
+        let expr = line.replace(/^return\s*/, '').trim();
+        if (!expr) {
+          jsLines.push(' '.repeat(indent) + 'return;');
+          continue;
+        }
+        expr = transpileExpression(expr);
+        jsLines.push(' '.repeat(indent) + `return ${expr};`);
+        continue;
+      }
+
+      // regular statement
+      let stmt = transpileStatement(line);
+      jsLines.push(' '.repeat(indent) + stmt + ';');
+    }
+
+    while (blockStack.length > 1) {
+      let top = blockStack.pop();
+      jsLines.push(' '.repeat(top.indent) + '}');
+      if (top.type === 'def' && top.funcName) {
+        jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+      }
+    }
+
+    function transpileCondition(cond) {
+      cond = cond.trim();
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+/g, '!');
+      cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+      cond = cond.replace(/^([a-zA-Z0-9_]+)$/, 'pyTruth($1)');
+      cond = cond.replace(/^([a-zA-Z0-9_]+)\s+&&/, 'pyTruth($1) &&');
+      cond = cond.replace(/&&\s+([a-zA-Z0-9_]+)\s*$/, '&& pyTruth($1)');
+      cond = cond.replace(/\|\|\s+([a-zA-Z0-9_]+)\s*$/, '|| pyTruth($1)');
+
+      return cond;
+    }
+
+    function transpileListComp(expr) {
+      const listCompWithIf = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+if\s+(.*?)\s*\]/;
+      const matchIf = expr.match(listCompWithIf);
+      if (matchIf) {
+        const mapExpr = matchIf[1];
+        const itemVar = matchIf[2];
+        const iterVar = matchIf[3];
+        const ifCond = matchIf[4];
+        return expr.replace(listCompWithIf, `Array.from(${iterVar}).filter(${itemVar} => ${ifCond}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      const listCompSimple = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*\]/;
+      const matchSimple = expr.match(listCompSimple);
+      if (matchSimple) {
+        const mapExpr = matchSimple[1];
+        const itemVar = matchSimple[2];
+        const iterVar = matchSimple[3];
+        return expr.replace(listCompSimple, `Array.from(${iterVar}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      return expr;
+    }
+
+    function transpileExpression(expr) {
+      expr = transpileListComp(expr);
+
+      let ternaryMatch = expr.match(/^(.*?)\s+if\s+(.*?)\s+else\s+(.*)$/);
+      if (ternaryMatch) {
+        let valTrue = transpileExpression(ternaryMatch[1].trim());
+        let cond = transpileCondition(ternaryMatch[2].trim());
+        let valFalse = transpileExpression(ternaryMatch[3].trim());
+        return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
+      }
+
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+/g, '!');
+      expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*==\s*([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyEq($1, $2)');
+      expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+      return expr;
+    }
+
+    function transpileStatement(stmt) {
+      stmt = transpileListComp(stmt);
+      stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+/g, '!');
+
+      // Tuple unpacking assignment: a, b = 1, 2
+      let tupleAssign = stmt.match(/^([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s*=\s*(.+?)\s*,\s*(.+)$/);
+      if (tupleAssign) {
+        let v1 = tupleAssign[1], v2 = tupleAssign[2];
+        let r1 = transpileExpression(tupleAssign[3]), r2 = transpileExpression(tupleAssign[4]);
+        let prefix = (!isVarDeclared(v1) && !isVarDeclared(v2)) ? 'let ' : '';
+        declareVar(v1);
+        declareVar(v2);
+        return `${prefix}[${v1}, ${v2}] = [${r1}, ${r2}]`;
+      }
+
+      // Single variable assignment (not ==, !=, <=, >=, +=, -=, *=, /=)
+      let assignMatch = stmt.match(/^([a-zA-Z0-9_]+)\s*=(?!=)\s*(.*)/);
+      if (assignMatch) {
+        let varName = assignMatch[1];
+        let rhs = transpileExpression(assignMatch[2]);
+        if (isVarDeclared(varName)) {
+          return `${varName} = ${rhs}`;
+        } else {
+          declareVar(varName);
+          return `let ${varName} = ${rhs}`;
+        }
+      }
+      return stmt;
+    }
+
+    return preamble + '\n' + jsLines.join('\n');
+    }
+
+    // --- MODULE 1 EXERCISE ---
+    function runExercise1() {
+      const code = document.getElementById('code-ex1').value;
+      const outBox = document.getElementById('output-ex1');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Escreva seu código calculando a média e imprimindo o resultado com <code>print()</code>!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('7') || logText.includes('7.0')) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Ótimo trabalho! Média calculada e f-string formatada com perfeição.</span>`;
+          
+          completedModules.mod1 = true;
+          document.getElementById('badge-mod-1').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-1').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Certifique-se de que a média calculada resulta em 7.0 e que o resultado foi exibido com print(). Clique em "💡 Dica" caso precise de ajuda.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 2 EXERCISE ---
+    function runExercise2() {
+      const code = document.getElementById('code-ex2').value;
+      const outBox = document.getElementById('output-ex2');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Crie o dicionário <code>tabela</code>, adicione <code>"alvo": 100</code> e faça a impressão!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('100') && (code.includes('tabela') || code.includes('dict') || code.includes('{'))) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Excelente! Dicionário construído, chave verificada e valor acessado com sucesso.</span>`;
+          
+          completedModules.mod2 = true;
+          document.getElementById('badge-mod-2').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-2').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Certifique-se de atribuir tabela["alvo"] = 100 e imprimir o valor. Clique em "💡 Dica" se necessário.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 3 EXERCISE ---
+    function runExercise3() {
+      const code = document.getElementById('code-ex3').value;
+      const outBox = document.getElementById('output-ex3');
+      outBox.classList.remove('hidden');
+
+      if (!code.trim()) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/40 border-yellow-700/50 text-yellow-300';
+        outBox.innerHTML = `⚠️ O campo está vazio. Use <code>for i, num in enumerate(nums):</code> para encontrar o 7 e imprimir o índice!`;
+        return;
+      }
+
+      let logs = [];
+      try {
+        const jsCode = transpilePython(code);
+        const runner = new Function('__print', jsCode);
+        runner((...args) => logs.push(args.join(' ')));
+
+        const logText = logs.join('\n');
+        if (logText.includes('2') && (code.includes('enumerate'))) {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-emerald-950/50 border-emerald-500/40 text-emerald-300';
+          outBox.innerHTML = `✅ <strong>Saída do programa:</strong><br>${logText}<br><span class="text-xs text-emerald-400 mt-1 inline-block">Perfeito! O número 7 está no índice 2 e foi encontrado usando enumerate() com maestria.</span>`;
+          
+          completedModules.mod3 = true;
+          document.getElementById('badge-mod-3').innerText = 'Concluído ✅';
+          document.getElementById('badge-mod-3').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+          updateProgress();
+        } else {
+          outBox.className = 'p-3 rounded-lg border text-xs code-font bg-yellow-950/50 border-yellow-500/40 text-yellow-300';
+          outBox.innerHTML = `⚠️ <strong>Saída gerada:</strong><br>${logText || '(Nenhuma saída gerada)'}<br><span class="text-xs text-yellow-400 mt-1 inline-block">Use enumerate(nums) para obter simultaneamente (i, num) e faça a verificação if num == 7:. Clique em "💡 Dica" caso queira revisar.</span>`;
+        }
+      } catch (err) {
+        outBox.className = 'p-3 rounded-lg border text-xs code-font bg-rose-950/50 border-rose-500/40 text-rose-300';
+        outBox.innerHTML = `❌ <strong>Erro de execução:</strong> ${err.message}`;
+      }
+    }
+
+    // --- MODULE 4 STEP-BY-STEP SIMULATOR ---
+    const visualSteps = [
+      {
+        step: 0,
+        activeIdx: -1,
+        vars: 'Iniciando algoritmo... nums = [2, 7, 11, 15], target = 9, vistos = {}',
+        dict: '{}',
+        explanation: 'O dicionário <code>vistos</code> começa vazio. Vamos iterar sobre o array com <code>enumerate</code>.',
+        completed: false
+      },
+      {
+        step: 1,
+        activeIdx: 0,
+        vars: 'i = 0, num = 2 | complemento = 9 - 2 = 7',
+        dict: '{}',
+        explanation: 'Número <strong>2</strong> no índice 0. Precisamos de <strong>7</strong>. O 7 está em <code>vistos</code>? <strong>Não</strong>. Então guardamos <code>vistos[2] = 0</code>.',
+        dictAfter: '{ 2: 0 }',
+        completed: false
+      },
+      {
+        step: 2,
+        activeIdx: 1,
+        vars: 'i = 1, num = 7 | complemento = 9 - 7 = 2',
+        dict: '{ 2: 0 }',
+        explanation: '🎉 Número <strong>7</strong> no índice 1. Precisamos de <strong>2</strong>. O 2 está em <code>vistos</code>? <strong>SIM!</strong> Ele foi visto no índice <code>vistos[2] = 0</code>. Retornamos imediatamente: <strong>[0, 1]</strong>!',
+        dictAfter: '{ 2: 0 }',
+        completed: true
+      }
+    ];
+
+    let currentVisualStep = 0;
+
+    function renderVisualStep() {
+      const stepData = visualSteps[currentVisualStep];
+
+      // Update elements highlights
+      for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`elem-${i}`);
+        el.className = 'p-3 rounded-xl border border-slate-800 bg-slate-950 transition-all';
+        if (i === stepData.activeIdx) {
+          el.className = 'p-3 rounded-xl border-2 border-amber-400 bg-amber-500/10 scale-105 transition-all text-amber-300 shadow-lg shadow-amber-500/10';
+        } else if (stepData.completed && (i === 0 || i === 1)) {
+          el.className = 'p-3 rounded-xl border-2 border-emerald-400 bg-emerald-500/10 text-emerald-300 shadow-lg shadow-emerald-500/10';
+        }
+      }
+
+      document.getElementById('step-vars').innerText = stepData.vars;
+      document.getElementById('step-dict').innerText = stepData.dictAfter || stepData.dict;
+      document.getElementById('step-explanation').innerHTML = stepData.explanation;
+
+      document.getElementById('btn-prev-step').disabled = (currentVisualStep === 0);
+      document.getElementById('btn-next-step').disabled = (currentVisualStep === visualSteps.length - 1);
+
+      if (stepData.completed) {
+        completedModules.mod4 = true;
+        document.getElementById('badge-mod-4').innerText = 'Concluído ✅';
+        document.getElementById('badge-mod-4').className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        updateProgress();
+      }
+    }
+
+    function nextStep() {
+      if (currentVisualStep < visualSteps.length - 1) {
+        currentVisualStep++;
+        renderVisualStep();
+      }
+    }
+
+    function prevStep() {
+      if (currentVisualStep > 0) {
+        currentVisualStep--;
+        renderVisualStep();
+      }
+    }
+
+    function resetStep() {
+      currentVisualStep = 0;
+      renderVisualStep();
+    }
+
+    // --- MODULE 5: LEETCODE TEST SUITE & RUNNER ---
+    const testCases = [
+      { nums: [2, 7, 11, 15], target: 9, expected: [0, 1] },
+      { nums: [3, 2, 4], target: 6, expected: [1, 2] },
+      { nums: [3, 3], target: 6, expected: [0, 1] },
+      { nums: [-1, -2, -3, -4, -5], target: -8, expected: [2, 4] }
+    ];
+
+    function toggleHints() {
+      const box = document.getElementById('hints-box');
+      box.classList.toggle('hidden');
+    }
+
+    function insertTemplate(type) {
+      const editor = document.getElementById('code-leetcode');
+      if (type === 'starter') {
+        editor.value = `def two_sum(nums, target):
+    # Escreva sua solução aqui
+    pass`;
+      } else if (type === 'solution') {
+        editor.value = `def two_sum(nums, target):
+    vistos = {}  # mapa: valor -> índice
+    for i, num in enumerate(nums):
+        complemento = target - num
+        if complemento in vistos:
+            return [vistos[complemento], i]
+        vistos[num] = i
+    return []`;
+      }
+    }
+
+    function detectComplexity(code) {
+      const forMatches = code.match(/\bfor\b/g) || [];
+      const hasDict = code.includes('{}') || code.includes('dict') || code.includes('in vistos') || code.includes('in seen') || code.includes('in mapa');
+      
+      if (forMatches.length >= 2 && !hasDict) {
+        return {
+          type: 'O(n²)',
+          badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">⚠️ Força Bruta O(n²) - Tente otimizar com Dicionário</span>'
+        };
+      } else if (hasDict && forMatches.length === 1) {
+        return {
+          type: 'O(n)',
+          badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">🏆 Solução Ótima O(n) Hash Map!</span>'
+        };
+      }
+      return {
+        type: 'O(n)',
+        badge: '<span class="text-xs px-2.5 py-1 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/30">Solução Aceita</span>'
+      };
+    }
+
+    function runLeetCodeTests() {
+      const pythonCode = document.getElementById('code-leetcode').value;
+      const consoleBox = document.getElementById('leetcode-console-box');
+      const consoleLogs = document.getElementById('leetcode-console-logs');
+      const complexityContainer = document.getElementById('complexity-badge-container');
+      const successBanner = document.getElementById('success-banner');
+
+      consoleBox.classList.add('hidden');
+      consoleLogs.innerText = '';
+      successBanner.classList.add('hidden');
+
+      let capturedLogs = [];
+
+      try {
+        const jsTranspiled = transpilePython(pythonCode);
+        
+        // Find function name (two_sum or twoSum or similar)
+        let fnNameMatch = pythonCode.match(/def\s+([a-zA-Z0-9_]+)\s*\(/);
+        if (!fnNameMatch) {
+          throw new Error("Nenhuma função Python definida. Use 'def two_sum(nums, target):'");
+        }
+        const funcName = fnNameMatch[1];
+
+        const factory = new Function('__print', jsTranspiled + `\nreturn (typeof ${funcName} !== 'undefined') ? ${funcName} : null;`);
+        const userFunction = factory((...args) => capturedLogs.push(args.join(' ')));
+
+        if (typeof userFunction !== 'function') {
+          throw new Error(`A função '${funcName}' não foi encontrada ou não retornou corretamente.`);
+        }
+
+        let passedAll = true;
+
+        testCases.forEach((tc, idx) => {
+          const card = document.getElementById(`test-card-${idx}`);
+          const status = document.getElementById(`test-status-${idx}`);
+          const resultElem = document.getElementById(`test-result-${idx}`);
+
+          try {
+            const start = performance.now();
+            const output = userFunction([...tc.nums], tc.target);
+            const duration = (performance.now() - start).toFixed(2);
+
+            let passed = false;
+            if (Array.isArray(output) && output.length === 2) {
+              const sortedActual = [...output].sort((a, b) => a - b);
+              const sortedExpected = [...tc.expected].sort((a, b) => a - b);
+              if (sortedActual[0] === sortedExpected[0] && sortedActual[1] === sortedExpected[1]) {
+                passed = true;
+              }
+            }
+
+            if (passed) {
+              card.className = 'p-3.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 space-y-2 text-xs';
+              status.className = 'px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-400 font-semibold';
+              status.innerText = `Aprovado (${duration}ms) ✅`;
+              resultElem.innerHTML = `Saída: <span class="text-emerald-400 font-bold">${JSON.stringify(output)}</span>`;
+            } else {
+              passedAll = false;
+              card.className = 'p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 space-y-2 text-xs';
+              status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+              status.innerText = 'Falhou ❌';
+              resultElem.innerHTML = `Saída: <span class="text-rose-400 font-bold">${JSON.stringify(output)}</span> (Esperado: ${JSON.stringify(tc.expected)})`;
+            }
+          } catch (execErr) {
+            passedAll = false;
+            card.className = 'p-3.5 rounded-xl border border-rose-500/40 bg-rose-950/20 space-y-2 text-xs';
+            status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+            status.innerText = 'Erro ❌';
+            resultElem.innerHTML = `Erro: <span class="text-rose-400">${execErr.message}</span>`;
+          }
+        });
+
+        // Show logs if any print() was executed
+        if (capturedLogs.length > 0) {
+          consoleBox.classList.remove('hidden');
+          consoleLogs.innerText = capturedLogs.join('\n');
+        }
+
+        // Complexity check
+        const comp = detectComplexity(pythonCode);
+        complexityContainer.innerHTML = comp.badge;
+
+        if (passedAll) {
+          successBanner.classList.remove('hidden');
+          completedModules.mod5 = true;
+          document.getElementById('status-tag-leetcode').innerText = 'Resolvido 🏆';
+          document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          updateProgress();
+        } else {
+          document.getElementById('status-tag-leetcode').innerText = 'Testes Falhando';
+          document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+        }
+
+      } catch (globalErr) {
+        testCases.forEach((tc, idx) => {
+          const card = document.getElementById(`test-card-${idx}`);
+          const status = document.getElementById(`test-status-${idx}`);
+          const resultElem = document.getElementById(`test-result-${idx}`);
+          if (idx === 0) {
+            card.className = 'p-3.5 rounded-xl border border-rose-500/50 bg-rose-950/30 space-y-2 text-xs md:col-span-2';
+            status.className = 'px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-400 font-semibold';
+            status.innerText = 'Erro de Execução / Sintaxe ❌';
+            resultElem.innerHTML = `<div class="text-rose-300 font-mono mt-1"><strong>Erro:</strong> ${globalErr.message}</div><div class="text-slate-400 text-[11px] mt-1">💡 Dica: Verifique a indentação dos blocos if / elif / else ou a presença de dois-pontos (:).</div>`;
+          } else {
+            card.className = 'p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 space-y-2 text-xs opacity-40';
+            status.innerText = 'Interrompido';
+            resultElem.innerHTML = 'Saída: -';
+          }
+        });
+        document.getElementById('status-tag-leetcode').innerText = 'Erro no Código';
+        document.getElementById('status-tag-leetcode').className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+      }
+    }
+
+    // Initialize initial visual step
+    renderVisualStep();
+    updateProgress();
+  
+    // --- SMART EDITOR ENHANCEMENTS: Auto-Grow, Cursor Following & Tab Indent ---
+    function ensureCursorVisible(textarea) {
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const val = textarea.value;
+      const textBefore = val.substring(0, start);
+      const currentLine = textBefore.split('\n').length;
+      
+      const style = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
+      const paddingTop = parseFloat(style.paddingTop) || 12;
+      
+      const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
+      const visibleTop = textarea.scrollTop;
+      const visibleBottom = textarea.scrollTop + textarea.clientHeight;
+      const margin = lineHeight * 2.5; // Keeps at least 2.5 lines visible below cursor
+
+      if (cursorTop + lineHeight > visibleBottom - margin) {
+        textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
+      } else if (cursorTop < visibleTop + margin) {
+        textarea.scrollTop = Math.max(0, cursorTop - margin);
+      }
+    }
+
+    function handleAutoGrow(textarea) {
+      if (!textarea || textarea.dataset.expanded === 'true') return;
+      const isLeet = textarea.id.includes('leetcode');
+      const minH = isLeet ? 360 : 240;
+      const maxH = isLeet ? 750 : 550;
+      
+      // Calculate needed height
+      textarea.style.height = 'auto';
+      const scrollH = textarea.scrollHeight;
+      const targetHeight = Math.min(maxH, Math.max(minH, scrollH + 16));
+      textarea.style.height = targetHeight + 'px';
+    }
+
+    function toggleExpandEditor(editorId, btn) {
+      const textarea = document.getElementById(editorId);
+      if (!textarea) return;
+      const isExpanded = textarea.dataset.expanded === 'true';
+      const isLeet = textarea.id.includes('leetcode');
+      const defaultH = isLeet ? 380 : 240;
+      const expandedH = isLeet ? 750 : 540;
+      
+      if (isExpanded) {
+        textarea.style.height = defaultH + 'px';
+        textarea.dataset.expanded = 'false';
+        if (btn) btn.innerHTML = '<span>⛶</span> Expandir';
+      } else {
+        textarea.style.height = expandedH + 'px';
+        textarea.dataset.expanded = 'true';
+        if (btn) btn.innerHTML = '<span>🗗</span> Reduzir';
+      }
+      ensureCursorVisible(textarea);
+    }
+
+    function setupCodeEditorFeatures() {
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.dataset.editorEnhanced) return;
+        textarea.dataset.editorEnhanced = 'true';
+
+        const isLeet = textarea.id.includes('leetcode');
+        const minH = isLeet ? 360 : 240;
+        textarea.style.minHeight = minH + 'px';
+        if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
+          textarea.style.height = minH + 'px';
+        }
+
+        textarea.addEventListener('keydown', function(e) {
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = this.selectionStart;
+            const end = this.selectionEnd;
+            const value = this.value;
+
+            if (!e.shiftKey) {
+              if (start === end) {
+                this.value = value.substring(0, start) + '    ' + value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 4;
+              } else {
+                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = value.indexOf('\n', end);
+                const endPos = lineEnd === -1 ? value.length : lineEnd;
+                const selectedLines = value.substring(lineStart, endPos).split('\n');
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
+                this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
+                this.selectionStart = start + 4;
+                this.selectionEnd = end + (selectedLines.length * 4);
+              }
+            } else {
+              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = value.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? value.length : lineEnd;
+              const selectedLines = value.substring(lineStart, endPos).split('\n');
+              let removedTotal = 0;
+              let firstLineRemoved = 0;
+
+              const dedented = selectedLines.map((l, idx) => {
+                const match = l.match(/^ {1,4}/);
+                if (match) {
+                  const removed = match[0].length;
+                  removedTotal += removed;
+                  if (idx === 0) firstLineRemoved = removed;
+                  return l.substring(removed);
+                }
+                return l;
+              }).join('\n');
+
+              this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
+              this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
+              this.selectionEnd = Math.max(lineStart, end - removedTotal);
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          } else if (e.key === 'Enter') {
+            const start = this.selectionStart;
+            const value = this.value;
+            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = value.substring(lineStart, start);
+            const indentMatch = currentLine.match(/^\s*/);
+            let indent = indentMatch ? indentMatch[0] : '';
+            if (currentLine.trim().endsWith(':')) {
+              indent += '    ';
+            }
+            if (indent.length > 0) {
+              e.preventDefault();
+              const before = value.substring(0, start);
+              const after = value.substring(this.selectionEnd);
+              this.value = before + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('input', function() {
+          handleAutoGrow(this);
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('keyup', function(e) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('click', function() {
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('focus', function() {
+          ensureCursorVisible(this);
+        });
+
+        handleAutoGrow(textarea);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', setupCodeEditorFeatures);
+    } else {
+      setupCodeEditorFeatures();
+    }
+  
+
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM ---
+    window.ProfileSystem = (function() {
+      const STORAGE_KEY = 'python_study_lab_profile_v1';
+      const CURRENT_LAB = 1;
+
+      const TASKS_CATALOG = {
+        // Fase 1
+        lab1_mod1: { lab: 1, xp: 50, title: 'Módulo 1: Tipos & F-Strings' },
+        lab1_mod2: { lab: 1, xp: 50, title: 'Módulo 2: Dict vs List O(1)' },
+        lab1_mod3: { lab: 1, xp: 50, title: 'Módulo 3: Loops & Enumerate' },
+        lab1_mod4: { lab: 1, xp: 50, title: 'Módulo 4: Simulador Hash Map' },
+        lab1_mod5: { lab: 1, xp: 150, title: '⚡ LeetCode #1: Two Sum', isLeet: true },
+        // Fase 2
+        lab2_mod1: { lab: 2, xp: 50, title: 'Módulo 1: Métodos de String' },
+        lab2_mod2: { lab: 2, xp: 50, title: 'Módulo 2: Slicing & [::-1]' },
+        lab2_mod3: { lab: 2, xp: 50, title: 'Módulo 3: List Comprehensions' },
+        lab2_mod4: { lab: 2, xp: 50, title: 'Módulo 4: Simulador Two Pointers' },
+        lab2_mod5: { lab: 2, xp: 150, title: '⚡ LeetCode #125: Valid Palindrome', isLeet: true },
+        // Fase 3
+        lab3_mod1: { lab: 3, xp: 50, title: 'Módulo 1: Pilhas & LIFO' },
+        lab3_mod2: { lab: 3, xp: 50, title: 'Módulo 2: Mapeamento de Pares' },
+        lab3_mod3: { lab: 3, xp: 50, title: 'Módulo 3: Diagnóstico de Erros' },
+        lab3_mod4: { lab: 3, xp: 50, title: 'Módulo 4: Stack Inspector' },
+        lab3_mod5: { lab: 3, xp: 150, title: '⚡ LeetCode #20: Valid Parentheses', isLeet: true },
+        // Fase 4
+        lab4_mod1: { lab: 4, xp: 50, title: 'Módulo 1: Memória do Menor Preço' },
+        lab4_mod2: { lab: 4, xp: 50, title: 'Módulo 2: Lucro Diário' },
+        lab4_mod3: { lab: 4, xp: 50, title: 'Módulo 3: Consultor da Bolsa' },
+        lab4_mod4: { lab: 4, xp: 50, title: 'Módulo 4: Simulador Wall Street' },
+        lab4_mod5: { lab: 4, xp: 150, title: '⚡ LeetCode #121: Buy & Sell Stock', isLeet: true }
+      };
+
+      const LEVELS = [
+        { level: 1, minXp: 0, maxXp: 150, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 150, maxXp: 350, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 350, maxXp: 650, rank: '⚡ Caçador de Algoritmos' },
+        { level: 4, minXp: 650, maxXp: 1000, rank: '🏗️ Arquiteto de Estruturas' },
+        { level: 5, minXp: 1000, maxXp: 1350, rank: '🚀 Engenheiro Big Tech' },
+        { level: 6, minXp: 1350, maxXp: 2000, rank: '👑 Lenda do LeetCode' }
+      ];
+
+      const ACHIEVEMENTS = [
+        { id: 'first_blood', icon: '🩸', title: 'Primeiro Passo', desc: 'Concluiu sua primeira atividade prática', check: (p) => Object.keys(p.completedTasks).length >= 1 },
+        { id: 'hash_master', icon: '🗺️', title: 'Mestre do Hash Map', desc: 'Venceu o LeetCode #1: Two Sum', check: (p) => !!p.completedTasks['lab1_mod5'] },
+        { id: 'two_pointers', icon: '🎯', title: 'Olhos de Águia', desc: 'Venceu o LeetCode #125: Valid Palindrome', check: (p) => !!p.completedTasks['lab2_mod5'] },
+        { id: 'lifo_guardian', icon: '🥞', title: 'Guardião LIFO', desc: 'Venceu o LeetCode #20: Valid Parentheses', check: (p) => !!p.completedTasks['lab3_mod5'] },
+        { id: 'wall_street', icon: '📈', title: 'Lobo de Wall Street', desc: 'Venceu o LeetCode #121: Buy & Sell Stock', check: (p) => !!p.completedTasks['lab4_mod5'] },
+        { id: 'python_legend', icon: '👑', title: 'Maratonista Python', desc: 'Acumulou 1.000+ XP nos laboratórios', check: (p) => p.xp >= 1000 }
+      ];
+
+      function getDefaultProfile() {
+        return {
+          name: 'Claudio',
+          avatar: '🐍',
+          xp: 0,
+          completedTasks: {},
+          savedCode: {},
+          history: []
+        };
+      }
+
+      function loadProfile() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultProfile();
+          const parsed = JSON.parse(raw);
+          return Object.assign(getDefaultProfile(), parsed);
+        } catch (e) {
+          return getDefaultProfile();
+        }
+      }
+
+      function saveProfile(profile) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+        } catch (e) {}
+      }
+
+      function getLevelInfo(xp) {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) return LEVELS[i];
+        }
+        return LEVELS[0];
+      }
+
+      function showToast(message, subtext) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl text-xs text-white flex items-center gap-3 transform transition-all duration-300 pointer-events-auto';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 flex items-center justify-center text-xl">✨</div>
+          <div>
+            <div class="font-extrabold text-emerald-400 text-sm">${message}</div>
+            <div class="text-slate-300 text-[11px]">${subtext || ''}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateY(10px)';
+          setTimeout(() => toast.remove(), 300);
+        }, 4000);
+      }
+
+      function completeTask(taskKey) {
+        const taskDef = TASKS_CATALOG[taskKey];
+        if (!taskDef) return;
+        const profile = loadProfile();
+        if (profile.completedTasks[taskKey]) {
+          // Already completed before, just refresh UI
+          renderTopBar(profile);
+          return;
+        }
+
+        const oldLevel = getLevelInfo(profile.xp).level;
+        profile.completedTasks[taskKey] = {
+          completedAt: new Date().toISOString(),
+          xp: taskDef.xp
+        };
+        profile.xp += taskDef.xp;
+        profile.history.unshift({
+          date: new Date().toISOString(),
+          text: `+${taskDef.xp} XP • ${taskDef.title}`
+        });
+        if (profile.history.length > 25) profile.history.pop();
+
+        saveProfile(profile);
+        renderTopBar(profile);
+
+        const newLevelObj = getLevelInfo(profile.xp);
+        if (newLevelObj.level > oldLevel) {
+          showToast(`🎉 LEVEL UP! Nível ${newLevelObj.level}!`, `Nova Patente: ${newLevelObj.rank} (+${taskDef.xp} XP)`);
+        } else {
+          showToast(`+${taskDef.xp} XP Ganhos!`, taskDef.title);
+        }
+      }
+
+      function saveEditorCode(editorId, code) {
+        const profile = loadProfile();
+        profile.savedCode[`lab${CURRENT_LAB}_${editorId}`] = code;
+        saveProfile(profile);
+      }
+
+      function getLabStats(profile, labNum) {
+        const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
+        const done = keys.filter(k => !!profile.completedTasks[k]).length;
+        const pct = Math.round((done / keys.length) * 100);
+        return { done, total: keys.length, pct, keys };
+      }
+
+      function renderTopBar(profile) {
+        profile = profile || loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        const avatarEl = document.getElementById('profile-bar-avatar');
+        const nameEl = document.getElementById('profile-bar-name');
+        const levelEl = document.getElementById('profile-bar-level');
+        const rankEl = document.getElementById('profile-bar-rank');
+        const xpTextEl = document.getElementById('profile-bar-xp-text');
+        const xpFillEl = document.getElementById('profile-bar-xp-fill');
+
+        if (avatarEl) avatarEl.innerText = profile.avatar;
+        if (nameEl) nameEl.innerText = profile.name;
+        if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
+        if (rankEl) rankEl.innerText = lvl.rank;
+        if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
+
+        if (xpFillEl) {
+          const span = Math.max(1, lvl.maxXp - lvl.minXp);
+          const inLevel = Math.min(span, Math.max(0, profile.xp - lvl.minXp));
+          xpFillEl.style.width = `${Math.round((inLevel / span) * 100)}%`;
+        }
+
+        for (let l = 1; l <= 4; l++) {
+          const st = getLabStats(profile, l);
+          const el = document.getElementById(`nav-pct-lab${l}`);
+          if (el) {
+            el.innerText = `${st.pct}%`;
+            if (st.pct === 100) {
+              el.className = 'text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+            }
+          }
+        }
+      }
+
+      function restoreLabState() {
+        const profile = loadProfile();
+        renderTopBar(profile);
+
+        // Restore saved editor code & bind auto-save
+        document.querySelectorAll('textarea').forEach(ta => {
+          const key = `lab${CURRENT_LAB}_${ta.id}`;
+          if (profile.savedCode && profile.savedCode[key] !== undefined && profile.savedCode[key].trim() !== '') {
+            ta.value = profile.savedCode[key];
+            if (typeof handleAutoGrow === 'function') handleAutoGrow(ta);
+          }
+          ta.addEventListener('input', function() {
+            saveEditorCode(this.id, this.value);
+          });
+        });
+
+        // Restore badges & progress for current lab
+        for (let m = 1; m <= 5; m++) {
+          const taskKey = `lab${CURRENT_LAB}_mod${m}`;
+          if (profile.completedTasks[taskKey]) {
+            const badge = document.getElementById(`badge-mod-${m}`);
+            if (badge) {
+              badge.innerText = 'Concluído ✓';
+              badge.className = 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30';
+            }
+            if (m === 5) {
+              const lc1 = document.getElementById('leetcode-status');
+              if (lc1) {
+                lc1.className = 'px-4 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-sm font-bold text-emerald-400 flex items-center gap-2';
+                lc1.innerHTML = '<span>🎉</span> Desafio Resolvido!';
+              }
+              const lc2 = document.getElementById('status-tag-leetcode');
+              if (lc2) {
+                lc2.innerText = 'Concluído ✅';
+                lc2.className = 'self-start px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+              }
+            }
+            if (typeof completedModules !== 'undefined') {
+              if (completedModules instanceof Set) {
+                completedModules.add(m === 5 ? 'leetcode' : `mod-${m}`);
+              } else if (typeof completedModules === 'object') {
+                completedModules[`mod${m}`] = true;
+              }
+            }
+          }
+        }
+
+        // Update current lab header progress bar
+        const st = getLabStats(profile, CURRENT_LAB);
+        const pctEl = document.getElementById('progress-percent');
+        const fillEl = document.getElementById('progress-bar-fill');
+        if (pctEl) pctEl.innerText = `${st.pct}% Concluído`;
+        if (fillEl) fillEl.style.width = `${st.pct}%`;
+        if (st.pct === 100) {
+          const trophy = document.getElementById('trophy-badge');
+          if (trophy) {
+            trophy.classList.remove('opacity-30');
+            trophy.classList.add('opacity-100', 'scale-125');
+          }
+        }
+      }
+
+      function openModal() {
+        const profile = loadProfile();
+        const lvl = getLevelInfo(profile.xp);
+        document.getElementById('modal-avatar-display').innerText = profile.avatar;
+        document.getElementById('modal-name-input').value = profile.name;
+        document.getElementById('modal-level-badge').innerText = `Nível ${lvl.level}`;
+        document.getElementById('modal-rank-title').innerText = lvl.rank;
+        document.getElementById('modal-xp-Next').innerText = `${profile.xp} / ${lvl.maxXp} XP`;
+
+        const totalTasks = Object.keys(TASKS_CATALOG).length;
+        const doneTasks = Object.keys(profile.completedTasks).length;
+        const leetsDone = ['lab1_mod5', 'lab2_mod5', 'lab3_mod5', 'lab4_mod5'].filter(k => !!profile.completedTasks[k]).length;
+
+        document.getElementById('stat-total-xp').innerText = `${profile.xp} XP`;
+        document.getElementById('stat-tasks-done').innerText = `${doneTasks} / ${totalTasks}`;
+        document.getElementById('stat-leetcodes-done').innerText = `${leetsDone} / 4`;
+        document.getElementById('stat-global-pct').innerText = `${Math.round((doneTasks / totalTasks) * 100)}%`;
+
+        // Render Labs breakdown
+        const labsInfo = [
+          { num: 1, name: 'Fase 1: Hash Maps & Two Sum', url: 'index.html', color: 'sky' },
+          { num: 2, name: 'Fase 2: Strings & Two Pointers', url: 'lab2_strings_twopointers.html', color: 'purple' },
+          { num: 3, name: 'Fase 3: Pilhas & Parênteses', url: 'lab3_stacks_valid_parentheses.html', color: 'indigo' },
+          { num: 4, name: 'Fase 4: Sliding Window & Ações', url: 'lab4_sliding_window_stocks.html', color: 'emerald' }
+        ];
+        const labsContainer = document.getElementById('modal-labs-breakdown');
+        labsContainer.innerHTML = labsInfo.map(l => {
+          const st = getLabStats(profile, l.num);
+          const taskItems = st.keys.map(k => {
+            const done = !!profile.completedTasks[k];
+            const t = TASKS_CATALOG[k];
+            return `<div class="flex items-center justify-between py-0.5 ${done ? 'text-emerald-300' : 'text-slate-500'}">
+              <span>${done ? '✅' : '⏳'} ${t.title}</span>
+              <span class="font-mono text-[10px]">+${t.xp} XP</span>
+            </div>`;
+          }).join('');
+
+          return `
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <a href="${l.url}" class="font-bold text-white hover:underline">${l.name}</a>
+                <span class="px-2 py-0.5 rounded bg-slate-950 font-mono font-bold text-emerald-400">${st.pct}%</span>
+              </div>
+              <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-500 h-full" style="width: ${st.pct}%"></div>
+              </div>
+              <div class="space-y-0.5 pt-1 text-[11px]">
+                ${taskItems}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Render Achievements
+        const achContainer = document.getElementById('modal-achievements-grid');
+        achContainer.innerHTML = ACHIEVEMENTS.map(a => {
+          const unlocked = a.check(profile);
+          return `
+            <div class="p-3 rounded-xl border transition-all ${unlocked ? 'bg-indigo-950/30 border-indigo-500/40 text-white' : 'bg-slate-900/40 border-slate-800/60 text-slate-600 opacity-60'} flex items-start gap-2.5">
+              <span class="text-2xl">${a.icon}</span>
+              <div>
+                <div class="font-bold text-xs ${unlocked ? 'text-amber-300' : 'text-slate-500'}">${a.title}</div>
+                <div class="text-[11px] ${unlocked ? 'text-slate-300' : 'text-slate-600'} mt-0.5">${a.desc}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        document.getElementById('profile-modal').classList.remove('hidden');
+      }
+
+      function closeModal() {
+        document.getElementById('profile-modal').classList.add('hidden');
+      }
+
+      function saveName() {
+        const input = document.getElementById('modal-name-input');
+        if (!input) return;
+        const val = input.value.trim() || 'Estudante Python';
+        const profile = loadProfile();
+        profile.name = val;
+        saveProfile(profile);
+        renderTopBar(profile);
+        showToast('Nome atualizado!', `Olá, ${val}!`);
+      }
+
+      function setAvatar(emoji) {
+        const profile = loadProfile();
+        profile.avatar = emoji;
+        saveProfile(profile);
+        document.getElementById('modal-avatar-display').innerText = emoji;
+        renderTopBar(profile);
+      }
+
+      function exportProfile() {
+        const profile = loadProfile();
+        const blob = new Blob([JSON.stringify(profile, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `python_lab_perfil_${profile.name.toLowerCase().replace(/\s+/g, '_')}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function resetProfile() {
+        if (!confirm('Tem certeza que deseja zerar todo o seu XP e progresso salvo?')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+
+      return {
+        completeTask,
+        saveEditorCode,
+        restoreLabState,
+        openModal,
+        closeModal,
+        saveName,
+        setAvatar,
+        exportProfile,
+        resetProfile
+      };
+    })();
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => window.ProfileSystem.restoreLabState());
+    } else {
+      window.ProfileSystem.restoreLabState();
+    }
+  </script>
+
+  <!-- PROFILE MODAL & XP TOAST CONTAINER -->
+  <div id="xp-toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <div id="profile-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 md:p-8 shadow-2xl space-y-6 my-8 max-h-[90vh] overflow-y-auto">
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-4">
+          <div id="modal-avatar-display" class="w-16 h-16 rounded-2xl bg-indigo-500/15 border-2 border-indigo-500/40 flex items-center justify-center text-4xl shadow-inner">
+            🐍
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <input id="modal-name-input" type="text" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1 text-lg font-extrabold text-white focus:outline-none focus:border-indigo-500" value="Estudante Python" maxlength="28">
+              <button onclick="window.ProfileSystem.saveName()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-colors">
+                Salvar Nome
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mt-2 text-xs">
+              <span id="modal-level-badge" class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-bold">Nível 1</span>
+              <span id="modal-rank-title" class="text-amber-400 font-semibold">🌱 Iniciante Python</span>
+              <span class="text-slate-500">•</span>
+              <span id="modal-xp-Next" class="text-slate-400 font-mono">0 / 150 XP para o próximo nível</span>
+            </div>
+          </div>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2 py-1">✕</button>
+      </div>
+
+      <!-- Avatar Selector -->
+      <div class="flex items-center gap-2 flex-wrap text-xs">
+        <span class="text-slate-400 font-medium">Escolher Avatar:</span>
+        <button onclick="window.ProfileSystem.setAvatar('🐍')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐍</button>
+        <button onclick="window.ProfileSystem.setAvatar('🚀')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🚀</button>
+        <button onclick="window.ProfileSystem.setAvatar('⚡')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">⚡</button>
+        <button onclick="window.ProfileSystem.setAvatar('🧙‍♂️')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🧙‍♂️</button>
+        <button onclick="window.ProfileSystem.setAvatar('🦊')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🦊</button>
+        <button onclick="window.ProfileSystem.setAvatar('🤖')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🤖</button>
+        <button onclick="window.ProfileSystem.setAvatar('🐉')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🐉</button>
+        <button onclick="window.ProfileSystem.setAvatar('🔥')" class="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-lg">🔥</button>
+      </div>
+
+      <!-- Top Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">XP Total</div>
+          <div id="stat-total-xp" class="text-2xl font-extrabold text-emerald-400 font-mono mt-1">0 XP</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Atividades</div>
+          <div id="stat-tasks-done" class="text-2xl font-extrabold text-indigo-400 font-mono mt-1">0 / 20</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">LeetCodes</div>
+          <div id="stat-leetcodes-done" class="text-2xl font-extrabold text-amber-400 font-mono mt-1">0 / 4</div>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase">Progresso Geral</div>
+          <div id="stat-global-pct" class="text-2xl font-extrabold text-cyan-400 font-mono mt-1">0%</div>
+        </div>
+      </div>
+
+      <!-- Progress Across All 4 Labs -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">📚 Progresso Detalhado por Fase</h3>
+        <div id="modal-labs-breakdown" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Achievements / Badges -->
+      <div class="space-y-3">
+        <h3 class="font-bold text-sm text-white uppercase tracking-wider">🏆 Sala de Troféus & Conquistas</h3>
+        <div id="modal-achievements-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Data Backup & Reset -->
+      <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center gap-2">
+          <button onclick="window.ProfileSystem.exportProfile()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+            📥 Exportar Backup (.json)
+          </button>
+          <button onclick="window.ProfileSystem.resetProfile()" class="px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/50 text-rose-300 border border-rose-500/30 transition-colors">
+            🗑️ Resetar Progresso
+          </button>
+        </div>
+        <button onclick="window.ProfileSystem.closeModal()" class="px-5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
