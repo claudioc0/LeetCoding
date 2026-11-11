@@ -304,11 +304,10 @@
         Use <code>palavra.startswith(prefixo)</code> dentro de um loop ou any().
       </div>
 
-      <textarea id="editor-2" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def tem_prefixo_comum(palavras, prefixo):
-    for p in palavras:
-        if p.startswith(prefixo):
-            return True
-    return False</textarea>
+      <textarea id="editor-2" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua função abaixo:
+def tem_prefixo_comum(palavras, prefixo):
+    # seu código aqui
+    pass"></textarea>
       <div id="result-2" class="hidden text-xs p-3 rounded-lg border"></div>
     </section>
 
@@ -347,8 +346,10 @@
         Use list comprehension: <code>[p for p in palavras if p.startswith(prefixo)]</code>.
       </div>
 
-      <textarea id="editor-3" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def sugestoes_simples(palavras, prefixo):
-    return [p for p in palavras if p.startswith(prefixo)]</textarea>
+      <textarea id="editor-3" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua função abaixo:
+def sugestoes_simples(palavras, prefixo):
+    # seu código aqui
+    pass"></textarea>
       <div id="result-3" class="hidden text-xs p-3 rounded-lg border"></div>
     </section>
 
@@ -432,7 +433,8 @@
         <strong>Dica:</strong> Crie TrieNode com <code>children = {}</code> e <code>is_end = False</code>. Na raiz, para cada char em word, se char not in curr.children crie novo nó. Ao final marque curr.is_end = True.
       </div>
 
-      <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">class TrieNode:
+      <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua solução aqui:
+class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end = False
@@ -441,29 +443,14 @@ class Trie:
     def __init__(self):
         self.root = TrieNode()
 
-    def insert(self, word: str) -> None:
-        curr = self.root
-        for char in word:
-            if char not in curr.children:
-                curr.children[char] = TrieNode()
-            curr = curr.children[char]
-        curr.is_end = True
+    def insert(self, word: str) -&gt; None:
+        pass
 
-    def search(self, word: str) -> bool:
-        curr = self.root
-        for char in word:
-            if char not in curr.children:
-                return False
-            curr = curr.children[char]
-        return curr.is_end
+    def search(self, word: str) -&gt; bool:
+        pass
 
-    def startsWith(self, prefix: str) -> bool:
-        curr = self.root
-        for char in prefix:
-            if char not in curr.children:
-                return False
-            curr = curr.children[char]
-        return True</textarea>
+    def startsWith(self, prefix: str) -&gt; bool:
+        pass"></textarea>
 
       <!-- Results Panel -->
       <div id="leetcode-results-panel" class="hidden space-y-4 pt-2">
@@ -1361,12 +1348,20 @@ class Trie:
 
     function revealSolution(num) {
       const ed = document.getElementById('editor-' + num);
-      if (ed && SOLUTIONS[num]) ed.value = SOLUTIONS[num];
+      if (ed && SOLUTIONS[num]) {
+        ed.value = SOLUTIONS[num];
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-' + num, ed.value);
+      }
     }
 
     function clearEditor(id) {
       const ed = document.getElementById(id === 'leetcode' ? 'editor-leetcode' : 'editor-' + id);
-      if (ed) ed.value = '';
+      if (ed) {
+        ed.value = '';
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(id === 'leetcode' ? 'editor-leetcode' : 'editor-' + id, '');
+      }
     }
 
     function toggleHint(id) {
@@ -1445,7 +1440,8 @@ class Trie:
 
     function revealLeetCodeSolution() {
       const ed = document.getElementById('editor-leetcode');
-      if (ed) ed.value = `class TrieNode:
+      if (ed) {
+        ed.value = `class TrieNode:
     def __init__(self):
         self.children = {}
         self.is_end = False
@@ -1477,6 +1473,9 @@ class Trie:
                 return False
             curr = curr.children[char]
         return True`;
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
+      }
     }
 
     function runLeetCodeTests() {
@@ -2105,7 +2104,19 @@ function setupCodeEditorFeatures() {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
-          return Object.assign(getDefaultProfile(), parsed);
+          const prof = Object.assign(getDefaultProfile(), parsed);
+          // Purge legacy shared keys so they never leak across labs
+          if (prof.savedCode) {
+            delete prof.savedCode['editor-1'];
+            delete prof.savedCode['editor-2'];
+            delete prof.savedCode['editor-3'];
+            delete prof.savedCode['editor-leetcode'];
+            delete prof.savedCode['code-ex1'];
+            delete prof.savedCode['code-ex2'];
+            delete prof.savedCode['code-ex3'];
+            delete prof.savedCode['code-leetcode'];
+          }
+          return prof;
         } catch (e) {
           return getDefaultProfile();
         }
@@ -2217,20 +2228,32 @@ function setupCodeEditorFeatures() {
         renderTopBar(profile);
       }
 
+      function getLabKey() {
+        const path = window.location.pathname;
+        const match = path.match(/(?:lab(d+)|index)/i);
+        if (match) {
+          return match[1] ? ('lab' + match[1]) : 'lab1';
+        }
+        return 'lab_common';
+      }
+
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        profile.savedCode[editorId] = code;
+        const key = getLabKey() + '_' + editorId;
+        profile.savedCode[key] = code;
         saveProfile(profile);
       }
 
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
+        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          if (profile.savedCode[textarea.id]) {
-            textarea.value = profile.savedCode[textarea.id];
+          const key = labKey + '_' + textarea.id;
+          if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
+            textarea.value = profile.savedCode[key];
           }
         });
       }

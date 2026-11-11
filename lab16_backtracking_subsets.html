@@ -320,16 +320,10 @@
         Se <code>len(atual) == n</code>: adicione aos resultados. Senão chame recursivamente adicionando "0" e depois adicionando "1".
       </div>
 
-      <textarea id="editor-2" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def gerar_binarios(n):
-    res = []
-    def backtrack(atual):
-        if len(atual) == n:
-            res.append(atual)
-            return
-        backtrack(atual + "0")
-        backtrack(atual + "1")
-    backtrack("")
-    return res</textarea>
+      <textarea id="editor-2" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua função abaixo:
+def gerar_binarios(n):
+    # seu código aqui
+    pass"></textarea>
       <div id="result-2" class="hidden text-xs p-3 rounded-lg border"></div>
     </section>
 
@@ -368,15 +362,10 @@
         Use dois loops ou um set para coletar os pares ordenados <code>[a, b]</code> sem duplicatas.
       </div>
 
-      <textarea id="editor-3" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def combinacoes_soma(nums, target):
-    vistos = set()
-    res = []
-    for n in nums:
-        diff = target - n
-        if diff in vistos:
-            res.append(sorted([diff, n]))
-        vistos.add(n)
-    return res</textarea>
+      <textarea id="editor-3" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua função abaixo:
+def combinacoes_soma(nums, target):
+    # seu código aqui
+    pass"></textarea>
       <div id="result-3" class="hidden text-xs p-3 rounded-lg border"></div>
     </section>
 
@@ -461,26 +450,11 @@
         <strong>Dica:</strong> Defina <code>res = []</code> e <code>subset = []</code>. Crie <code>dfs(i)</code>: se <code>i >= len(nums): res.append(subset.copy()); return</code>. Faça <code>subset.append(nums[i])</code> e chame <code>dfs(i + 1)</code>. Depois <code>subset.pop()</code> e chame <code>dfs(i + 1)</code>.
       </div>
 
-      <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">class Solution:
+      <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner" placeholder="# Escreva sua solução aqui:
+class Solution:
     def subsets(self, nums):
-        res = []
-        subset = []
-        
-        def dfs(i):
-            if i >= len(nums):
-                res.append(subset.copy())
-                return
-                
-            # Decisão 1: incluir nums[i]
-            subset.append(nums[i])
-            dfs(i + 1)
-            
-            # Decisão 2: NÃO incluir nums[i] (backtrack)
-            subset.pop()
-            dfs(i + 1)
-            
-        dfs(0)
-        return res</textarea>
+        # sua implementação aqui
+        pass"></textarea>
 
       <!-- Results Panel -->
       <div id="leetcode-results-panel" class="hidden space-y-4 pt-2">
@@ -1390,12 +1364,20 @@
 
     function revealSolution(num) {
       const ed = document.getElementById('editor-' + num);
-      if (ed && SOLUTIONS[num]) ed.value = SOLUTIONS[num];
+      if (ed && SOLUTIONS[num]) {
+        ed.value = SOLUTIONS[num];
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-' + num, ed.value);
+      }
     }
 
     function clearEditor(id) {
       const ed = document.getElementById(id === 'leetcode' ? 'editor-leetcode' : 'editor-' + id);
-      if (ed) ed.value = '';
+      if (ed) {
+        ed.value = '';
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(id === 'leetcode' ? 'editor-leetcode' : 'editor-' + id, '');
+      }
     }
 
     function toggleHint(id) {
@@ -1474,7 +1456,8 @@
 
     function revealLeetCodeSolution() {
       const ed = document.getElementById('editor-leetcode');
-      if (ed) ed.value = `class Solution:
+      if (ed) {
+        ed.value = `class Solution:
     def subsets(self, nums):
         res = []
         subset = []
@@ -1494,6 +1477,9 @@
             
         dfs(0)
         return res`;
+        if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
+        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
+      }
     }
 
     function runLeetCodeTests() {
@@ -2135,7 +2121,19 @@ function setupCodeEditorFeatures() {
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
-          return Object.assign(getDefaultProfile(), parsed);
+          const prof = Object.assign(getDefaultProfile(), parsed);
+          // Purge legacy shared keys so they never leak across labs
+          if (prof.savedCode) {
+            delete prof.savedCode['editor-1'];
+            delete prof.savedCode['editor-2'];
+            delete prof.savedCode['editor-3'];
+            delete prof.savedCode['editor-leetcode'];
+            delete prof.savedCode['code-ex1'];
+            delete prof.savedCode['code-ex2'];
+            delete prof.savedCode['code-ex3'];
+            delete prof.savedCode['code-leetcode'];
+          }
+          return prof;
         } catch (e) {
           return getDefaultProfile();
         }
@@ -2247,20 +2245,32 @@ function setupCodeEditorFeatures() {
         renderTopBar(profile);
       }
 
+      function getLabKey() {
+        const path = window.location.pathname;
+        const match = path.match(/(?:lab(d+)|index)/i);
+        if (match) {
+          return match[1] ? ('lab' + match[1]) : 'lab1';
+        }
+        return 'lab_common';
+      }
+
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        profile.savedCode[editorId] = code;
+        const key = getLabKey() + '_' + editorId;
+        profile.savedCode[key] = code;
         saveProfile(profile);
       }
 
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
+        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          if (profile.savedCode[textarea.id]) {
-            textarea.value = profile.savedCode[textarea.id];
+          const key = labKey + '_' + textarea.id;
+          if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
+            textarea.value = profile.savedCode[key];
           }
         });
       }

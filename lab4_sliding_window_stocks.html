@@ -2557,6 +2557,7 @@ class Solution:
     }
 
     
+    
     // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (20 LABS) ---
     window.ProfileSystem = (function() {
       const STORAGE_KEY = 'python_study_lab_profile_v1';
@@ -2695,7 +2696,19 @@ class Solution:
           const raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
-          return Object.assign(getDefaultProfile(), parsed);
+          const prof = Object.assign(getDefaultProfile(), parsed);
+          // Purge legacy shared keys so they never leak across labs
+          if (prof.savedCode) {
+            delete prof.savedCode['editor-1'];
+            delete prof.savedCode['editor-2'];
+            delete prof.savedCode['editor-3'];
+            delete prof.savedCode['editor-leetcode'];
+            delete prof.savedCode['code-ex1'];
+            delete prof.savedCode['code-ex2'];
+            delete prof.savedCode['code-ex3'];
+            delete prof.savedCode['code-leetcode'];
+          }
+          return prof;
         } catch (e) {
           return getDefaultProfile();
         }
@@ -2807,20 +2820,32 @@ class Solution:
         renderTopBar(profile);
       }
 
+      function getLabKey() {
+        const path = window.location.pathname;
+        const match = path.match(/(?:lab(d+)|index)/i);
+        if (match) {
+          return match[1] ? ('lab' + match[1]) : 'lab1';
+        }
+        return 'lab_common';
+      }
+
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        profile.savedCode[editorId] = code;
+        const key = getLabKey() + '_' + editorId;
+        profile.savedCode[key] = code;
         saveProfile(profile);
       }
 
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
+        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          if (profile.savedCode[textarea.id]) {
-            textarea.value = profile.savedCode[textarea.id];
+          const key = labKey + '_' + textarea.id;
+          if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
+            textarea.value = profile.savedCode[key];
           }
         });
       }
