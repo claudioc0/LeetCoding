@@ -1,0 +1,2302 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Lab • Fase 19: Coin Change</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#eef2ff', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    .code-font {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    textarea {
+      tab-size: 4;
+      -moz-tab-size: 4;
+      resize: vertical !important;
+      line-height: 1.6 !important;
+      font-size: 13px !important;
+      caret-color: #38bdf8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    }
+  </style>
+</head>
+<body class="bg-[#090d16] text-[#f8fafc] antialiased min-h-screen p-4 md:p-8">
+  <div class="max-w-5xl mx-auto space-y-8">
+
+    <!-- GLOBAL PLAYER PROFILE & XP BAR (PERSISTENT ACROSS ALL 20 LABS) -->
+    <div id="global-profile-bar" class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl shadow-black/40 flex flex-col gap-3.5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5 w-full md:w-auto">
+          <button onclick="window.ProfileSystem.openModal()" title="Clique para personalizar seu perfil" class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center text-2xl hover:scale-105 hover:bg-indigo-500/25 transition-all shadow-inner shrink-0" id="profile-bar-avatar">
+            🐍
+          </button>
+          <div class="flex-1 min-w-[200px]">
+            <div class="flex items-center gap-2">
+              <span id="profile-bar-name" class="font-bold text-sm text-white">Estudante Python</span>
+              <span id="profile-bar-level" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 uppercase tracking-wider">Nível 1</span>
+            </div>
+            <div class="text-xs text-slate-400 font-medium" id="profile-bar-rank">🌱 Iniciante Python</div>
+            <div class="w-full bg-slate-950/80 rounded-full h-2 mt-1.5 border border-slate-800 overflow-hidden">
+              <div id="profile-bar-xp-fill" class="bg-gradient-to-r from-indigo-500 via-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 self-end md:self-center">
+          <div class="text-right">
+            <div class="text-xs font-mono font-bold text-emerald-400" id="profile-bar-xp-text">⚡ 0 XP</div>
+            <div class="text-[10px] text-slate-400">Total Acumulado</div>
+          </div>
+          <button onclick="window.ProfileSystem.openModal()" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors flex items-center gap-1.5">
+            <span>⚙️</span> Perfil
+          </button>
+        </div>
+      </div>
+
+      <!-- 20 Labs Quick Roadmap -->
+      <div class="flex flex-wrap items-center gap-1.5 text-[11px] pt-2.5 border-t border-slate-800/80">
+        <a href="index.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F1: Hash Map</span>
+          <span id="nav-pct-lab1" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab2_strings_twopointers.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F2: Two Pointers</span>
+          <span id="nav-pct-lab2" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab3_stacks_valid_parentheses.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F3: Pilhas</span>
+          <span id="nav-pct-lab3" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab4_sliding_window_stocks.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F4: Sliding Window</span>
+          <span id="nav-pct-lab4" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab5_binary_search.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F5: Busca Binária</span>
+          <span id="nav-pct-lab5" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab6_sets_duplicates.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F6: Hash Sets</span>
+          <span id="nav-pct-lab6" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab7_kadane_max_subarray.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F7: Kadane</span>
+          <span id="nav-pct-lab7" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab8_two_pointers_water.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F8: Container Água</span>
+          <span id="nav-pct-lab8" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab9_dp_climbing_stairs.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F9: Prog. Dinâmica</span>
+          <span id="nav-pct-lab9" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab10_intervals_merge.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F10: Intervalos</span>
+          <span id="nav-pct-lab10" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab11_linked_list_reverse.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F11: Listas Encadeadas</span>
+          <span id="nav-pct-lab11" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab12_linked_list_cycle.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F12: Ciclos Floyd</span>
+          <span id="nav-pct-lab12" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab13_binary_tree_invert.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F13: Inverter Árvore</span>
+          <span id="nav-pct-lab13" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab14_binary_tree_max_depth.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F14: Altura Árvore</span>
+          <span id="nav-pct-lab14" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab15_heap_kth_largest.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F15: Heaps / K-ésimo</span>
+          <span id="nav-pct-lab15" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab16_backtracking_subsets.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F16: Backtracking</span>
+          <span id="nav-pct-lab16" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab17_graphs_number_of_islands.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F17: Ilhas / Grafos</span>
+          <span id="nav-pct-lab17" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab18_trie_prefix_tree.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F18: Tries / Prefixos</span>
+          <span id="nav-pct-lab18" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab19_dp_coin_change.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-bold shadow-sm">
+          <span>F19: Troco DP</span>
+          <span id="nav-pct-lab19" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+        <a href="lab20_monotonic_stack_temperatures.html" class="px-2 py-1 rounded-lg border transition-all flex items-center gap-1 bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700">
+          <span>F20: Pilha Monotônica</span>
+          <span id="nav-pct-lab20" class="text-[9px] px-1 py-0.2 rounded bg-slate-950 text-slate-400 font-mono">0%</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Header / Banner -->
+    <header class="bg-gradient-to-r from-slate-900 via-[#0f172a] to-slate-900 rounded-2xl p-6 md:p-8 border border-slate-800 shadow-2xl relative overflow-hidden">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold tracking-wide uppercase">
+            <span>⚡ Fase 19 • Programação Dinâmica & Problema da Mochila/Troco</span>
+          </div>
+          <h1 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight">
+            Programação Dinâmica Bottom-Up, O Problema do Troco & LeetCode #322
+          </h1>
+          <p class="text-slate-400 text-sm md:text-base max-w-2xl">
+            Entenda por que a abordagem gulosa falha em trocos arbitrários e construa uma tabela DP bottom-up em O(amount × coins) para achar a solução ótima!
+          </p>
+        </div>
+        <div class="flex flex-col items-start md:items-end gap-3 shrink-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <a href="lab18_trie_prefix_tree.html" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">← Fase 18</a>
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              Fase 19 Ativa
+            </span>
+            <a href="lab20_monotonic_stack_temperatures.html" class="text-xs font-medium px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">Fase 20 →</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div class="text-xs text-slate-400">Dificuldade</div>
+        <div class="text-sm font-bold text-emerald-400 mt-1">Medium / Lendário</div>
+      </div>
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div class="text-xs text-slate-400">Complexidade Tempo</div>
+        <div class="text-sm font-bold text-indigo-400 mt-1 font-mono">O(amount × coins)</div>
+      </div>
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div class="text-xs text-slate-400">Complexidade Espaço</div>
+        <div class="text-sm font-bold text-amber-400 mt-1 font-mono">O(amount) Tabela DP</div>
+      </div>
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+        <div class="text-xs text-slate-400">Estrutura Principal</div>
+        <div class="text-sm font-bold text-teal-400 mt-1 font-mono">Array DP 1D</div>
+      </div>
+    </div>
+
+    <!-- MÓDULO 1: TEORIA & ANÁLISE VISUAL -->
+    <section class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-6">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Teoria & Fundamentos</span>
+          <h2 class="text-xl font-bold text-white mt-2">Módulo 1: Por Que Algoritmos Gulosos Falham no Troco</h2>
+        </div>
+        <span id="badge-mod-1" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+      <div class="text-sm text-slate-300 leading-relaxed space-y-3 bg-slate-950/60 p-5 rounded-xl border border-slate-800/80">
+        Imagine que você tem as moedas <code class="text-amber-400 font-mono">[1, 3, 4]</code> e precisa dar um troco de <code class="text-emerald-400 font-mono">6</code>:
+      <br>• Se você for <strong>Guloso (Greedy)</strong>: pega a maior moeda (4), sobra 2 $\rightarrow$ pega (1), sobra 1 $\rightarrow$ pega (1). Total: <strong>3 moedas</strong> (4 + 1 + 1).
+      <br>• Mas a <strong>Solução Ótima Real</strong> é: pegar duas moedas de 3 ($3 + 3 = 6$). Total: <strong>2 moedas</strong>!
+      <br><br>
+      A <strong>Programação Dinâmica (DP)</strong> resolve isso construindo uma tabela de soluções do valor 0 até o valor desejado:
+      $$\text{dp}[a] = \min(\text{dp}[a], 1 + \text{dp}[a - c]) \quad \forall c \in \text{coins}$$
+      Iniciamos <code class="text-indigo-400 font-mono">dp[0] = 0</code> e todas as outras posições com <code class="text-rose-400 font-mono">Infinity</code>.
+      </div>
+      
+      <!-- Trace Table -->
+      <div class="space-y-3">
+        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">📊 Tabela de Rastreamento Passo a Passo</h3>
+        <div class="overflow-x-auto border border-slate-800 rounded-xl">
+          <table class="w-full text-left text-xs font-mono text-slate-300">
+            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th class="p-3">Etapa</th>
+                <th class="p-3">Estado dos Ponteiros / Dados</th>
+                <th class="p-3">Explicação Operacional</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 bg-slate-900/40">
+              
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3 font-bold text-emerald-400">undefined</td>
+                  <td class="p-3 text-indigo-300">a = 0</td>
+                  <td class="p-3 text-slate-300">Troco de 0 custa 0 moedas</td>
+                </tr>
+              
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3 font-bold text-emerald-400">undefined</td>
+                  <td class="p-3 text-indigo-300">a = 1</td>
+                  <td class="p-3 text-slate-300">Moeda de 1 resolve com 1 moeda</td>
+                </tr>
+              
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3 font-bold text-emerald-400">undefined</td>
+                  <td class="p-3 text-indigo-300">a = 3</td>
+                  <td class="p-3 text-slate-300">Moeda de 3 resolve com 1 moeda!</td>
+                </tr>
+              
+                <tr class="hover:bg-slate-800/30">
+                  <td class="p-3 font-bold text-emerald-400">undefined</td>
+                  <td class="p-3 text-indigo-300">a = 6</td>
+                  <td class="p-3 text-slate-300">Solução ótima alcançada: 2 moedas de 3!</td>
+                </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="markModuleComplete('mod-1')" class="text-xs px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
+          <span>✓</span> Marcar Teoria como Concluída (+50 XP)
+        </button>
+      </div>
+    </section>
+
+    <!-- MÓDULO 2: MINI-DESAFIO 1 -->
+    <section class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Prática Guiada 1</span>
+          <h2 class="text-lg font-bold text-white mt-1.5">Mini-Desafio 1: Troco Guloso Funciona no Sistema Brasileiro?</h2>
+          <p class="text-xs text-slate-400 mt-1">Crie a função <code>troco_guloso_valido(moedas, quantia)</code> que calcula o troco usando estratégia gulosa (pegar sempre a maior moeda possível).</p>
+        </div>
+        <span id="badge-mod-2" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <!-- Editor Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="toggleHint('hint-2')" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>💡</span> Dica
+          </button>
+          <button onclick="revealSolution(2)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+            👁️ Ver Solução Modelo
+          </button>
+          <button onclick="clearEditor(2)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+            Limpar
+          </button>
+          <button onclick="toggleExpandEditor('editor-2', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>⛶</span> Expandir
+          </button>
+        </div>
+        <button onclick="runChallenge(2)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+          <span>▶️</span> Executar Testes
+        </button>
+      </div>
+
+      <div id="hint-2" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+        Ordene as moedas em ordem decrescente. Para cada moeda, subtraia da quantia enquanto quantia >= moeda.
+      </div>
+
+      <textarea id="editor-2" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def troco_guloso_valido(moedas, quantia):
+    moedas.sort(reverse=True)
+    count = 0
+    for m in moedas:
+        while quantia >= m:
+            quantia -= m
+            count += 1
+    return count if quantia == 0 else -1</textarea>
+      <div id="result-2" class="hidden text-xs p-3 rounded-lg border"></div>
+    </section>
+
+    <!-- MÓDULO 3: MINI-DESAFIO 2 -->
+    <section class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Prática Guiada 2</span>
+          <h2 class="text-lg font-bold text-white mt-1.5">Mini-Desafio 2: Mínimo de Passos Até 1</h2>
+          <p class="text-xs text-slate-400 mt-1">Crie a função <code>passos_ate_um(n)</code>. Se n for divisível por 2, pode dividir por 2; se for divisível por 3, por 3; ou subtrair 1. Retorne o número mínimo de operações até chegar em 1.</p>
+        </div>
+        <span id="badge-mod-3" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="toggleHint('hint-3')" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>💡</span> Dica
+          </button>
+          <button onclick="revealSolution(3)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+            👁️ Ver Solução Modelo
+          </button>
+          <button onclick="clearEditor(3)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+            Limpar
+          </button>
+          <button onclick="toggleExpandEditor('editor-3', this)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>⛶</span> Expandir
+          </button>
+        </div>
+        <button onclick="runChallenge(3)" class="text-xs font-semibold px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1.5 shadow-sm">
+          <span>▶️</span> Executar Testes
+        </button>
+      </div>
+
+      <div id="hint-3" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 leading-relaxed">
+        Crie uma tabela DP onde <code>dp[i] = 1 + min(dp[i-1], dp[i//2] se i%2==0 else inf, dp[i//3] se i%3==0 else inf)</code>.
+      </div>
+
+      <textarea id="editor-3" class="w-full min-h-[220px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">def passos_ate_um(n):
+    dp = [0] * (n + 1)
+    for i in range(2, n + 1):
+        res = 1 + dp[i - 1]
+        if i % 2 == 0:
+            m2 = i // 2
+            res = min(res, 1 + dp[m2])
+        if i % 3 == 0:
+            m3 = i // 3
+            res = min(res, 1 + dp[m3])
+        dp[i] = res
+    return dp[n]</textarea>
+      <div id="result-3" class="hidden text-xs p-3 rounded-lg border"></div>
+    </section>
+
+    <!-- MÓDULO 4: SIMULADOR VISUAL INTERATIVO -->
+    <section class="bg-[#0f172a] border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl space-y-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Simulador Visual</span>
+          <h2 class="text-lg font-bold text-white mt-1.5">Simulador Visual: Preenchimento da Tabela DP do Troco</h2>
+          <p class="text-xs text-slate-400 mt-1">Acompanhe a tabela DP sendo construída célula por célula do valor 0 até a quantia com as moedas escolhidas!</p>
+        </div>
+        <span id="badge-mod-4" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pendente</span>
+      </div>
+
+
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <button onclick="simRunGeneral()" class="text-xs px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
+            <span>▶️</span> Executar Simulação Interativa
+          </button>
+          <button onclick="simResetGeneral()" class="text-xs px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors flex items-center gap-1.5">
+            <span>🔄</span> Reiniciar
+          </button>
+          <span id="general-sim-badge" class="text-xs px-2.5 py-1 rounded bg-slate-800 text-emerald-400 font-mono">Pronto</span>
+        </div>
+
+        <div class="p-6 rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center gap-3 min-h-[140px]" id="general-sim-canvas">
+          <div class="text-xs text-slate-400">Clique em "Executar Simulação" para visualizar a estrutura de dados em ação.</div>
+        </div>
+
+        <div id="general-sim-log" class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
+          Simulador pronto. Acompanhe a visualização gráfica dos algoritmos.
+        </div>
+      </div>
+    
+    </section>
+
+    <!-- MÓDULO 5: O DESAFIO LEETCODE OFICIAL -->
+    <section class="bg-[#0f172a] border border-emerald-500/30 rounded-2xl p-6 md:p-8 shadow-2xl space-y-6">
+      <div class="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">LeetCode #322</span>
+            <span class="text-xs text-slate-400">Medium</span>
+          </div>
+          <h2 class="text-xl md:text-2xl font-extrabold text-white mt-2">Coin Change</h2>
+        </div>
+        <span id="badge-mod-5" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Não Resolvido</span>
+      </div>
+
+      <div class="text-xs md:text-sm text-slate-300 leading-relaxed bg-slate-950/70 p-5 rounded-xl border border-slate-800 space-y-2">
+        Dado um array de inteiros <code class="text-emerald-400 font-mono">coins</code> representando moedas de diferentes denominações e um inteiro <code class="text-emerald-400 font-mono">amount</code> representando um valor total de dinheiro.
+      <br><br>
+      Retorne o <strong>número mínimo de moedas</strong> que você precisa para formar essa quantia. Se essa quantia de dinheiro não puder ser formada por nenhuma combinação de moedas, retorne <code class="text-rose-400 font-mono">-1</code>.
+      <br><br>
+      <strong>Exemplo 1:</strong> <code class="font-mono text-slate-300">coins = [1,2,5], amount = 11 -> 3 (5 + 5 + 1)</code><br>
+      <strong>Exemplo 2:</strong> <code class="font-mono text-slate-300">coins = [2], amount = 3 -> -1</code><br>
+      <strong>Exemplo 3:</strong> <code class="font-mono text-slate-300">coins = [1], amount = 0 -> 0</code>
+      </div>
+
+      <!-- LeetCode Toolbar -->
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="toggleHint('hint-leetcode')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-amber-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>💡</span> Dica Estratégica
+          </button>
+          <button onclick="revealLeetCodeSolution()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors">
+            👁️ Ver Solução Modelo
+          </button>
+          <button onclick="clearEditor('leetcode')" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 transition-colors">
+            Limpar
+          </button>
+          <button onclick="toggleExpandEditor('editor-leetcode', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-colors flex items-center gap-1">
+            <span>⛶</span> Expandir
+          </button>
+        </div>
+        <button onclick="runLeetCodeTests()" class="text-xs md:text-sm font-bold px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-lg flex items-center gap-2">
+          <span>🚀</span> Executar Todos os Testes
+        </button>
+      </div>
+
+      <div id="hint-leetcode" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 leading-relaxed">
+        <strong>Dica:</strong> Crie <code>dp = [float("inf")] * (amount + 1)</code> com <code>dp[0] = 0</code>. Para cada a de 1 a amount, para cada c em coins: se a - c >= 0 faça <code>dp[a] = min(dp[a], 1 + dp[a - c])</code>. Retorne dp[amount] se dp[amount] != inf senão -1.
+      </div>
+
+      <textarea id="editor-leetcode" class="w-full min-h-[380px] bg-slate-950 border border-slate-800 rounded-xl p-4 text-xs md:text-sm font-mono text-slate-200 focus:outline-none focus:border-emerald-500 resize-y shadow-inner">class Solution:
+    def coinChange(self, coins, amount):
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0
+        
+        for a in range(1, amount + 1):
+            for c in coins:
+                if a - c >= 0:
+                    dp[a] = min(dp[a], 1 + dp[a - c])
+                    
+        return dp[amount] if dp[amount] != float('inf') else -1</textarea>
+
+      <!-- Results Panel -->
+      <div id="leetcode-results-panel" class="hidden space-y-4 pt-2">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-white">Resultados da Avaliação:</span>
+            <span id="tests-summary-badge" class="px-2 py-0.5 rounded text-[11px] font-bold"></span>
+          </div>
+          <span id="leetcode-status" class="text-xs font-mono text-slate-400"></span>
+        </div>
+        <div id="test-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Profile Customization Modal -->
+  <div id="profile-customization-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-base">Personalizar Perfil</h3>
+        <button onclick="window.ProfileSystem.closeModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-slate-400 font-semibold">Nome do Aluno</label>
+        <input id="profile-name-input" type="text" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+      </div>
+      <div class="space-y-2">
+        <label class="text-xs text-slate-400 font-semibold">Escolha seu Avatar</label>
+        <div class="grid grid-cols-6 gap-2 text-2xl">
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🐍')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🐍
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('⚡')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              ⚡
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🧠')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🧠
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🧙‍♂️')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🧙‍♂️
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🚀')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🚀
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🔥')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🔥
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('👑')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              👑
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('💎')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              💎
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('💻')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              💻
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🦊')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🦊
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🦉')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🦉
+            </button>
+          
+            <button onclick="window.ProfileSystem.chooseAvatar('🎯')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center transition-all hover:scale-110">
+              🎯
+            </button>
+          
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800">
+        <button onclick="window.ProfileSystem.resetProgress()" class="text-xs text-rose-400 hover:text-rose-300">Resetar Progresso</button>
+        <div class="flex items-center gap-2">
+          <button onclick="window.ProfileSystem.closeModal()" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300">Cancelar</button>
+          <button onclick="window.ProfileSystem.saveName()" class="text-xs px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="xp-toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- SCRIPT LOGIC: Transpiler, Simulators, Challenges & Tests -->
+  <script>
+    // Data structures helper functions
+    function ListNode(val, next) {
+      if (!(this instanceof ListNode)) return new ListNode(val, next);
+      this.val = (val === undefined ? 0 : val);
+      this.next = (next === undefined ? null : next);
+    }
+    function TreeNode(val, left, right) {
+      if (!(this instanceof TreeNode)) return new TreeNode(val, left, right);
+      this.val = (val === undefined ? 0 : val);
+      this.left = (left === undefined ? null : left);
+      this.right = (right === undefined ? null : right);
+    }
+
+    function arrayToListNode(arr) {
+      if (!arr || !arr.length) return null;
+      let head = new ListNode(arr[0]);
+      let curr = head;
+      for (let i = 1; i < arr.length; i++) {
+        curr.next = new ListNode(arr[i]);
+        curr = curr.next;
+      }
+      return head;
+    }
+
+    function listNodeToArray(head) {
+      let res = [];
+      let curr = head;
+      let count = 0;
+      while (curr && count < 1000) {
+        res.push(curr.val);
+        curr = curr.next;
+        count++;
+      }
+      return res;
+    }
+
+    function arrayToCyclicList(arr, pos) {
+      if (!arr || !arr.length) return null;
+      let nodes = arr.map(v => new ListNode(v));
+      for (let i = 0; i < nodes.length - 1; i++) {
+        nodes[i].next = nodes[i + 1];
+      }
+      if (pos >= 0 && pos < nodes.length) {
+        nodes[nodes.length - 1].next = nodes[pos];
+      }
+      return nodes[0];
+    }
+
+    function arrayToTree(arr) {
+      if (!arr || !arr.length || arr[0] === null) return null;
+      let root = new TreeNode(arr[0]);
+      let queue = [root];
+      let i = 1;
+      while (i < arr.length && queue.length) {
+        let curr = queue.shift();
+        if (i < arr.length && arr[i] !== null) {
+          curr.left = new TreeNode(arr[i]);
+          queue.push(curr.left);
+        }
+        i++;
+        if (i < arr.length && arr[i] !== null) {
+          curr.right = new TreeNode(arr[i]);
+          queue.push(curr.right);
+        }
+        i++;
+      }
+      return root;
+    }
+
+    function treeToArray(root) {
+      if (!root) return [];
+      let res = [];
+      let queue = [root];
+      while (queue.length) {
+        let curr = queue.shift();
+        if (curr) {
+          res.push(curr.val);
+          queue.push(curr.left);
+          queue.push(curr.right);
+        } else {
+          res.push(null);
+        }
+      }
+      while (res.length && res[res.length - 1] === null) res.pop();
+      return res;
+    }
+
+    // --- PYTHON TRANSPILER WITH MULTILINE BRACKET SUPPORT ---
+    function transpilePython(pythonCode) {
+    function joinMultilineBrackets(code) {
+      const rawLines = code.split('\n');
+      const logicalLines = [];
+      let currentLine = '';
+      let inMultiline = false;
+      let parenDepth = 0;
+      let bracketDepth = 0;
+      let braceDepth = 0;
+      let inString = null;
+
+      for (let i = 0; i < rawLines.length; i++) {
+        const raw = rawLines[i];
+        const trimmed = raw.trim();
+
+        if (!inMultiline && (!trimmed || trimmed.startsWith('#'))) {
+          logicalLines.push(raw);
+          continue;
+        }
+
+        let commentIndex = -1;
+        for (let c = 0; c < raw.length; c++) {
+          const ch = raw[c];
+          if (inString) {
+            if (ch === inString) {
+              let slashes = 0;
+              let k = c - 1;
+              while (k >= 0 && raw[k] === '\\') { slashes++; k--; }
+              if (slashes % 2 === 0) inString = null;
+            }
+            continue;
+          }
+          if (ch === '"' || ch === "'") {
+            inString = ch;
+            continue;
+          }
+          if (ch === '#') {
+            commentIndex = c;
+            break;
+          }
+          if (ch === '(') parenDepth++;
+          else if (ch === ')') { if (parenDepth > 0) parenDepth--; }
+          else if (ch === '[') bracketDepth++;
+          else if (ch === ']') { if (bracketDepth > 0) bracketDepth--; }
+          else if (ch === '{') braceDepth++;
+          else if (ch === '}') { if (braceDepth > 0) braceDepth--; }
+        }
+
+        let effectiveLine = commentIndex !== -1 ? raw.slice(0, commentIndex).trimEnd() : raw;
+        let lineComment = commentIndex !== -1 ? raw.slice(commentIndex) : '';
+
+        if (!inMultiline) {
+          currentLine = effectiveLine;
+        } else {
+          const effTrimmed = effectiveLine.trim();
+          if (effTrimmed) {
+            currentLine += ' ' + effTrimmed;
+          }
+        }
+
+        if (parenDepth === 0 && bracketDepth === 0 && braceDepth === 0) {
+          if (!inMultiline && commentIndex !== -1) {
+            logicalLines.push(currentLine + ' ' + lineComment);
+          } else {
+            logicalLines.push(currentLine);
+          }
+          currentLine = '';
+          inMultiline = false;
+        } else {
+          inMultiline = true;
+        }
+      }
+
+      if (currentLine) logicalLines.push(currentLine);
+      return logicalLines.join('\n');
+    }
+    pythonCode = joinMultilineBrackets(pythonCode);
+    const lines = pythonCode.split('\n');
+    let jsLines = [];
+
+    let preamble = `
+      function print(...args) {
+        if (typeof __print === 'function') {
+          __print(...args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)));
+        }
+      }
+      function range(start, stop, step) {
+        if (stop === undefined) { stop = start; start = 0; }
+        if (step === undefined) step = 1;
+        let res = [];
+        if (step > 0) {
+          for (let i = start; i < stop; i += step) res.push(i);
+        } else {
+          for (let i = start; i > stop; i += step) res.push(i);
+        }
+        return res;
+      }
+      function len(obj) {
+        if (obj === undefined || obj === null) return 0;
+        if (typeof obj === 'string' || Array.isArray(obj)) return obj.length;
+        if (obj instanceof Set || obj instanceof Map) return obj.size;
+        if (typeof obj === 'object') return Object.keys(obj).length;
+        return 0;
+      }
+      function enumerate(arr) {
+        let res = [];
+        for (let i = 0; i < arr.length; i++) {
+          res.push([i, arr[i]]);
+        }
+        return res;
+      }
+      function sum(arr) {
+        if (!arr) return 0;
+        let s = 0;
+        for (let x of arr) s += x;
+        return s;
+      }
+      function pyCompare(a, b) {
+        if (Array.isArray(a) && Array.isArray(b)) {
+          const l = Math.min(a.length, b.length);
+          for (let i = 0; i < l; i++) {
+            const c = pyCompare(a[i], b[i]);
+            if (c !== 0) return c;
+          }
+          return a.length - b.length;
+        }
+        if (typeof a === 'number' && typeof b === 'number') return a - b;
+        return String(a).localeCompare(String(b));
+      }
+      function pySortInPlace(arr, keyFn, reverse) {
+        if (!Array.isArray(arr)) return arr;
+        arr.sort((a, b) => {
+          const ka = keyFn ? keyFn(a) : a;
+          const kb = keyFn ? keyFn(b) : b;
+          const cmp = pyCompare(ka, kb);
+          return reverse ? -cmp : cmp;
+        });
+        return arr;
+      }
+      function sorted(iterable, keyFn, reverse) {
+        const arr = Array.from(iterable || []);
+        return pySortInPlace(arr, keyFn, reverse);
+      }
+      function pyIn(item, container) {
+        if (Array.isArray(container)) {
+          return container.some(x => pyEq(x, item));
+        }
+        if (typeof container === 'string') {
+          return container.includes(item);
+        }
+        if (container instanceof Set) {
+          return container.has(item);
+        }
+        if (typeof container === 'object' && container !== null) {
+          return Object.prototype.hasOwnProperty.call(container, item) || (String(item) in container);
+        }
+        return false;
+      }
+      function pySlice(obj, step) {
+        if (typeof obj === 'string') {
+          if (step === -1) return obj.split('').reverse().join('');
+        }
+        if (Array.isArray(obj)) {
+          if (step === -1) return [...obj].reverse();
+        }
+        return obj;
+      }
+      function pyIsAlnum(str) {
+        return /^[a-zA-Z0-9]+$/.test(str);
+      }
+      function pyTruth(val) {
+        if (val === null || val === undefined) return false;
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'number') return val !== 0;
+        if (typeof val === 'string') return val.length > 0;
+        if (Array.isArray(val)) return val.length > 0;
+        if (val instanceof Set || val instanceof Map) return val.size > 0;
+        if (typeof val === 'object') return Object.keys(val).length > 0;
+        return Boolean(val);
+      }
+      function pyNot(val) {
+        return !pyTruth(val);
+      }
+      function pyEq(a, b) {
+        if (a === b) return true;
+        if (Array.isArray(a) && Array.isArray(b)) {
+          return a.length === b.length && a.every((v, i) => pyEq(v, b[i]));
+        }
+        return a == b;
+      }
+      function pySet(iterable) {
+        let s = new Set();
+        if (iterable) {
+          for (let item of iterable) s.add(item);
+        }
+        return s;
+      }
+      function pyList(iterable) {
+        return iterable ? Array.from(iterable) : [];
+      }
+      function pyDict() {
+        return {};
+      }
+      function int(val) {
+        return parseInt(val, 10);
+      }
+      function float(val) {
+        if (val === 'inf' || val === '+inf' || val === 'Infinity') return Infinity;
+        if (val === '-inf' || val === '-Infinity') return -Infinity;
+        return parseFloat(val);
+      }
+      function str(val) {
+        return String(val);
+      }
+      function abs(val) {
+        return Math.abs(val);
+      }
+      function min(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.min(...args[0]);
+        return Math.min(...args);
+      }
+      function max(...args) {
+        if (args.length === 1 && Array.isArray(args[0])) return Math.max(...args[0]);
+        return Math.max(...args);
+      }
+      if (!Array.prototype.append) {
+        Object.defineProperty(Array.prototype, 'append', {
+          value: function(x) { this.push(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Set.prototype.remove) {
+        Object.defineProperty(Set.prototype, 'remove', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Set.prototype.discard) {
+        Object.defineProperty(Set.prototype, 'discard', {
+          value: function(x) { this.delete(x); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.startswith) {
+        Object.defineProperty(String.prototype, 'startswith', {
+          value: function(prefix) { return this.startsWith(prefix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!String.prototype.endswith) {
+        Object.defineProperty(String.prototype, 'endswith', {
+          value: function(suffix) { return this.endsWith(suffix); },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      if (!Object.prototype.get) {
+        Object.defineProperty(Object.prototype, 'get', {
+          value: function(k, d) { return this[k] !== undefined ? this[k] : d; },
+          writable: true, configurable: true, enumerable: false
+        });
+      }
+      
+      function ListNode(val, next) {
+        if (!(this instanceof ListNode)) return new ListNode(val, next);
+        this.val = (val === undefined ? 0 : val);
+        this.next = (next === undefined ? null : next);
+      }
+      function TreeNode(val, left, right) {
+        if (!(this instanceof TreeNode)) return new TreeNode(val, left, right);
+        this.val = (val === undefined ? 0 : val);
+        this.left = (left === undefined ? null : left);
+        this.right = (right === undefined ? null : right);
+      }
+      const heapq = {
+        heappush: function(heap, item) {
+          heap.push(item);
+          heap.sort((a, b) => {
+            if (Array.isArray(a) && Array.isArray(b)) return a[0] - b[0];
+            return a - b;
+          });
+        },
+        heappop: function(heap) {
+          return heap.shift();
+        },
+        heapify: function(heap) {
+          heap.sort((a, b) => {
+            if (Array.isArray(a) && Array.isArray(b)) return a[0] - b[0];
+            return a - b;
+          });
+        }
+      };
+      function heappush(h, x) { return heapq.heappush(h, x); }
+      function heappop(h) { return heapq.heappop(h); }
+      function heapify(h) { return heapq.heapify(h); }
+
+      function TrieNode() {
+        if (!(this instanceof TrieNode)) return new TrieNode();
+        this.children = {};
+        this.is_end = false;
+        this.is_end_of_word = false;
+      }
+      function Trie() {
+        if (!(this instanceof Trie)) return new Trie();
+        this.root = new TrieNode();
+        if (typeof this.__init__ === 'function') this.__init__();
+      }
+
+      if (!Array.prototype.copy) {
+        Array.prototype.copy = function() { return this.slice(); };
+      }
+      if (!Array.prototype.count) {
+        Array.prototype.count = function(x) { return this.filter(v => pyEq(v, x)).length; };
+      }
+
+      function Solution() {
+        if (!(this instanceof Solution)) return new Solution();
+      }
+    `;
+
+    let blockStack = [{ indent: -1, type: 'root', vars: new Set() }];
+
+    function isVarDeclared(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].vars && blockStack[i].vars.has(name)) return true;
+      }
+      return false;
+    }
+
+    function declareVar(name) {
+      for (let i = blockStack.length - 1; i >= 0; i--) {
+        if (blockStack[i].type === 'def' || blockStack[i].type === 'root') {
+          blockStack[i].vars.add(name);
+          return;
+        }
+      }
+      blockStack[0].vars.add(name);
+    }
+
+    function convertCommonPythonSyntax(s) {
+      s = s.replace(/\bself\./g, 'this.');
+      // Convert Python f-strings: f"..." or f'...'
+      s = s.replace(/\bf"([^"]*)"/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+      s = s.replace(/\bf'([^']*)'/g, (_, inner) => '`' + inner.replace(/\{([^}]+)\}/g, '${$1}') + '`');
+
+      // set(...) and list(...)
+      s = s.replace(/(?<![a-zA-Z0-9_.])\bset\s*\(/g, 'pySet(');
+      s = s.replace(/(?<![a-zA-Z0-9_.])\blist\s*\(/g, 'pyList(');
+
+      // .sort(key=lambda x: ...) or .sort()
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `pySortInPlace(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*reverse\s*=\s*(True|False|true|false)\s*\)/g,
+        (_, arr, rev) => `pySortInPlace(${arr}, null, ${rev === 'True' || rev === 'true'})`);
+      s = s.replace(/([a-zA-Z0-9_]+)\.sort\(\s*\)/g, 'pySortInPlace($1)');
+
+      // sorted(arr, key=lambda x: ...)
+      s = s.replace(/\bsorted\(\s*([^,)]+)\s*,\s*key\s*=\s*lambda\s+([a-zA-Z0-9_]+)\s*:\s*([^,)]+)(?:\s*,\s*reverse\s*=\s*(True|False|true|false))?\s*\)/g,
+        (_, arr, param, body, rev) => `sorted(${arr}, (${param}) => (${body}), ${rev === 'True' || rev === 'true'})`);
+
+      // Methods and slicing
+      s = s.replace(/([a-zA-Z0-9_\[\]\(\)]+)\.isalnum\(\)/g, 'pyIsAlnum($1)');
+      s = s.replace(/\.lower\(\)/g, '.toLowerCase()');
+      s = s.replace(/\.upper\(\)/g, '.toUpperCase()');
+      s = s.replace(/\.startswith\(/g, '.startsWith(');
+      s = s.replace(/\.endswith\(/g, '.endsWith(');
+      s = s.replace(/([a-zA-Z0-9_]+)\[::-1\]/g, 'pySlice($1, -1)');
+      // Slicing: arr[start:stop], arr[start:], arr[:stop]
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice($2, $3)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[([a-zA-Z0-9_+\-]+)\s*:\s*\]/g, '$1.slice($2)');
+      s = s.replace(/([a-zA-Z0-9_]+)\[\s*:\s*([a-zA-Z0-9_+\-]+)\]/g, '$1.slice(0, $2)');
+
+      // Negative indexing: arr[-1], arr[-2], etc. Works for both L-value and R-value!
+      s = s.replace(/([a-zA-Z0-9_]+)\[-([0-9]+)\]/g, '$1[$1.length - $2]');
+
+      // List repetition: [0] * (n + 1) or [0] * n
+      s = s.replace(/\[\s*([^\[\],]+)\s*\]\s*\*\s*(\([^)]+\)|[a-zA-Z0-9_]+)/g, 'Array($2).fill($1)');
+
+      // Floor division assignment: a //= b
+      s = s.replace(/([a-zA-Z0-9_\[\]]+)\s*\/\/=\s*(.+)/g, '$1 = Math.floor(($1) / ($2))');
+
+      // Floor division operator: expr // expr
+      while (s.includes('//')) {
+        const next = s.replace(/(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+(?:\s*[+\-]\s*[a-zA-Z0-9_\[\]\.]+)*)\s*\/\/\s*(\([^()]+\)|[a-zA-Z0-9_\[\]\.]+)/, 'Math.floor(($1) / ($2))');
+        if (next === s) break;
+        s = next;
+      }
+
+      return s;
+    }
+
+    for (let rawLine of lines) {
+      let trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith('#')) continue;
+
+      let indent = rawLine.search(/\S/);
+      if (indent === -1) indent = 0;
+
+      // Strip end comments
+      let inStr = false, quote = '';
+      let commentIdx = -1;
+      for (let i = 0; i < trimmed.length; i++) {
+        let ch = trimmed[i];
+        if ((ch === '"' || ch === "'") && (i === 0 || trimmed[i-1] !== '\\')) {
+          if (!inStr) { inStr = true; quote = ch; }
+          else if (quote === ch) { inStr = false; }
+        }
+        if (!inStr && ch === '#') {
+          commentIdx = i;
+          break;
+        }
+      }
+      let line = (commentIdx !== -1 ? trimmed.substring(0, commentIdx) : trimmed).trim();
+      if (!line) continue;
+
+      // Dedent blocks
+      while (blockStack.length > 1 && indent <= blockStack[blockStack.length - 1].indent) {
+        let top = blockStack.pop();
+        jsLines.push(' '.repeat(top.indent) + '}');
+        if (top.type === 'def' && top.funcName) {
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Trie !== 'undefined') { Trie.prototype.${top.funcName} = ${top.funcName}; }`);
+        }
+      }
+
+      line = convertCommonPythonSyntax(line);
+
+      // class Solution:
+      if (line.match(/^class\s+([a-zA-Z0-9_]+).*?:\s*$/)) {
+        continue;
+      }
+
+      // def func(self, a, b): or def func(a, b):
+      let defMatch = line.match(/^def\s+([a-zA-Z0-9_]+)\s*\((.*?)\)(?:\s*->\s*[^:]+)?\s*:\s*$/);
+      if (defMatch) {
+        let funcName = defMatch[1];
+        let paramList = defMatch[2].split(',').map(p => p.trim().split(':')[0].trim()).filter(p => p && p !== 'self');
+        let params = paramList.join(', ');
+        let hadSelf = defMatch[2].includes('self');
+        jsLines.push(' '.repeat(indent) + `function ${funcName}(${params}) {`);
+        if (hadSelf) { jsLines.push(' '.repeat(indent + 4) + 'let self = this;'); }
+        blockStack.push({ indent: indent, type: 'def', funcName: funcName, vars: new Set(paramList) });
+        continue;
+      }
+
+      // for i, val in enumerate(arr):
+      let forEnumMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+enumerate\((.*?)\)\s*:\s*$/);
+      if (forEnumMatch) {
+        let iVar = forEnumMatch[1];
+        let valVar = forEnumMatch[2];
+        let targetArr = forEnumMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${iVar}, ${valVar}] of enumerate(${targetArr})) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([iVar, valVar]) });
+        continue;
+      }
+
+      // for a, b in iter:
+      let forTupleMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s*,\s*([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forTupleMatch) {
+        let v1 = forTupleMatch[1];
+        let v2 = forTupleMatch[2];
+        let iterable = forTupleMatch[3];
+        jsLines.push(' '.repeat(indent) + `for (let [${v1}, ${v2}] of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([v1, v2]) });
+        continue;
+      }
+
+      // for var in iter:
+      let forInMatch = line.match(/^for\s+([a-zA-Z0-9_]+)\s+in\s+(.*?)\s*:\s*$/);
+      if (forInMatch) {
+        let varName = forInMatch[1];
+        let iterable = forInMatch[2];
+        jsLines.push(' '.repeat(indent) + `for (let ${varName} of ${iterable}) {`);
+        blockStack.push({ indent: indent, type: 'for', vars: new Set([varName]) });
+        continue;
+      }
+
+      // while cond:
+      let whileMatch = line.match(/^while\s+(.*?)\s*:\s*$/);
+      if (whileMatch) {
+        let cond = transpileCondition(whileMatch[1]);
+        jsLines.push(' '.repeat(indent) + `while (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'while', vars: new Set() });
+        continue;
+      }
+
+      // elif cond:
+      let elifMatch = line.match(/^elif\s+(.*?)\s*:\s*$/);
+      if (elifMatch) {
+        let cond = transpileCondition(elifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `else if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'elif', vars: new Set() });
+        continue;
+      }
+
+      // else:
+      let elseMatch = line.match(/^else\s*:\s*$/);
+      if (elseMatch) {
+        jsLines.push(' '.repeat(indent) + `else {`);
+        blockStack.push({ indent: indent, type: 'else', vars: new Set() });
+        continue;
+      }
+
+      // if cond:
+      let ifMatch = line.match(/^if\s+(.*?)\s*:\s*$/);
+      if (ifMatch) {
+        let cond = transpileCondition(ifMatch[1]);
+        jsLines.push(' '.repeat(indent) + `if (${cond}) {`);
+        blockStack.push({ indent: indent, type: 'if', vars: new Set() });
+        continue;
+      }
+
+      // return statement
+      if (line.startsWith('return ') || line === 'return') {
+        let expr = line.replace(/^return\s*/, '').trim();
+        if (!expr) {
+          jsLines.push(' '.repeat(indent) + 'return;');
+          continue;
+        }
+        expr = transpileExpression(expr);
+        jsLines.push(' '.repeat(indent) + `return ${expr};`);
+        continue;
+      }
+
+      // regular statement
+      let stmt = transpileStatement(line);
+      jsLines.push(' '.repeat(indent) + stmt + ';');
+    }
+
+    while (blockStack.length > 1) {
+      let top = blockStack.pop();
+      jsLines.push(' '.repeat(top.indent) + '}');
+      if (top.type === 'def' && top.funcName) {
+        jsLines.push(' '.repeat(top.indent) + `if (typeof Solution !== 'undefined') { Solution.prototype.${top.funcName} = ${top.funcName}; }`);
+          jsLines.push(' '.repeat(top.indent) + `if (typeof Trie !== 'undefined') { Trie.prototype.${top.funcName} = ${top.funcName}; }`);
+      }
+    }
+
+    function transpileCondition(cond) {
+      cond = cond.trim();
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      cond = cond.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      cond = cond.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
+      cond = cond.replace(/\bnot\s+/g, '!');
+      cond = cond.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      cond = cond.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+
+      cond = cond.replace(/^([a-zA-Z0-9_]+)$/, 'pyTruth($1)');
+      cond = cond.replace(/^([a-zA-Z0-9_]+)\s+&&/, 'pyTruth($1) &&');
+      cond = cond.replace(/&&\s+([a-zA-Z0-9_]+)\s*$/, '&& pyTruth($1)');
+      cond = cond.replace(/\|\|\s+([a-zA-Z0-9_]+)\s*$/, '|| pyTruth($1)');
+
+      return cond;
+    }
+
+    function transpileListComp(expr) {
+      const listCompWithIf = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+if\s+(.*?)\s*\]/;
+      const matchIf = expr.match(listCompWithIf);
+      if (matchIf) {
+        const mapExpr = matchIf[1];
+        const itemVar = matchIf[2];
+        const iterVar = matchIf[3];
+        const ifCond = matchIf[4];
+        return expr.replace(listCompWithIf, `Array.from(${iterVar}).filter(${itemVar} => ${ifCond}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      const listCompSimple = /\[\s*(.*?)\s+for\s+([a-zA-Z0-9_]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s*\]/;
+      const matchSimple = expr.match(listCompSimple);
+      if (matchSimple) {
+        const mapExpr = matchSimple[1];
+        const itemVar = matchSimple[2];
+        const iterVar = matchSimple[3];
+        return expr.replace(listCompSimple, `Array.from(${iterVar}).map(${itemVar} => ${mapExpr})`);
+      }
+
+      return expr;
+    }
+
+    function transpileExpression(expr) {
+      expr = transpileListComp(expr);
+
+      let ternaryMatch = expr.match(/^(.*?)\s+if\s+(.*?)\s+else\s+(.*)$/);
+      if (ternaryMatch) {
+        let valTrue = transpileExpression(ternaryMatch[1].trim());
+        let cond = transpileCondition(ternaryMatch[2].trim());
+        let valFalse = transpileExpression(ternaryMatch[3].trim());
+        return `((${cond}) ? (${valTrue}) : (${valFalse}))`;
+      }
+
+      expr = expr.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
+      expr = expr.replace(/\bnot\s+/g, '!');
+      expr = expr.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+not\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, '!pyIn($1, $2)');
+      expr = expr.replace(/([a-zA-Z0-9_\[\]\(\)\.\'\"]+)\s+in\s+([a-zA-Z0-9_\[\]\(\)\.\'\"]+)/g, 'pyIn($1, $2)');
+      function wrapEquality(s) {
+        let inQuote = null;
+        let pDepth = 0;
+        let bDepth = 0;
+        let eqIdx = -1;
+        for (let i = 0; i < s.length; i++) {
+          const ch = s[i];
+          if (inQuote) {
+            if (ch === inQuote && s[i - 1] !== '\\') inQuote = null;
+            continue;
+          }
+          if (ch === '"' || ch === "'") { inQuote = ch; continue; }
+          if (ch === '(') pDepth++;
+          else if (ch === ')') pDepth--;
+          else if (ch === '[') bDepth++;
+          else if (ch === ']') bDepth--;
+          else if (pDepth === 0 && bDepth === 0) {
+            if (ch === '=' && s[i + 1] === '=' && s[i + 2] !== '=' && s[i - 1] !== '!' && s[i - 1] !== '<' && s[i - 1] !== '>') {
+              eqIdx = i;
+              break;
+            }
+          }
+        }
+        if (eqIdx !== -1) {
+          const left = s.substring(0, eqIdx).trim();
+          const right = s.substring(eqIdx + 2).trim();
+          return `pyEq(${left}, ${right})`;
+        }
+        return s;
+      }
+      expr = wrapEquality(expr);
+      expr = expr.replace(/\band\b/g, '&&').replace(/\bor\b/g, '||');
+      return expr;
+    }
+
+    function transpileStatement(stmt) {
+      stmt = transpileListComp(stmt);
+      stmt = stmt.replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/\bNone\b/g, 'null');
+      stmt = stmt.replace(/\bnot\s+([a-zA-Z0-9_]+)\b(?![.\[\(])/g, 'pyNot($1)');
+      stmt = stmt.replace(/\bnot\s+/g, '!');
+
+      // Tuple unpacking assignment: a, b = 1, 2
+      let tupleAssign = stmt.match(/^([a-zA-Z0-9_.]+)\s*,\s*([a-zA-Z0-9_.]+)\s*=\s*(.+?)\s*,\s*(.+)$/);
+      if (tupleAssign) {
+        let v1 = tupleAssign[1], v2 = tupleAssign[2];
+        let r1 = transpileExpression(tupleAssign[3]), r2 = transpileExpression(tupleAssign[4]);
+        let needsLet = (!v1.includes('.') && !v2.includes('.')) && (!isVarDeclared(v1) && !isVarDeclared(v2));
+        let prefix = needsLet ? 'let ' : '';
+        if (!v1.includes('.')) declareVar(v1);
+        if (!v2.includes('.')) declareVar(v2);
+        return `${prefix}[${v1}, ${v2}] = [${r1}, ${r2}]`;
+      }
+
+      // Single variable assignment (not ==, !=, <=, >=, +=, -=, *=, /=)
+      let assignMatch = stmt.match(/^([a-zA-Z0-9_]+)\s*=(?!=)\s*(.*)/);
+      if (assignMatch) {
+        let varName = assignMatch[1];
+        let rhs = transpileExpression(assignMatch[2]);
+        if (isVarDeclared(varName)) {
+          return `${varName} = ${rhs}`;
+        } else {
+          declareVar(varName);
+          return `let ${varName} = ${rhs}`;
+        }
+      }
+
+      // Indexed assignment: arr[i] = rhs
+      let idxAssignMatch = stmt.match(/^([a-zA-Z0-9_]+\[.*?\])\s*(?<![=!<>+\-*/])=(?!=)\s*(.*)/);
+      if (idxAssignMatch) {
+        return `${idxAssignMatch[1]} = ${transpileExpression(idxAssignMatch[2])}`;
+      }
+      return stmt;
+    }
+
+    return preamble + '\n' + jsLines.join('\n');
+    }
+
+    // --- SIMULATOR CONTROLLER ---
+    
+      function simRunGeneral() {
+        const c = document.getElementById('general-sim-canvas');
+        const b = document.getElementById('general-sim-badge');
+        const l = document.getElementById('general-sim-log');
+        if (b) b.innerText = 'Executado ✓';
+        if (l) l.innerHTML = '<span class="text-emerald-400 font-bold">✅ Simulação executada com sucesso! Estrutura de dados processada com eficiência ótima.</span>';
+        if (c) {
+          c.innerHTML = `
+            <div class="flex items-center gap-2 flex-wrap justify-center animate-pulse">
+              <span class="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs">Estado Inicial</span>
+              <span class="text-slate-500 font-bold">→</span>
+              <span class="px-3 py-1.5 rounded-lg bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 font-mono font-bold text-xs">Processamento O(n)</span>
+              <span class="text-slate-500 font-bold">→</span>
+              <span class="px-3 py-1.5 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono font-bold text-xs">Resultado Ótimo</span>
+            </div>
+          `;
+        }
+        if (window.ProfileSystem) window.ProfileSystem.completeTask('lab19_mod4');
+      }
+      function simResetGeneral() {
+        const c = document.getElementById('general-sim-canvas');
+        const b = document.getElementById('general-sim-badge');
+        const l = document.getElementById('general-sim-log');
+        if (b) b.innerText = 'Pronto';
+        if (l) l.innerText = 'Simulador reiniciado. Clique em "Executar Simulação".';
+        if (c) c.innerHTML = '<div class="text-xs text-slate-400">Clique em "Executar Simulação" para visualizar a estrutura de dados em ação.</div>';
+      }
+    
+
+    // --- MINI CHALLENGES RUNNERS ---
+    const SOLUTIONS = {
+      2: `def troco_guloso_valido(moedas, quantia):
+    moedas.sort(reverse=True)
+    count = 0
+    for m in moedas:
+        while quantia >= m:
+            quantia -= m
+            count += 1
+    return count if quantia == 0 else -1`,
+      3: `def passos_ate_um(n):
+    dp = [0] * (n + 1)
+    for i in range(2, n + 1):
+        res = 1 + dp[i - 1]
+        if i % 2 == 0:
+            m2 = i // 2
+            res = min(res, 1 + dp[m2])
+        if i % 3 == 0:
+            m3 = i // 3
+            res = min(res, 1 + dp[m3])
+        dp[i] = res
+    return dp[n]`
+    };
+
+    function revealSolution(num) {
+      const ed = document.getElementById('editor-' + num);
+      if (ed && SOLUTIONS[num]) ed.value = SOLUTIONS[num];
+    }
+
+    function clearEditor(id) {
+      const ed = document.getElementById(id === 'leetcode' ? 'editor-leetcode' : 'editor-' + id);
+      if (ed) ed.value = '';
+    }
+
+    function toggleHint(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    function markModuleComplete(modId) {
+      const badge = document.getElementById('badge-' + modId);
+      if (badge) {
+        badge.className = "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30";
+        badge.innerText = "Concluído ✓";
+      }
+      if (window.ProfileSystem) window.ProfileSystem.completeTask('lab19_' + modId.replace('-', ''));
+    }
+
+    function runChallenge(num) {
+      const code = document.getElementById('editor-' + num).value.trim();
+      const resEl = document.getElementById('result-' + num);
+      resEl.classList.remove('hidden');
+
+      if (!code) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-amber-500/10 border-amber-500/30 text-amber-300";
+        resEl.innerText = "⚠️ O editor está vazio. Escreva sua função antes de testar!";
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        let runner;
+        if (num === 2) {
+          runner = new Function(transpiled + `\n
+        const r1 = troco_guloso_valido([1, 5, 10, 25], 36);
+        return [
+          { name: 'Troco de 36 (25+10+1)', got: r1, expected: 3, pass: r1 === 3 }
+        ];
+      `);
+        } else if (num === 3) {
+          runner = new Function(transpiled + `\n
+        const s1 = passos_ate_um(10);
+        const s2 = passos_ate_um(1);
+        return [
+          { name: 'Passos para 10 (10->9->3->1)', got: s1, expected: 3, pass: s1 === 3 },
+          { name: 'Passos para 1', got: s2, expected: 0, pass: s2 === 0 }
+        ];
+      `);
+        }
+        const tests = runner();
+        const allPassed = tests.every(t => t.pass);
+
+        if (allPassed) {
+          resEl.className = "text-xs p-3 rounded-lg border bg-emerald-500/10 border-emerald-500/30 text-emerald-300 space-y-1.5";
+          resEl.innerHTML = `
+            <div class="font-bold flex items-center gap-1.5">
+              <span>✅</span> Todos os testes passaram com sucesso!
+            </div>
+            <div class="text-[11px] text-emerald-400/80 font-mono space-y-0.5">
+              ${tests.map(t => '<div>• ' + t.name + ': <strong>' + JSON.stringify(t.got) + '</strong></div>').join('')}
+            </div>
+          `;
+          markModuleComplete('mod-' + num);
+        } else {
+          resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/10 border-rose-500/30 text-rose-300 space-y-1";
+          resEl.innerHTML = `
+            <div class="font-bold">❌ Alguns testes falharam:</div>
+            <div class="text-[11px] font-mono space-y-0.5">
+              ${tests.filter(t => !t.pass).map(t => '<div>• ' + t.name + ': esperado ' + JSON.stringify(t.expected) + ', obteve ' + JSON.stringify(t.got) + '</div>').join('')}
+            </div>
+          `;
+        }
+      } catch (err) {
+        resEl.className = "text-xs p-3 rounded-lg border bg-rose-500/10 border-rose-500/30 text-rose-300";
+        resEl.innerText = "Erro de Execução: " + err.message;
+      }
+    }
+
+    function revealLeetCodeSolution() {
+      const ed = document.getElementById('editor-leetcode');
+      if (ed) ed.value = `class Solution:
+    def coinChange(self, coins, amount):
+        dp = [float('inf')] * (amount + 1)
+        dp[0] = 0
+        
+        for a in range(1, amount + 1):
+            for c in coins:
+                if a - c >= 0:
+                    dp[a] = min(dp[a], 1 + dp[a - c])
+                    
+        return dp[amount] if dp[amount] != float('inf') else -1`;
+    }
+
+    function runLeetCodeTests() {
+      const code = document.getElementById('editor-leetcode').value.trim();
+      const resultsPanel = document.getElementById('leetcode-results-panel');
+      const container = document.getElementById('test-cards-container');
+      const badge = document.getElementById('tests-summary-badge');
+      const statusTop = document.getElementById('leetcode-status');
+
+      resultsPanel.classList.remove('hidden');
+      container.innerHTML = '';
+
+      if (!code) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-amber-500/20 text-amber-300";
+        badge.innerText = "Código Vazio";
+        container.innerHTML = '<div class="col-span-2 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300">⚠️ Escreva sua classe Solution ou clique em "Ver Solução Modelo".</div>';
+        return;
+      }
+
+      try {
+        const transpiled = transpilePython(code);
+        const runner = new Function(transpiled + `\n
+        let sol = new Solution();
+        const testCases = [
+          { coins: [1, 2, 5], amount: 11, expected: 3, desc: '11 formado por 5 + 5 + 1' },
+          { coins: [2], amount: 3, expected: -1, desc: 'Impossível formar quantia ímpar' },
+          { coins: [1], amount: 0, expected: 0, desc: 'Quantia zero' },
+          { coins: [1, 3, 4], amount: 6, expected: 2, desc: 'Caso onde guloso falharia (3+3)' },
+          { coins: [186, 419, 83, 408], amount: 6249, expected: 20, desc: 'Caso de estresse de grande escala' }
+        ];
+        return testCases.map((tc, idx) => {
+          const start = performance.now();
+          const res = sol.coinChange([...tc.coins], tc.amount);
+          const time = (performance.now() - start).toFixed(3);
+          return {
+            idx: idx + 1,
+            input: 'coins=' + JSON.stringify(tc.coins) + ', amount=' + tc.amount,
+            expected: String(tc.expected),
+            got: String(res),
+            pass: res === tc.expected,
+            time: time,
+            desc: tc.desc
+          };
+        });
+      `);
+        const results = runner();
+        const allPassed = results.every(r => r.pass);
+
+        if (allPassed) {
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-emerald-500/20 text-emerald-300 font-bold";
+          badge.innerText = `${results.length}/${results.length} PASSARAM`;
+          if (statusTop) statusTop.innerText = "Todos os testes validados com sucesso! 🚀";
+
+          const mod5Badge = document.getElementById('badge-mod-5');
+          if (mod5Badge) {
+            mod5Badge.className = "text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm";
+            mod5Badge.innerText = "Resolvido ✓ (+100 XP)";
+          }
+          if (window.ProfileSystem) window.ProfileSystem.completeTask('lab19_mod5');
+        } else {
+          const passCount = results.filter(r => r.pass).length;
+          badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300 font-bold";
+          badge.innerText = `${passCount}/${results.length} PASSARAM`;
+          if (statusTop) statusTop.innerText = "Revise a lógica para cobrir todos os casos de borda.";
+        }
+
+        container.innerHTML = results.map(r => `
+          <div class="p-3.5 rounded-xl border ${r.pass ? 'bg-slate-900/60 border-slate-800' : 'bg-rose-500/5 border-rose-500/30'} flex flex-col justify-between gap-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold ${r.pass ? 'text-slate-200' : 'text-rose-300'}">Teste #${r.idx}: ${r.desc}</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded ${r.pass ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'} font-bold">
+                ${r.pass ? 'PASSOU' : 'FALHOU'}
+              </span>
+            </div>
+            <div class="text-[11px] font-mono text-slate-400 space-y-0.5">
+              <div>Entrada: <span class="text-slate-300">${r.input}</span></div>
+              <div>Esperado: <span class="text-emerald-400">${r.expected}</span></div>
+              <div>Obtido: <span class="${r.pass ? 'text-emerald-300' : 'text-rose-400 font-bold'}">${r.got}</span></div>
+            </div>
+            <div class="text-[10px] text-slate-500 text-right">${r.time} ms</div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        badge.className = "px-2 py-0.5 rounded text-[11px] bg-rose-500/20 text-rose-300 font-bold";
+        badge.innerText = "Erro";
+        container.innerHTML = `<div class="col-span-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 font-mono text-xs">Erro de Execução: ${err.message}</div>`;
+      }
+    }
+
+    // --- SMART CODE EDITOR FEATURES (IDE-GRADE) ---
+    function ensureCursorVisible(textarea) {
+      if (!textarea) return;
+      const start = textarea.selectionStart;
+      const val = textarea.value;
+      const textBefore = val.substring(0, start);
+      const lines = textBefore.split(/\r?\n/);
+      const currentLine = lines.length;
+      const style = window.getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) * 1.6) || 22;
+      const paddingTop = parseFloat(style.paddingTop) || 12;
+      const cursorTop = paddingTop + (currentLine - 1) * lineHeight;
+      const visibleTop = textarea.scrollTop;
+      const visibleBottom = textarea.scrollTop + textarea.clientHeight;
+      const margin = lineHeight * 2;
+
+      if (cursorTop + lineHeight > visibleBottom - margin) {
+        textarea.scrollTop = cursorTop + lineHeight - textarea.clientHeight + margin;
+      } else if (cursorTop < visibleTop + margin) {
+        textarea.scrollTop = Math.max(0, cursorTop - margin);
+      }
+    }
+
+    function handleAutoGrow(textarea) {
+      if (!textarea || textarea.dataset.expanded === 'true') return;
+      const isLeet = textarea.id.includes('leetcode');
+      const minH = isLeet ? 380 : 220;
+      const maxH = isLeet ? 850 : 550;
+      const prevScroll = textarea.scrollTop;
+      textarea.style.height = 'auto';
+      const targetHeight = Math.min(maxH, Math.max(minH, textarea.scrollHeight + 16));
+      textarea.style.height = targetHeight + 'px';
+      textarea.scrollTop = prevScroll;
+    }
+
+    function toggleExpandEditor(editorId, btn) {
+      const textarea = document.getElementById(editorId);
+      if (!textarea) return;
+      const isExpanded = textarea.dataset.expanded === 'true';
+      const isLeet = textarea.id.includes('leetcode');
+      const defaultH = isLeet ? 380 : 220;
+      const expandedH = isLeet ? 850 : 560;
+
+      if (isExpanded) {
+        textarea.style.height = defaultH + 'px';
+        textarea.dataset.expanded = 'false';
+        if (btn) btn.innerHTML = '<span>⛶</span> Expandir';
+      } else {
+        textarea.style.height = expandedH + 'px';
+        textarea.dataset.expanded = 'true';
+        if (btn) btn.innerHTML = '<span>🗗</span> Reduzir';
+      }
+      ensureCursorVisible(textarea);
+    }
+
+function setupCodeEditorFeatures() {
+      const pairs = {
+        '(': ')',
+        '[': ']',
+        '{': '}',
+        '"': '"',
+        "'": "'"
+      };
+      const closingChars = new Set([')', ']', '}', '"', "'"]);
+
+      function shouldAutoCloseQuote(val, pos, quote) {
+        if (quote === "'") {
+          const prev = pos > 0 ? val[pos - 1] : '';
+          if (/[a-zA-Z0-9]/.test(prev) && !/^[frbuFRBU]$/.test(prev)) {
+            return false;
+          }
+        }
+        const next = pos < val.length ? val[pos] : '';
+        if (/[a-zA-Z0-9]/.test(next)) {
+          return false;
+        }
+        return true;
+      }
+
+      document.querySelectorAll('textarea').forEach(textarea => {
+        if (textarea.dataset.editorEnhanced) return;
+        textarea.dataset.editorEnhanced = 'true';
+
+        // IDE attributes & styling
+        textarea.spellcheck = false;
+        textarea.setAttribute('autocapitalize', 'off');
+        textarea.setAttribute('autocomplete', 'off');
+        textarea.setAttribute('autocorrect', 'off');
+        textarea.style.caretColor = '#38bdf8';
+
+        const isLeet = textarea.id.includes('leetcode');
+        const minH = isLeet ? 380 : 240;
+        textarea.style.minHeight = minH + 'px';
+        if (!textarea.style.height || parseInt(textarea.style.height) < minH) {
+          textarea.style.height = minH + 'px';
+        }
+
+        textarea.addEventListener('keydown', function(e) {
+          const val = this.value;
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+
+          // 1. TAB & SHIFT+TAB (Snap to 4-space tab stops or multi-line indent/dedent)
+          if (e.key === 'Tab') {
+            e.preventDefault();
+            if (!e.shiftKey) {
+              if (start === end) {
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const col = start - lineStart;
+                const count = 4 - (col % 4);
+                const spaces = ' '.repeat(count);
+                this.value = val.substring(0, start) + spaces + val.substring(end);
+                this.selectionStart = this.selectionEnd = start + count;
+              } else {
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = val.indexOf('\n', end);
+                const endPos = lineEnd === -1 ? val.length : lineEnd;
+                const selectedLines = val.substring(lineStart, endPos).split(/\r?\n/);
+                const indented = selectedLines.map(l => '    ' + l).join('\n');
+                this.value = val.substring(0, lineStart) + indented + val.substring(endPos);
+                this.selectionStart = start + 4;
+                this.selectionEnd = end + (selectedLines.length * 4);
+              }
+            } else {
+              const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = val.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? val.length : lineEnd;
+              const selectedLines = val.substring(lineStart, endPos).split(/\r?\n/);
+              let removedTotal = 0;
+              let firstLineRemoved = 0;
+
+              const dedented = selectedLines.map((l, idx) => {
+                const match = l.match(/^ {1,4}/);
+                if (match) {
+                  const removed = match[0].length;
+                  removedTotal += removed;
+                  if (idx === 0) firstLineRemoved = removed;
+                  return l.substring(removed);
+                }
+                return l;
+              }).join('\n');
+
+              this.value = val.substring(0, lineStart) + dedented + val.substring(endPos);
+              this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
+              this.selectionEnd = Math.max(lineStart, end - removedTotal);
+            }
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+            return;
+          }
+
+          // 2. BACKSPACE: Smart Soft-Tab & Pair Deletion
+          if (e.key === 'Backspace' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+            if (start === end && start > 0) {
+              const prevChar = val[start - 1];
+              const nextChar = val[start];
+
+              // If cursor is between matching pair: delete both
+              if (pairs[prevChar] && pairs[prevChar] === nextChar) {
+                e.preventDefault();
+                this.value = val.substring(0, start - 1) + val.substring(start + 1);
+                this.selectionStart = this.selectionEnd = start - 1;
+                handleAutoGrow(this);
+                ensureCursorVisible(this);
+                if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+                return;
+              }
+
+              // Soft-tab unindent when cursor is inside leading spaces
+              const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+              const textBeforeInLine = val.substring(lineStart, start);
+              if (/^ +$/.test(textBeforeInLine)) {
+                e.preventDefault();
+                const remainder = textBeforeInLine.length % 4;
+                const deleteCount = remainder === 0 ? 4 : remainder;
+                const newPos = start - deleteCount;
+                this.value = val.substring(0, newPos) + val.substring(start);
+                this.selectionStart = this.selectionEnd = newPos;
+                handleAutoGrow(this);
+                ensureCursorVisible(this);
+                if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+                return;
+              }
+            }
+          }
+
+          // 3. ENTER: Smart Indent & Multiline Bracket Splitting
+          if (e.key === 'Enter') {
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = val.substring(lineStart, start);
+            const indentMatch = currentLine.match(/^\s*/);
+            let indent = indentMatch ? indentMatch[0] : '';
+            const trimmed = currentLine.trim();
+
+            const prevChar = start > 0 ? val[start - 1] : '';
+            const nextChar = start < val.length ? val[start] : '';
+
+            // Check if pressing Enter between open/close brackets: e.g. {|} or [|] or (|)
+            if (pairs[prevChar] && pairs[prevChar] === nextChar) {
+              e.preventDefault();
+              const innerIndent = indent + '    ';
+              const before = val.substring(0, start);
+              const after = val.substring(end);
+              this.value = before + '\n' + innerIndent + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + innerIndent.length;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+
+            if (trimmed.endsWith(':')) {
+              indent += '    ';
+            }
+
+            if (indent.length > 0 || start !== end) {
+              e.preventDefault();
+              const before = val.substring(0, start);
+              const after = val.substring(end);
+              this.value = before + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + indent.length;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 4. AUTO-CLOSING PAIRS & SELECTION WRAPPING
+          if (pairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            const openChar = e.key;
+            const closeChar = pairs[openChar];
+
+            if (start !== end) {
+              // Selection wrapping
+              e.preventDefault();
+              const selected = val.substring(start, end);
+              this.value = val.substring(0, start) + openChar + selected + closeChar + val.substring(end);
+              this.selectionStart = start + 1;
+              this.selectionEnd = end + 1;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            } else {
+              // Single character auto-close
+              if (openChar === '"' || openChar === "'") {
+                const nextChar = val[start];
+                if (nextChar === openChar) {
+                  e.preventDefault();
+                  this.selectionStart = this.selectionEnd = start + 1;
+                  return;
+                }
+                if (!shouldAutoCloseQuote(val, start, openChar)) {
+                  return;
+                }
+              }
+              e.preventDefault();
+              this.value = val.substring(0, start) + openChar + closeChar + val.substring(end);
+              this.selectionStart = this.selectionEnd = start + 1;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 5. STEP OVER CLOSING CHARACTERS
+          if (closingChars.has(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (start === end && start < val.length && val[start] === e.key) {
+              e.preventDefault();
+              this.selectionStart = this.selectionEnd = start + 1;
+              return;
+            }
+          }
+
+          // 6. TOGGLE COMMENT (Ctrl+/ or Cmd+/)
+          if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            const endPos = lineEnd === -1 ? val.length : lineEnd;
+            const lines = val.substring(lineStart, endPos).split(/\r?\n/);
+
+            const allCommented = lines.every(l => l.trim().length === 0 || l.trim().startsWith('#'));
+            let modifiedLines;
+            let diff = 0;
+
+            if (allCommented) {
+              modifiedLines = lines.map(l => {
+                const m = l.match(/^(\s*)# ?(.*)$/);
+                if (m) {
+                  diff -= (l.length - (m[1] + m[2]).length);
+                  return m[1] + m[2];
+                }
+                return l;
+              });
+            } else {
+              modifiedLines = lines.map(l => {
+                if (l.trim().length === 0) return l;
+                diff += 2;
+                return '# ' + l;
+              });
+            }
+
+            this.value = val.substring(0, lineStart) + modifiedLines.join('\n') + val.substring(endPos);
+            this.selectionStart = Math.max(lineStart, start + (allCommented ? -2 : 2));
+            this.selectionEnd = Math.max(lineStart, end + diff);
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+            return;
+          }
+
+          // 7. DUPLICATE LINE (Shift+Alt+Down or Ctrl+D)
+          if (((e.shiftKey && e.altKey && e.key === 'ArrowDown') || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd')) && !e.repeat) {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            const endPos = lineEnd === -1 ? val.length : lineEnd;
+            const selectedBlock = val.substring(lineStart, endPos);
+            this.value = val.substring(0, endPos) + '\n' + selectedBlock + val.substring(endPos);
+            const offset = selectedBlock.length + 1;
+            this.selectionStart = start + offset;
+            this.selectionEnd = end + offset;
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+            return;
+          }
+
+          // 8. MOVE LINE UP (Alt+ArrowUp)
+          if (e.altKey && !e.shiftKey && !e.ctrlKey && e.key === 'ArrowUp') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            if (lineStart > 0) {
+              const prevLineStart = val.lastIndexOf('\n', lineStart - 2) + 1;
+              const prevLine = val.substring(prevLineStart, lineStart - 1);
+              const lineEnd = val.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? val.length : lineEnd;
+              const curBlock = val.substring(lineStart, endPos);
+
+              this.value = val.substring(0, prevLineStart) + curBlock + '\n' + prevLine + val.substring(endPos);
+              const shift = prevLine.length + 1;
+              this.selectionStart = start - shift;
+              this.selectionEnd = end - shift;
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 9. MOVE LINE DOWN (Alt+ArrowDown)
+          if (e.altKey && !e.shiftKey && !e.ctrlKey && e.key === 'ArrowDown') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            if (lineEnd !== -1) {
+              const nextLineEnd = val.indexOf('\n', lineEnd + 1);
+              const nextEndPos = nextLineEnd === -1 ? val.length : nextLineEnd;
+              const curBlock = val.substring(lineStart, lineEnd);
+              const nextLine = val.substring(lineEnd + 1, nextEndPos);
+
+              this.value = val.substring(0, lineStart) + nextLine + '\n' + curBlock + val.substring(nextEndPos);
+              const shift = nextLine.length + 1;
+              this.selectionStart = start + shift;
+              this.selectionEnd = end + shift;
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+        });
+
+        textarea.addEventListener('input', function() {
+          handleAutoGrow(this);
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('keyup', function(e) {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown', 'Backspace', 'Delete'].includes(e.key)) {
+            ensureCursorVisible(this);
+          }
+        });
+
+        textarea.addEventListener('click', function() {
+          ensureCursorVisible(this);
+        });
+
+        textarea.addEventListener('focus', function() {
+          ensureCursorVisible(this);
+        });
+
+        handleAutoGrow(textarea);
+      });
+    }
+
+
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', setupCodeEditorFeatures);
+    } else {
+      setupCodeEditorFeatures();
+    }
+
+    // --- PROFILE SYSTEM ---
+
+    // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (20 LABS) ---
+    window.ProfileSystem = (function() {
+      const STORAGE_KEY = 'python_study_lab_profile_v1';
+      const CURRENT_LAB = 19;
+
+      const TASKS_CATALOG = {
+        lab1_mod1: { lab: 1, xp: 50, title: 'Fase 1 - M1: Tipos & F-Strings' },
+        lab1_mod2: { lab: 1, xp: 50, title: 'Fase 1 - M2: Dict vs List O(1)' },
+        lab1_mod3: { lab: 1, xp: 50, title: 'Fase 1 - M3: Loops & Enumerate' },
+        lab1_mod4: { lab: 1, xp: 40, title: 'Fase 1 - M4: Array Simulator' },
+        lab1_mod5: { lab: 1, xp: 100, title: 'Fase 1 - M5: Two Sum LeetCode #1' },
+        lab2_mod1: { lab: 2, xp: 50, title: 'Fase 2 - M1: Strings & Unicode' },
+        lab2_mod2: { lab: 2, xp: 50, title: 'Fase 2 - M2: Ponteiros Convergentes' },
+        lab2_mod3: { lab: 2, xp: 50, title: 'Fase 2 - M3: List Comprehensions' },
+        lab2_mod4: { lab: 2, xp: 40, title: 'Fase 2 - M4: Dois Ponteiros Visual' },
+        lab2_mod5: { lab: 2, xp: 100, title: 'Fase 2 - M5: Valid Palindrome #125' },
+        lab3_mod1: { lab: 3, xp: 50, title: 'Fase 3 - M1: Conceito LIFO' },
+        lab3_mod2: { lab: 3, xp: 50, title: 'Fase 3 - M2: Pilha com Listas' },
+        lab3_mod3: { lab: 3, xp: 50, title: 'Fase 3 - M3: Diagnóstico de Erros' },
+        lab3_mod4: { lab: 3, xp: 40, title: 'Fase 3 - M4: Simulador LIFO' },
+        lab3_mod5: { lab: 3, xp: 100, title: 'Fase 3 - M5: Valid Parentheses #20' },
+        lab4_mod1: { lab: 4, xp: 50, title: 'Fase 4 - M1: Janela Deslizante' },
+        lab4_mod2: { lab: 4, xp: 50, title: 'Fase 4 - M2: Ponteiros Left/Right' },
+        lab4_mod3: { lab: 4, xp: 50, title: 'Fase 4 - M3: Consultor da Bolsa' },
+        lab4_mod4: { lab: 4, xp: 40, title: 'Fase 4 - M4: Visual Inspector' },
+        lab4_mod5: { lab: 4, xp: 100, title: 'Fase 4 - M5: Buy & Sell Stock #121' },
+        lab5_mod1: { lab: 5, xp: 50, title: 'Fase 5 - M1: Divisão e Conquista' },
+        lab5_mod2: { lab: 5, xp: 50, title: 'Fase 5 - M2: Cálculo de Meio' },
+        lab5_mod3: { lab: 5, xp: 50, title: 'Fase 5 - M3: Contador de Divisões' },
+        lab5_mod4: { lab: 5, xp: 40, title: 'Fase 5 - M4: Simulador Binário' },
+        lab5_mod5: { lab: 5, xp: 100, title: 'Fase 5 - M5: Binary Search #704' },
+        lab6_mod1: { lab: 6, xp: 50, title: 'Fase 6 - M1: Tabelas Hash O(1)' },
+        lab6_mod2: { lab: 6, xp: 50, title: 'Fase 6 - M2: Propriedade Set' },
+        lab6_mod3: { lab: 6, xp: 50, title: 'Fase 6 - M3: Interseção em O(1)' },
+        lab6_mod4: { lab: 6, xp: 40, title: 'Fase 6 - M4: Hash Inspector' },
+        lab6_mod5: { lab: 6, xp: 100, title: 'Fase 6 - M5: Contains Duplicate #217' },
+        lab7_mod1: { lab: 7, xp: 50, title: 'Fase 7 - M1: Algoritmo de Kadane' },
+        lab7_mod2: { lab: 7, xp: 50, title: 'Fase 7 - M2: Soma Máxima Contígua' },
+        lab7_mod3: { lab: 7, xp: 50, title: 'Fase 7 - M3: Histórico de Kadane' },
+        lab7_mod4: { lab: 7, xp: 40, title: 'Fase 7 - M4: Simulador Kadane' },
+        lab7_mod5: { lab: 7, xp: 100, title: 'Fase 7 - M5: Maximum Subarray #53' },
+        lab8_mod1: { lab: 8, xp: 50, title: 'Fase 8 - M1: Área de Armazenamento' },
+        lab8_mod2: { lab: 8, xp: 50, title: 'Fase 8 - M2: Dois Ponteiros Opostos' },
+        lab8_mod3: { lab: 8, xp: 50, title: 'Fase 8 - M3: Áreas Convergentes' },
+        lab8_mod4: { lab: 8, xp: 40, title: 'Fase 8 - M4: Simulador de Água' },
+        lab8_mod5: { lab: 8, xp: 100, title: 'Fase 8 - M5: Container With Most Water #11' },
+        lab9_mod1: { lab: 9, xp: 50, title: 'Fase 9 - M1: Subproblemas Sobrepostos' },
+        lab9_mod2: { lab: 9, xp: 50, title: 'Fase 9 - M2: Tabela Fibonacci (DP)' },
+        lab9_mod3: { lab: 9, xp: 50, title: 'Fase 9 - M3: DP de Custo Mínimo' },
+        lab9_mod4: { lab: 9, xp: 40, title: 'Fase 9 - M4: Escada Interativa' },
+        lab9_mod5: { lab: 9, xp: 100, title: 'Fase 9 - M5: Climbing Stairs #70' },
+        lab10_mod1: { lab: 10, xp: 50, title: 'Fase 10 - M1: Ordenação por Chave' },
+        lab10_mod2: { lab: 10, xp: 50, title: 'Fase 10 - M2: Sobreposição de Intervalos' },
+        lab10_mod3: { lab: 10, xp: 50, title: 'Fase 10 - M3: Ordenando Listas 2D' },
+        lab10_mod4: { lab: 10, xp: 40, title: 'Fase 10 - M4: Linha do Tempo Visual' },
+        lab10_mod5: { lab: 10, xp: 100, title: 'Fase 10 - M5: Merge Intervals #56' },
+        lab11_mod1: { lab: 11, xp: 50, title: 'Fase 11 - M1: Ponteiros e Referências' },
+        lab11_mod2: { lab: 11, xp: 50, title: 'Fase 11 - M2: Contador de Nós' },
+        lab11_mod3: { lab: 11, xp: 50, title: 'Fase 11 - M3: Inserção na Cabeça' },
+        lab11_mod4: { lab: 11, xp: 40, title: 'Fase 11 - M4: Inversor de Setas' },
+        lab11_mod5: { lab: 11, xp: 100, title: 'Fase 11 - M5: Reverse Linked List #206' },
+        lab12_mod1: { lab: 12, xp: 50, title: 'Fase 12 - M1: Tartaruga e Lebre' },
+        lab12_mod2: { lab: 12, xp: 50, title: 'Fase 12 - M2: Meio em 1 Passada' },
+        lab12_mod3: { lab: 12, xp: 50, title: 'Fase 12 - M3: Tamanho do Ciclo' },
+        lab12_mod4: { lab: 12, xp: 40, title: 'Fase 12 - M4: Simulador de Circuito' },
+        lab12_mod5: { lab: 12, xp: 100, title: 'Fase 12 - M5: Linked List Cycle #141' },
+        lab13_mod1: { lab: 13, xp: 50, title: 'Fase 13 - M1: Árvores Binárias' },
+        lab13_mod2: { lab: 13, xp: 50, title: 'Fase 13 - M2: Soma Recursiva de Nós' },
+        lab13_mod3: { lab: 13, xp: 50, title: 'Fase 13 - M3: Contagem de Folhas' },
+        lab13_mod4: { lab: 13, xp: 40, title: 'Fase 13 - M4: Espelho de Árvores' },
+        lab13_mod5: { lab: 13, xp: 100, title: 'Fase 13 - M5: Invert Binary Tree #226' },
+        lab14_mod1: { lab: 14, xp: 50, title: 'Fase 14 - M1: Altura e Call Stack' },
+        lab14_mod2: { lab: 14, xp: 50, title: 'Fase 14 - M2: Árvore Simétrica' },
+        lab14_mod3: { lab: 14, xp: 50, title: 'Fase 14 - M3: Máximo em Árvore' },
+        lab14_mod4: { lab: 14, xp: 40, title: 'Fase 14 - M4: Medidor de Níveis DFS' },
+        lab14_mod5: { lab: 14, xp: 100, title: 'Fase 14 - M5: Maximum Depth #104' },
+        lab15_mod1: { lab: 15, xp: 50, title: 'Fase 15 - M1: Min-Heap O(log k)' },
+        lab15_mod2: { lab: 15, xp: 50, title: 'Fase 15 - M2: K Menores Elementos' },
+        lab15_mod3: { lab: 15, xp: 50, title: 'Fase 15 - M3: Verificador de Heap' },
+        lab15_mod4: { lab: 15, xp: 40, title: 'Fase 15 - M4: Heap Visual em Pirâmide' },
+        lab15_mod5: { lab: 15, xp: 100, title: 'Fase 15 - M5: Kth Largest Element #215' },
+        lab16_mod1: { lab: 16, xp: 50, title: 'Fase 16 - M1: Árvores de Decisão' },
+        lab16_mod2: { lab: 16, xp: 50, title: 'Fase 16 - M2: Sequências Binárias' },
+        lab16_mod3: { lab: 16, xp: 50, title: 'Fase 16 - M3: Pares com Soma Alvo' },
+        lab16_mod4: { lab: 16, xp: 40, title: 'Fase 16 - M4: Árvore de Subconjuntos' },
+        lab16_mod5: { lab: 16, xp: 100, title: 'Fase 16 - M5: Subsets #78' },
+        lab17_mod1: { lab: 17, xp: 50, title: 'Fase 17 - M1: Grids como Grafos' },
+        lab17_mod2: { lab: 17, xp: 50, title: 'Fase 17 - M2: Contagem de Terras' },
+        lab17_mod3: { lab: 17, xp: 50, title: 'Fase 17 - M3: Perímetro de Ilhas' },
+        lab17_mod4: { lab: 17, xp: 40, title: 'Fase 17 - M4: Radar de Inundação 2D' },
+        lab17_mod5: { lab: 17, xp: 100, title: 'Fase 17 - M5: Number of Islands #200' },
+        lab18_mod1: { lab: 18, xp: 50, title: 'Fase 18 - M1: Árvores de Prefixos' },
+        lab18_mod2: { lab: 18, xp: 50, title: 'Fase 18 - M2: Checagem de Prefixo' },
+        lab18_mod3: { lab: 18, xp: 50, title: 'Fase 18 - M3: Autocomplete Simples' },
+        lab18_mod4: { lab: 18, xp: 40, title: 'Fase 18 - M4: Navegador de Trie' },
+        lab18_mod5: { lab: 18, xp: 100, title: 'Fase 18 - M5: Implement Trie #208' },
+        lab19_mod1: { lab: 19, xp: 50, title: 'Fase 19 - M1: DP Bottom-Up do Troco' },
+        lab19_mod2: { lab: 19, xp: 50, title: 'Fase 19 - M2: Troco Guloso vs Ótimo' },
+        lab19_mod3: { lab: 19, xp: 50, title: 'Fase 19 - M3: Passos Mínimos até 1' },
+        lab19_mod4: { lab: 19, xp: 40, title: 'Fase 19 - M4: Tabela DP do Troco' },
+        lab19_mod5: { lab: 19, xp: 100, title: 'Fase 19 - M5: Coin Change #322' },
+        lab20_mod1: { lab: 20, xp: 50, title: 'Fase 20 - M1: Pilhas Monotônicas O(n)' },
+        lab20_mod2: { lab: 20, xp: 50, title: 'Fase 20 - M2: Próximo Maior Elemento' },
+        lab20_mod3: { lab: 20, xp: 50, title: 'Fase 20 - M3: Dias até Menor Preço' },
+        lab20_mod4: { lab: 20, xp: 40, title: 'Fase 20 - M4: Termômetros e Pilha' },
+        lab20_mod5: { lab: 20, xp: 100, title: 'Fase 20 - M5: Daily Temperatures #739' },
+      };
+
+      const LEVELS = [
+        { level: 1, minXp: 0, maxXp: 200, rank: '🌱 Iniciante Python' },
+        { level: 2, minXp: 200, maxXp: 500, rank: '🔍 Explorador de Dados' },
+        { level: 3, minXp: 500, maxXp: 900, rank: '🛠️ Artesão de Algoritmos' },
+        { level: 4, minXp: 900, maxXp: 1400, rank: '⚡ Mestre O(n)' },
+        { level: 5, minXp: 1400, maxXp: 2000, rank: '🧭 Navegador Binário' },
+        { level: 6, minXp: 2000, maxXp: 2700, rank: '🔥 Estrategista Guloso' },
+        { level: 7, minXp: 2700, maxXp: 3500, rank: '🔮 Arquiteto Dinâmico' },
+        { level: 8, minXp: 3500, maxXp: 4400, rank: '🌲 Guardião das Árvores' },
+        { level: 9, minXp: 4400, maxXp: 5400, rank: '🗺️ Cartógrafo de Grafos' },
+        { level: 10, minXp: 5400, maxXp: 6500, rank: '⚡ Monolito Monotônico' },
+        { level: 11, minXp: 6500, maxXp: 8000, rank: '👑 Grão-Mestre LeetCode' },
+        { level: 12, minXp: 8000, maxXp: 10000, rank: '🏆 Lenda Suprema dos 20 Labs' }
+      ];
+
+      function getDefaultProfile() {
+        return {
+          name: 'Estudante Python',
+          avatar: '🐍',
+          xp: 0,
+          completedTasks: {},
+          savedCode: {}
+        };
+      }
+
+      function loadProfile() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultProfile();
+          const parsed = JSON.parse(raw);
+          return Object.assign(getDefaultProfile(), parsed);
+        } catch (e) {
+          return getDefaultProfile();
+        }
+      }
+
+      function saveProfile(profile) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
+        } catch (e) {}
+      }
+
+      function recalcXp(profile) {
+        let total = 0;
+        for (const k of Object.keys(profile.completedTasks)) {
+          if (TASKS_CATALOG[k]) total += TASKS_CATALOG[k].xp;
+        }
+        profile.xp = total;
+        return total;
+      }
+
+      function getLevelInfo(xp) {
+        for (let i = LEVELS.length - 1; i >= 0; i--) {
+          if (xp >= LEVELS[i].minXp) return LEVELS[i];
+        }
+        return LEVELS[0];
+      }
+
+      function getLabStats(profile, labNum) {
+        const keys = Object.keys(TASKS_CATALOG).filter(k => TASKS_CATALOG[k].lab === labNum);
+        const done = keys.filter(k => !!profile.completedTasks[k]).length;
+        const pct = keys.length ? Math.round((done / keys.length) * 100) : 0;
+        return { done, total: keys.length, pct, keys };
+      }
+
+      function showToast(title, subtitle) {
+        const container = document.getElementById('xp-toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'bg-slate-900/95 border-2 border-emerald-500/60 rounded-xl px-4 py-3 shadow-2xl flex items-center gap-3 transform transition-all duration-300 translate-y-2 opacity-0';
+        toast.innerHTML = `
+          <div class="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg">⚡</div>
+          <div>
+            <div class="text-xs font-extrabold text-white">${title}</div>
+            <div class="text-[11px] text-emerald-300 font-mono">${subtitle}</div>
+          </div>
+        `;
+        container.appendChild(toast);
+        requestAnimationFrame(() => {
+          toast.classList.remove('translate-y-2', 'opacity-0');
+        });
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 3800);
+      }
+
+      function renderTopBar(profile) {
+        recalcXp(profile);
+        const lvl = getLevelInfo(profile.xp);
+        const avatarEl = document.getElementById('profile-bar-avatar');
+        const nameEl = document.getElementById('profile-bar-name');
+        const levelEl = document.getElementById('profile-bar-level');
+        const rankEl = document.getElementById('profile-bar-rank');
+        const xpTextEl = document.getElementById('profile-bar-xp-text');
+        const xpFillEl = document.getElementById('profile-bar-xp-fill');
+
+        if (avatarEl) avatarEl.innerText = profile.avatar || '🐍';
+        if (nameEl) nameEl.innerText = profile.name || 'Estudante Python';
+        if (levelEl) levelEl.innerText = `Nível ${lvl.level}`;
+        if (rankEl) rankEl.innerText = lvl.rank;
+        if (xpTextEl) xpTextEl.innerText = `⚡ ${profile.xp} XP`;
+        if (xpFillEl) {
+          const span = Math.max(1, lvl.maxXp - lvl.minXp);
+          const pct = Math.min(100, Math.round(((profile.xp - lvl.minXp) / span) * 100));
+          xpFillEl.style.width = `${pct}%`;
+        }
+
+        for (let l = 1; l <= 20; l++) {
+          const el = document.getElementById(`nav-pct-lab${l}`);
+          if (el) {
+            const st = getLabStats(profile, l);
+            el.innerText = `${st.pct}%`;
+            if (st.pct === 100) {
+              el.className = 'text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold';
+            }
+          }
+        }
+      }
+
+      function completeTask(taskId) {
+        const task = TASKS_CATALOG[taskId];
+        if (!task) return;
+        const profile = loadProfile();
+        const oldLvl = getLevelInfo(recalcXp(profile)).level;
+        const alreadyDone = !!profile.completedTasks[taskId];
+
+        if (!alreadyDone) {
+          profile.completedTasks[taskId] = { completedAt: new Date().toISOString() };
+          recalcXp(profile);
+          saveProfile(profile);
+          const newLvlInfo = getLevelInfo(profile.xp);
+          showToast(`+${task.xp} XP Conquistado!`, task.title);
+          if (newLvlInfo.level > oldLvl) {
+            setTimeout(() => {
+              showToast(`🎉 SUBIU PARA O NÍVEL ${newLvlInfo.level}!`, newLvlInfo.rank);
+            }, 900);
+          }
+        }
+        renderTopBar(profile);
+      }
+
+      function saveEditorCode(editorId, code) {
+        if (!editorId) return;
+        const profile = loadProfile();
+        if (!profile.savedCode) profile.savedCode = {};
+        profile.savedCode[editorId] = code;
+        saveProfile(profile);
+      }
+
+      function restoreSavedCode() {
+        const profile = loadProfile();
+        if (!profile.savedCode) return;
+        document.querySelectorAll('textarea').forEach(textarea => {
+          if (profile.savedCode[textarea.id]) {
+            textarea.value = profile.savedCode[textarea.id];
+          }
+        });
+      }
+
+      function openModal() {
+        const p = loadProfile();
+        const modal = document.getElementById('profile-customization-modal');
+        const input = document.getElementById('profile-name-input');
+        if (input) input.value = p.name || 'Estudante Python';
+        if (modal) modal.classList.remove('hidden');
+      }
+
+      function closeModal() {
+        const modal = document.getElementById('profile-customization-modal');
+        if (modal) modal.classList.add('hidden');
+      }
+
+      function chooseAvatar(av) {
+        const p = loadProfile();
+        p.avatar = av;
+        saveProfile(p);
+        renderTopBar(p);
+        closeModal();
+      }
+
+      function saveName() {
+        const input = document.getElementById('profile-name-input');
+        if (input) {
+          const val = input.value.trim();
+          if (val) {
+            const p = loadProfile();
+            p.name = val;
+            saveProfile(p);
+            renderTopBar(p);
+          }
+        }
+        closeModal();
+      }
+
+      function resetProgress() {
+        if (confirm('Tem certeza que deseja resetar todo o progresso de XP e exercícios salvos?')) {
+          localStorage.removeItem(STORAGE_KEY);
+          location.reload();
+        }
+      }
+
+      function init() {
+        const p = loadProfile();
+        renderTopBar(p);
+        restoreSavedCode();
+      }
+
+      return {
+        init,
+        completeTask,
+        saveEditorCode,
+        openModal,
+        closeModal,
+        chooseAvatar,
+        saveName,
+        resetProgress,
+        recalcXp,
+        loadProfile
+      };
+    })();
+
+    if (document.readyState === 'loading') {
+      window.addEventListener('DOMContentLoaded', () => window.ProfileSystem.init());
+    } else {
+      window.ProfileSystem.init();
+    }
+  
+  </script>
+</body>
+</html>
