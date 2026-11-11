@@ -827,6 +827,82 @@ def is_palindrome(s):
 
     // Python-to-JS Mini Transpiler Engine with String & Two Pointers features
     function transpilePython(pythonCode) {
+    function joinMultilineBrackets(code) {
+      const rawLines = code.split('\n');
+      const logicalLines = [];
+      let currentLine = '';
+      let inMultiline = false;
+      let parenDepth = 0;
+      let bracketDepth = 0;
+      let braceDepth = 0;
+      let inString = null;
+
+      for (let i = 0; i < rawLines.length; i++) {
+        const raw = rawLines[i];
+        const trimmed = raw.trim();
+
+        if (!inMultiline && (!trimmed || trimmed.startsWith('#'))) {
+          logicalLines.push(raw);
+          continue;
+        }
+
+        let commentIndex = -1;
+        for (let c = 0; c < raw.length; c++) {
+          const ch = raw[c];
+          if (inString) {
+            if (ch === inString) {
+              let slashes = 0;
+              let k = c - 1;
+              while (k >= 0 && raw[k] === '\\') { slashes++; k--; }
+              if (slashes % 2 === 0) inString = null;
+            }
+            continue;
+          }
+          if (ch === '"' || ch === "'") {
+            inString = ch;
+            continue;
+          }
+          if (ch === '#') {
+            commentIndex = c;
+            break;
+          }
+          if (ch === '(') parenDepth++;
+          else if (ch === ')') { if (parenDepth > 0) parenDepth--; }
+          else if (ch === '[') bracketDepth++;
+          else if (ch === ']') { if (bracketDepth > 0) bracketDepth--; }
+          else if (ch === '{') braceDepth++;
+          else if (ch === '}') { if (braceDepth > 0) braceDepth--; }
+        }
+
+        let effectiveLine = commentIndex !== -1 ? raw.slice(0, commentIndex).trimEnd() : raw;
+        let lineComment = commentIndex !== -1 ? raw.slice(commentIndex) : '';
+
+        if (!inMultiline) {
+          currentLine = effectiveLine;
+        } else {
+          const effTrimmed = effectiveLine.trim();
+          if (effTrimmed) {
+            currentLine += ' ' + effTrimmed;
+          }
+        }
+
+        if (parenDepth === 0 && bracketDepth === 0 && braceDepth === 0) {
+          if (!inMultiline && commentIndex !== -1) {
+            logicalLines.push(currentLine + ' ' + lineComment);
+          } else {
+            logicalLines.push(currentLine);
+          }
+          currentLine = '';
+          inMultiline = false;
+        } else {
+          inMultiline = true;
+        }
+      }
+
+      if (currentLine) logicalLines.push(currentLine);
+      return logicalLines.join('\n');
+    }
+    pythonCode = joinMultilineBrackets(pythonCode);
     const lines = pythonCode.split('\n');
     let jsLines = [];
 
