@@ -1867,9 +1867,39 @@ def is_palindrome(s):
     }
 
     function setupCodeEditorFeatures() {
+      const pairs = {
+        '(': ')',
+        '[': ']',
+        '{': '}',
+        '"': '"',
+        "'": "'"
+      };
+      const closingChars = new Set([')', ']', '}', '"', "'"]);
+
+      function shouldAutoCloseQuote(val, pos, quote) {
+        if (quote === "'") {
+          const prev = pos > 0 ? val[pos - 1] : '';
+          if (/[a-zA-Z0-9]/.test(prev) && !/^[frbuFRBU]$/.test(prev)) {
+            return false;
+          }
+        }
+        const next = pos < val.length ? val[pos] : '';
+        if (/[a-zA-Z0-9]/.test(next)) {
+          return false;
+        }
+        return true;
+      }
+
       document.querySelectorAll('textarea').forEach(textarea => {
         if (textarea.dataset.editorEnhanced) return;
         textarea.dataset.editorEnhanced = 'true';
+
+        // IDE attributes & styling
+        textarea.spellcheck = false;
+        textarea.setAttribute('autocapitalize', 'off');
+        textarea.setAttribute('autocomplete', 'off');
+        textarea.setAttribute('autocorrect', 'off');
+        textarea.style.caretColor = '#38bdf8';
 
         const isLeet = textarea.id.includes('leetcode');
         const minH = isLeet ? 380 : 240;
@@ -1879,31 +1909,36 @@ def is_palindrome(s):
         }
 
         textarea.addEventListener('keydown', function(e) {
+          const val = this.value;
+          const start = this.selectionStart;
+          const end = this.selectionEnd;
+
+          // 1. TAB & SHIFT+TAB (Snap to 4-space tab stops or multi-line indent/dedent)
           if (e.key === 'Tab') {
             e.preventDefault();
-            const start = this.selectionStart;
-            const end = this.selectionEnd;
-            const value = this.value;
-
             if (!e.shiftKey) {
               if (start === end) {
-                this.value = value.substring(0, start) + '    ' + value.substring(end);
-                this.selectionStart = this.selectionEnd = start + 4;
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const col = start - lineStart;
+                const count = 4 - (col % 4);
+                const spaces = ' '.repeat(count);
+                this.value = val.substring(0, start) + spaces + val.substring(end);
+                this.selectionStart = this.selectionEnd = start + count;
               } else {
-                const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-                const lineEnd = value.indexOf('\n', end);
-                const endPos = lineEnd === -1 ? value.length : lineEnd;
-                const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const lineEnd = val.indexOf('\n', end);
+                const endPos = lineEnd === -1 ? val.length : lineEnd;
+                const selectedLines = val.substring(lineStart, endPos).split(/\r?\n/);
                 const indented = selectedLines.map(l => '    ' + l).join('\n');
-                this.value = value.substring(0, lineStart) + indented + value.substring(endPos);
+                this.value = val.substring(0, lineStart) + indented + val.substring(endPos);
                 this.selectionStart = start + 4;
                 this.selectionEnd = end + (selectedLines.length * 4);
               }
             } else {
-              const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-              const lineEnd = value.indexOf('\n', end);
-              const endPos = lineEnd === -1 ? value.length : lineEnd;
-              const selectedLines = value.substring(lineStart, endPos).split(/\r?\n/);
+              const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+              const lineEnd = val.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? val.length : lineEnd;
+              const selectedLines = val.substring(lineStart, endPos).split(/\r?\n/);
               let removedTotal = 0;
               let firstLineRemoved = 0;
 
@@ -1918,32 +1953,235 @@ def is_palindrome(s):
                 return l;
               }).join('\n');
 
-              this.value = value.substring(0, lineStart) + dedented + value.substring(endPos);
+              this.value = val.substring(0, lineStart) + dedented + val.substring(endPos);
               this.selectionStart = Math.max(lineStart, start - firstLineRemoved);
               this.selectionEnd = Math.max(lineStart, end - removedTotal);
             }
             handleAutoGrow(this);
             ensureCursorVisible(this);
             if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
-          } else if (e.key === 'Enter') {
-            const start = this.selectionStart;
-            const value = this.value;
-            const lineStart = value.lastIndexOf('\n', start - 1) + 1;
-            const currentLine = value.substring(lineStart, start);
+            return;
+          }
+
+          // 2. BACKSPACE: Smart Soft-Tab & Pair Deletion
+          if (e.key === 'Backspace' && !e.shiftKey && !e.ctrlKey && !e.altKey) {
+            if (start === end && start > 0) {
+              const prevChar = val[start - 1];
+              const nextChar = val[start];
+
+              // If cursor is between matching pair: delete both
+              if (pairs[prevChar] && pairs[prevChar] === nextChar) {
+                e.preventDefault();
+                this.value = val.substring(0, start - 1) + val.substring(start + 1);
+                this.selectionStart = this.selectionEnd = start - 1;
+                handleAutoGrow(this);
+                ensureCursorVisible(this);
+                if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+                return;
+              }
+
+              // Soft-tab unindent when cursor is inside leading spaces
+              const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+              const textBeforeInLine = val.substring(lineStart, start);
+              if (/^ +$/.test(textBeforeInLine)) {
+                e.preventDefault();
+                const remainder = textBeforeInLine.length % 4;
+                const deleteCount = remainder === 0 ? 4 : remainder;
+                const newPos = start - deleteCount;
+                this.value = val.substring(0, newPos) + val.substring(start);
+                this.selectionStart = this.selectionEnd = newPos;
+                handleAutoGrow(this);
+                ensureCursorVisible(this);
+                if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+                return;
+              }
+            }
+          }
+
+          // 3. ENTER: Smart Indent & Multiline Bracket Splitting
+          if (e.key === 'Enter') {
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = val.substring(lineStart, start);
             const indentMatch = currentLine.match(/^\s*/);
             let indent = indentMatch ? indentMatch[0] : '';
-            if (currentLine.trim().endsWith(':')) {
+            const trimmed = currentLine.trim();
+
+            const prevChar = start > 0 ? val[start - 1] : '';
+            const nextChar = start < val.length ? val[start] : '';
+
+            // Check if pressing Enter between open/close brackets: e.g. {|} or [|] or (|)
+            if (pairs[prevChar] && pairs[prevChar] === nextChar) {
+              e.preventDefault();
+              const innerIndent = indent + '    ';
+              const before = val.substring(0, start);
+              const after = val.substring(end);
+              this.value = before + '\n' + innerIndent + '\n' + indent + after;
+              this.selectionStart = this.selectionEnd = start + 1 + innerIndent.length;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+
+            if (trimmed.endsWith(':')) {
               indent += '    ';
             }
-            if (indent.length > 0) {
+
+            if (indent.length > 0 || start !== end) {
               e.preventDefault();
-              const before = value.substring(0, start);
-              const after = value.substring(this.selectionEnd);
+              const before = val.substring(0, start);
+              const after = val.substring(end);
               this.value = before + '\n' + indent + after;
               this.selectionStart = this.selectionEnd = start + 1 + indent.length;
               handleAutoGrow(this);
               ensureCursorVisible(this);
               if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 4. AUTO-CLOSING PAIRS & SELECTION WRAPPING
+          if (pairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            const openChar = e.key;
+            const closeChar = pairs[openChar];
+
+            if (start !== end) {
+              // Selection wrapping
+              e.preventDefault();
+              const selected = val.substring(start, end);
+              this.value = val.substring(0, start) + openChar + selected + closeChar + val.substring(end);
+              this.selectionStart = start + 1;
+              this.selectionEnd = end + 1;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            } else {
+              // Single character auto-close
+              if (openChar === '"' || openChar === "'") {
+                const nextChar = val[start];
+                if (nextChar === openChar) {
+                  e.preventDefault();
+                  this.selectionStart = this.selectionEnd = start + 1;
+                  return;
+                }
+                if (!shouldAutoCloseQuote(val, start, openChar)) {
+                  return;
+                }
+              }
+              e.preventDefault();
+              this.value = val.substring(0, start) + openChar + closeChar + val.substring(end);
+              this.selectionStart = this.selectionEnd = start + 1;
+              handleAutoGrow(this);
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 5. STEP OVER CLOSING CHARACTERS
+          if (closingChars.has(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            if (start === end && start < val.length && val[start] === e.key) {
+              e.preventDefault();
+              this.selectionStart = this.selectionEnd = start + 1;
+              return;
+            }
+          }
+
+          // 6. TOGGLE COMMENT (Ctrl+/ or Cmd+/)
+          if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            const endPos = lineEnd === -1 ? val.length : lineEnd;
+            const lines = val.substring(lineStart, endPos).split(/\r?\n/);
+
+            const allCommented = lines.every(l => l.trim().length === 0 || l.trim().startsWith('#'));
+            let modifiedLines;
+            let diff = 0;
+
+            if (allCommented) {
+              modifiedLines = lines.map(l => {
+                const m = l.match(/^(\s*)# ?(.*)$/);
+                if (m) {
+                  diff -= (l.length - (m[1] + m[2]).length);
+                  return m[1] + m[2];
+                }
+                return l;
+              });
+            } else {
+              modifiedLines = lines.map(l => {
+                if (l.trim().length === 0) return l;
+                diff += 2;
+                return '# ' + l;
+              });
+            }
+
+            this.value = val.substring(0, lineStart) + modifiedLines.join('\n') + val.substring(endPos);
+            this.selectionStart = Math.max(lineStart, start + (allCommented ? -2 : 2));
+            this.selectionEnd = Math.max(lineStart, end + diff);
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+            return;
+          }
+
+          // 7. DUPLICATE LINE (Shift+Alt+Down or Ctrl+D)
+          if (((e.shiftKey && e.altKey && e.key === 'ArrowDown') || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd')) && !e.repeat) {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            const endPos = lineEnd === -1 ? val.length : lineEnd;
+            const selectedBlock = val.substring(lineStart, endPos);
+            this.value = val.substring(0, endPos) + '\n' + selectedBlock + val.substring(endPos);
+            const offset = selectedBlock.length + 1;
+            this.selectionStart = start + offset;
+            this.selectionEnd = end + offset;
+            handleAutoGrow(this);
+            ensureCursorVisible(this);
+            if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+            return;
+          }
+
+          // 8. MOVE LINE UP (Alt+ArrowUp)
+          if (e.altKey && !e.shiftKey && !e.ctrlKey && e.key === 'ArrowUp') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            if (lineStart > 0) {
+              const prevLineStart = val.lastIndexOf('\n', lineStart - 2) + 1;
+              const prevLine = val.substring(prevLineStart, lineStart - 1);
+              const lineEnd = val.indexOf('\n', end);
+              const endPos = lineEnd === -1 ? val.length : lineEnd;
+              const curBlock = val.substring(lineStart, endPos);
+
+              this.value = val.substring(0, prevLineStart) + curBlock + '\n' + prevLine + val.substring(endPos);
+              const shift = prevLine.length + 1;
+              this.selectionStart = start - shift;
+              this.selectionEnd = end - shift;
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
+            }
+          }
+
+          // 9. MOVE LINE DOWN (Alt+ArrowDown)
+          if (e.altKey && !e.shiftKey && !e.ctrlKey && e.key === 'ArrowDown') {
+            e.preventDefault();
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            if (lineEnd !== -1) {
+              const nextLineEnd = val.indexOf('\n', lineEnd + 1);
+              const nextEndPos = nextLineEnd === -1 ? val.length : nextLineEnd;
+              const curBlock = val.substring(lineStart, lineEnd);
+              const nextLine = val.substring(lineEnd + 1, nextEndPos);
+
+              this.value = val.substring(0, lineStart) + nextLine + '\n' + curBlock + val.substring(nextEndPos);
+              const shift = nextLine.length + 1;
+              this.selectionStart = start + shift;
+              this.selectionEnd = end + shift;
+              ensureCursorVisible(this);
+              if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(this.id, this.value);
+              return;
             }
           }
         });
