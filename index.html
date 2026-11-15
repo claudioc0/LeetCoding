@@ -1749,7 +1749,7 @@ def two_sum(nums, target):
       const ed = document.getElementById('code-leetcode');
       ed.value = 'def two_sum(nums, target):\n    # Escreva sua solução aqui\n    pass';
       if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('code-leetcode', ed.value);
+      
       const res = document.getElementById('leetcode-results');
       if (res) res.classList.add('hidden');
     }
@@ -1758,7 +1758,7 @@ def two_sum(nums, target):
       const ed = document.getElementById('code-leetcode');
       ed.value = 'def two_sum(nums, target):\n    mapa = {}\n    for i, num in enumerate(nums):\n        complemento = target - num\n        if complemento in mapa:\n            return [mapa[complemento], i]\n        mapa[num] = i\n    return []';
       if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('code-leetcode', ed.value);
+      
       ensureCursorVisible(ed);
     }
 
@@ -2290,6 +2290,7 @@ def two_sum(nums, target):
 
     
     
+    
     // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (20 LABS) ---
     window.ProfileSystem = (function() {
       const STORAGE_KEY = 'python_study_lab_profile_v1';
@@ -2429,16 +2430,11 @@ def two_sum(nums, target):
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
           const prof = Object.assign(getDefaultProfile(), parsed);
-          // Purge legacy shared keys so they never leak across labs
-          if (prof.savedCode) {
-            delete prof.savedCode['editor-1'];
-            delete prof.savedCode['editor-2'];
-            delete prof.savedCode['editor-3'];
-            delete prof.savedCode['editor-leetcode'];
-            delete prof.savedCode['code-ex1'];
-            delete prof.savedCode['code-ex2'];
-            delete prof.savedCode['code-ex3'];
-            delete prof.savedCode['code-leetcode'];
+          // Purge legacy shared and contaminated savedCode from v1 bug
+          if (!prof.codeStorageVersion || prof.codeStorageVersion < 2) {
+            prof.savedCode = {};
+            prof.codeStorageVersion = 2;
+            saveProfile(prof);
           }
           return prof;
         } catch (e) {
@@ -2552,20 +2548,13 @@ def two_sum(nums, target):
         renderTopBar(profile);
       }
 
-      function getLabKey() {
-        const path = window.location.pathname;
-        const match = path.match(/(?:lab(d+)|index)/i);
-        if (match) {
-          return match[1] ? ('lab' + match[1]) : 'lab1';
-        }
-        return 'lab_common';
-      }
+      const CURRENT_LAB_KEY = 'lab1';
 
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        const key = getLabKey() + '_' + editorId;
+        const key = CURRENT_LAB_KEY + '_' + editorId;
         profile.savedCode[key] = code;
         saveProfile(profile);
       }
@@ -2573,9 +2562,8 @@ def two_sum(nums, target):
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
-        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          const key = labKey + '_' + textarea.id;
+          const key = CURRENT_LAB_KEY + '_' + textarea.id;
           if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
             textarea.value = profile.savedCode[key];
           }

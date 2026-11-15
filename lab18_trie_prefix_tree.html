@@ -1351,7 +1351,6 @@ class Trie:
       if (ed && SOLUTIONS[num]) {
         ed.value = SOLUTIONS[num];
         if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-' + num, ed.value);
       }
     }
 
@@ -1474,7 +1473,6 @@ class Trie:
             curr = curr.children[char]
         return True`;
         if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-        if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
       }
     }
 
@@ -2105,16 +2103,11 @@ function setupCodeEditorFeatures() {
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
           const prof = Object.assign(getDefaultProfile(), parsed);
-          // Purge legacy shared keys so they never leak across labs
-          if (prof.savedCode) {
-            delete prof.savedCode['editor-1'];
-            delete prof.savedCode['editor-2'];
-            delete prof.savedCode['editor-3'];
-            delete prof.savedCode['editor-leetcode'];
-            delete prof.savedCode['code-ex1'];
-            delete prof.savedCode['code-ex2'];
-            delete prof.savedCode['code-ex3'];
-            delete prof.savedCode['code-leetcode'];
+          // Purge legacy shared and contaminated savedCode from v1 bug
+          if (!prof.codeStorageVersion || prof.codeStorageVersion < 2) {
+            prof.savedCode = {};
+            prof.codeStorageVersion = 2;
+            saveProfile(prof);
           }
           return prof;
         } catch (e) {
@@ -2228,20 +2221,13 @@ function setupCodeEditorFeatures() {
         renderTopBar(profile);
       }
 
-      function getLabKey() {
-        const path = window.location.pathname;
-        const match = path.match(/(?:lab(d+)|index)/i);
-        if (match) {
-          return match[1] ? ('lab' + match[1]) : 'lab1';
-        }
-        return 'lab_common';
-      }
+      const CURRENT_LAB_KEY = 'lab18';
 
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        const key = getLabKey() + '_' + editorId;
+        const key = CURRENT_LAB_KEY + '_' + editorId;
         profile.savedCode[key] = code;
         saveProfile(profile);
       }
@@ -2249,9 +2235,8 @@ function setupCodeEditorFeatures() {
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
-        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          const key = labKey + '_' + textarea.id;
+          const key = CURRENT_LAB_KEY + '_' + textarea.id;
           if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
             textarea.value = profile.savedCode[key];
           }

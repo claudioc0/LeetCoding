@@ -222,11 +222,12 @@
           <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
             <h4 class="font-bold text-purple-400">🧱 Construindo do Degrau Base para o Topo</h4>
             <p class="text-xs text-slate-400">Na Programação Dinâmica (<em>Bottom-Up Tabulation</em>), criamos uma lista <code class="font-mono text-purple-300">dp</code> onde cada posição <code class="font-mono">dp[i]</code> guarda a resposta para o tamanho <code class="font-mono">i</code>, usando os dois valores anteriores já calculados:</p>
-            <pre class="font-mono text-xs text-slate-300 bg-slate-900 p-2.5 rounded border border-slate-800">dp = [0] * (n + 1)
-dp[1] = 1
-dp[2] = 2
-for i in range(3, n + 1):
-    dp[i] = dp[i - 1] + dp[i - 2]</pre>
+            <pre class="font-mono text-xs text-slate-300 bg-slate-900 p-2.5 rounded border border-slate-800"># Conceito geral de Tabulação Bottom-Up
+dp = [0] * (n + 1)
+dp[0] = caso_base_0
+dp[1] = caso_base_1
+for i in range(2, n + 1):
+    dp[i] = dp[i - 1] + dp[i - 2]  # Combina subproblemas menores</pre>
           </div>
           <div class="p-4 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2">
             <h4 class="font-bold text-fuchsia-400">✨ Multiplicação de Lista: <code class="font-mono">[0] * (n + 1)</code></h4>
@@ -1474,7 +1475,7 @@ class Solution:
       const ed = document.getElementById(`editor-${num}`);
       ed.value = solutions[num];
       if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode(`editor-${num}`, ed.value);
+      
     }
 
     function runChallenge(num) {
@@ -1660,7 +1661,7 @@ class Solution:
       const ed = document.getElementById('editor-leetcode');
       ed.value = "class Solution:\n    def climbStairs(self, n: int) -&gt; int:\n        if n <= 2:\n            return n\n        dp = [0] * (n + 1)\n        dp[1] = 1\n        dp[2] = 2\n        for i in range(3, n + 1):\n            dp[i] = dp[i - 1] + dp[i - 2]\n        return dp[n]";
       if (typeof handleAutoGrow === 'function') handleAutoGrow(ed);
-      if (window.ProfileSystem) window.ProfileSystem.saveEditorCode('editor-leetcode', ed.value);
+      
     }
 
     function runLeetCodeTests() {
@@ -2177,6 +2178,7 @@ class Solution:
 
     
     
+    
     // --- UNIFIED PLAYER PROFILE, XP & PERSISTENCE SYSTEM (20 LABS) ---
     window.ProfileSystem = (function() {
       const STORAGE_KEY = 'python_study_lab_profile_v1';
@@ -2316,16 +2318,11 @@ class Solution:
           if (!raw) return getDefaultProfile();
           const parsed = JSON.parse(raw);
           const prof = Object.assign(getDefaultProfile(), parsed);
-          // Purge legacy shared keys so they never leak across labs
-          if (prof.savedCode) {
-            delete prof.savedCode['editor-1'];
-            delete prof.savedCode['editor-2'];
-            delete prof.savedCode['editor-3'];
-            delete prof.savedCode['editor-leetcode'];
-            delete prof.savedCode['code-ex1'];
-            delete prof.savedCode['code-ex2'];
-            delete prof.savedCode['code-ex3'];
-            delete prof.savedCode['code-leetcode'];
+          // Purge legacy shared and contaminated savedCode from v1 bug
+          if (!prof.codeStorageVersion || prof.codeStorageVersion < 2) {
+            prof.savedCode = {};
+            prof.codeStorageVersion = 2;
+            saveProfile(prof);
           }
           return prof;
         } catch (e) {
@@ -2439,20 +2436,13 @@ class Solution:
         renderTopBar(profile);
       }
 
-      function getLabKey() {
-        const path = window.location.pathname;
-        const match = path.match(/(?:lab(d+)|index)/i);
-        if (match) {
-          return match[1] ? ('lab' + match[1]) : 'lab1';
-        }
-        return 'lab_common';
-      }
+      const CURRENT_LAB_KEY = 'lab9';
 
       function saveEditorCode(editorId, code) {
         if (!editorId) return;
         const profile = loadProfile();
         if (!profile.savedCode) profile.savedCode = {};
-        const key = getLabKey() + '_' + editorId;
+        const key = CURRENT_LAB_KEY + '_' + editorId;
         profile.savedCode[key] = code;
         saveProfile(profile);
       }
@@ -2460,9 +2450,8 @@ class Solution:
       function restoreSavedCode() {
         const profile = loadProfile();
         if (!profile.savedCode) return;
-        const labKey = getLabKey();
         document.querySelectorAll('textarea').forEach(textarea => {
-          const key = labKey + '_' + textarea.id;
+          const key = CURRENT_LAB_KEY + '_' + textarea.id;
           if (profile.savedCode[key] !== undefined && profile.savedCode[key] !== '') {
             textarea.value = profile.savedCode[key];
           }
